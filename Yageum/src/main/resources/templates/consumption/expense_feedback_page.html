@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소비분석 피드백</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff8dc 0%, #fffacd 50%, #fff8dc 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #8b4513;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #a0522d;
+            position: relative;
+            z-index: 1;
+        }
+
+        .analysis-score {
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(#ff6b6b 0deg, #ffa500 72deg, #ffd700 144deg, #32cd32 216deg, #32cd32 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+            animation: rotate 3s ease-in-out;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .score-inner {
+            width: 160px;
+            height: 160px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #b8860b;
+            margin-bottom: 5px;
+        }
+
+        .score-label {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .score-description {
+            font-size: 1.2rem;
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+
+        .score-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .feedback-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .feedback-card {
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.25);
+        }
+
+        .feedback-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffb347, #ffd700);
+        }
+
+        .feedback-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .feedback-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #b8860b;
+            margin-bottom: 15px;
+        }
+
+        .feedback-content {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feedback-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .status-good {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .recommendations {
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+        }
+
+        .recommendations h3 {
+            font-size: 1.5rem;
+            color: #b8860b;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+
+        .recommendation-item {
+            background: linear-gradient(135deg, #fffef7 0%, #fff 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .recommendation-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .recommendation-text {
+            display: inline-block;
+            vertical-align: middle;
+            width: calc(100% - 40px);
+        }
+
+        .recommendation-title {
+            font-weight: bold;
+            color: #8b4513;
+            margin-bottom: 5px;
+        }
+
+        .recommendation-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .progress-section {
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+        }
+
+        .progress-section h3 {
+            font-size: 1.5rem;
+            color: #b8860b;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+
+        .progress-item {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #f0e68c;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffb347);
+            border-radius: 6px;
+            transition: width 2s ease-in-out;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progress-shine 2s infinite;
+        }
+
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .goals-section {
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+        }
+
+        .goals-section h3 {
+            font-size: 1.5rem;
+            color: #b8860b;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+
+        .goal-card {
+            background: linear-gradient(135deg, #fffef7 0%, #fff 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #f0e68c;
+            transition: all 0.3s ease;
+        }
+
+        .goal-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .goal-title {
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        .goal-status {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+            color: #8b4513;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .feedback-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .score-circle {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .score-inner {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .score-number {
+                font-size: 2.5rem;
+            }
+        }
+
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        canvas {
+            max-height: 250px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎯 소비분석 피드백</h1>
+            <p>AI가 분석한 당신의 소비패턴과 맞춤형 조언을 확인해보세요</p>
+        </header>
+
+        <div class="analysis-score">
+            <div class="score-circle">
+                <div class="score-inner">
+                    <div class="score-number" id="overallScore">85</div>
+                    <div class="score-label">점</div>
+                </div>
+            </div>
+            <div class="score-description">양호한 소비 패턴</div>
+            <div class="score-subtitle">평균보다 15% 더 효율적인 소비를 하고 계십니다!</div>
+        </div>
+
+        <div class="feedback-grid">
+            <div class="feedback-card">
+                <span class="feedback-icon">💰</span>
+                <div class="feedback-title">예산 관리</div>
+                <div class="feedback-status status-good">우수</div>
+                <div class="feedback-content">
+                    이번 달 예산 대비 78% 사용으로 적절한 수준입니다. 예산 계획을 잘 지키고 있어 금융 목표 달성 가능성이 높습니다.
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <span class="feedback-icon">🍽️</span>
+                <div class="feedback-title">식비 지출</div>
+                <div class="feedback-status status-warning">주의</div>
+                <div class="feedback-content">
+                    식비가 전체 지출의 35%를 차지하고 있습니다. 일반적인 권장 비율인 25-30%보다 높은 수준이니 외식 빈도를 조절해보세요.
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <span class="feedback-icon">🚗</span>
+                <div class="feedback-title">교통비</div>
+                <div class="feedback-status status-good">절약</div>
+                <div class="feedback-content">
+                    대중교통 이용으로 교통비를 효율적으로 관리하고 있습니다. 지난달 대비 20% 절약하며 환경에도 도움이 되고 있어요.
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <span class="feedback-icon">🛍️</span>
+                <div class="feedback-title">쇼핑 패턴</div>
+                <div class="feedback-status status-danger">개선 필요</div>
+                <div class="feedback-content">
+                    충동구매가 증가하는 추세입니다. 쇼핑 전 구매 목록을 작성하고, 24시간 후 재고하는 습관을 기르시길 권합니다.
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendations">
+            <h3>💡 맞춤형 개선 제안</h3>
+            
+            <div class="recommendation-item">
+                <span class="recommendation-icon">🎯</span>
+                <div class="recommendation-text">
+                    <div class="recommendation-title">식비 예산 재조정</div>
+                    <div class="recommendation-desc">월 식비를 현재 45만원에서 35만원으로 줄이면 연간 120만원을 절약할 수 있습니다.</div>
+                </div>
+            </div>
+
+            <div class="recommendation-item">
+                <span class="recommendation-icon">📱</span>
+                <div class="recommendation-text">
+                    <div class="recommendation-title">가계부 앱 활용</div>
+                    <div class="recommendation-desc">실시간 지출 기록으로 소비 인식을 높이고, 자동 분류 기능으로 관리 효율성을 증대시키세요.</div>
+                </div>
+            </div>
+
+            <div class="recommendation-item">
+                <span class="recommendation-icon">💳</span>
+                <div class="recommendation-text">
+                    <div class="recommendation-title">할인 혜택 극대화</div>
+                    <div class="recommendation-desc">주로 이용하는 카테고리에 특화된 카드로 변경하면 월평균 3-5% 추가 절약이 가능합니다.</div>
+                </div>
+            </div>
+
+            <div class="recommendation-item">
+                <span class="recommendation-icon">⏰</span>
+                <div class="recommendation-text">
+                    <div class="recommendation-title">정기 지출 검토</div>
+                    <div class="recommendation-desc">구독 서비스와 멤버십을 분기별로 검토하여 사용하지 않는 서비스를 정리하세요.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <h3>📈 목표 달성 현황</h3>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>월 절약 목표</span>
+                    <span>78% (234,000원/300,000원)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 78%"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>식비 절약</span>
+                    <span>45% (67,500원/150,000원)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 45%"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>비상금 적립</span>
+                    <span>92% (1,840,000원/2,000,000원)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 92%"></div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </div>
+
+        <div class="goals-section">
+            <h3>🏆 이번 달 도전 과제</h3>
+            
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">외식비 20% 줄이기</div>
+                    <div class="goal-status status-warning">진행중</div>
+                </div>
+                <div class="feedback-content">
+                    현재 12% 감소 달성. 주 2회 집밥 도전으로 목표 달성 가능!
+                </div>
+            </div>
+
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">용돈 기입장 매일 작성</div>
+                    <div class="goal-status status-good">달성</div>
+                </div>
+                <div class="feedback-content">
+                    26일 연속 기록 달성! 소비 인식 개선에 큰 도움이 되고 있습니다.
+                </div>
+            </div>
+
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">구독 서비스 정리</div>
+                    <div class="goal-status status-danger">미완료</div>
+                </div>
+                <div class="feedback-content">
+                    사용하지 않는 3개 서비스 발견. 해지 시 월 27,000원 절약 가능.
+                </div>
+            </div>
+
+            <button class="btn" onclick="generateNewGoals()">새로운 목표 생성하기</button>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 애니메이션
+        document.addEventListener('DOMContentLoaded', function() {
+            // 점수 애니메이션
+            animateScore();
+            
+            // 프로그레스 바 애니메이션
+            animateProgressBars();
+            
+            // 차트 생성
+            createProgressChart();
+            
+            // 카드 순차 애니메이션
+            animateCards();
+        });
+
+        function animateScore() {
+            const scoreElement = document.getElementById('overallScore');
+            const targetScore = 85;
+            let currentScore = 0;
+            const increment = targetScore / 50;
+            
+            const timer = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= targetScore) {
+                    currentScore = targetScore;
+                    clearInterval(timer);
+                }
+                scoreElement.textContent = Math.round(currentScore);
+            }, 50);
+        }
+
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach((bar, index) => {
+                setTimeout(() => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                }, index * 200);
+            });
+        }
+
+        function animateCards() {
+            const cards = document.querySelectorAll('.feedback-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        }
+
+        function createProgressChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1주차', '2주차', '3주차', '4주차'],
+                    datasets: [{
+                        label: '목표 달성률',
+                        data: [65, 72, 78, 85],
+                        borderColor: '#FFD700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#FFB347',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '달성률: ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+
+        function generateNewGoals() {
+            const btn = event.target;
+            btn.textContent = '목표 생성 중...';
+            btn.disabled = true;
+            
+            // API 호출 시뮬레이션
+            setTimeout(() => {
+                alert('새로운 개인 맞춤형 목표가 생성되었습니다!\n\n1. 카페 이용 월 15회로 제한\n2. 온라인 쇼핑 위시리스트 활용\n3. 고정비 5% 절약 도전');
+                btn.textContent = '새로운 목표 생성하기';
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        // Spring Boot API 연동 함수들
+        async function fetchFeedbackData() {
+            try {
+                // const response = await fetch('/api/feedback');
+                // const data = await response.json();
+                // 피드백 데이터 업데이트
+                console.log('API 호출: 피드백 데이터 가져오기');
+            } catch (error) {
+                console.error('피드백 데이터 로드 실패:', error);
+            }
+        }
+
+        async function updateGoals(goalData) {
+            try {
+                // const response = await fetch('/api/goals', {
+                //     method: 'POST',
+                //     headers: {'Content-Type': 'application/json'},
+                //     body: JSON.stringify(goalData)
+                // });
+                console.log('API 호출: 목표 업데이트');
+            } catch (error) {
+                console.error('목표 업데이트 실패:', error);
+            }
+        }
+
+        // 실시간 알림 기능
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #ffd700, #ffb347);
+                color: #8b4513;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+                z-index: 1000;
+                font-weight: bold;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // 주기적으로 새로운 인사이트 표시
+        setInterval(() => {
+            const insights = [
+                "💡 팁: 이번 주 식비가 예산을 초과했어요!",
+                "🎯 목표까지 67,000원 더 절약하면 달성!",
+                "📊 지난 달 대비 교통비 15% 절약 중!"
+            ];
+            const randomInsight = insights[Math.floor(Math.random() * insights.length)];
+            showNotification(randomInsight);
+        }, 30000); // 30초마다
+    </script>
+</body>
+</html>

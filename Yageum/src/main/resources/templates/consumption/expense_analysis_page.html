@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가계부 소비분석</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff8dc 0%, #fffacd 50%, #fff8dc 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #8b4513;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #a0522d;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.25);
+            border-color: #ffb347;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffb347, #ffd700);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #ff8c00;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #b8860b;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .chart-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+            height: 400px;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.25);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #b8860b;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+
+        canvas {
+            max-height: 300px !important;
+        }
+
+        .expense-table {
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+            border: 2px solid #ffd700;
+            margin-bottom: 30px;
+        }
+
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #b8860b;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0e68c;
+        }
+
+        th {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+            color: #8b4513;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        tr:hover {
+            background-color: #fffacd;
+            transition: background-color 0.3s ease;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            color: #b8860b;
+            font-size: 0.9rem;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #ffb347;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+            color: #8b4513;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #b8860b;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #ffd700;
+            border-radius: 50%;
+            border-top-color: #ffb347;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💰 가계부 소비분석</h1>
+            <p>스마트한 소비 패턴 분석으로 더 나은 재정 관리를 시작하세요</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💳</div>
+                <div class="stat-value" id="totalExpense">₩1,234,567</div>
+                <div class="stat-label">이번 달 총 지출</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="avgDaily">₩41,152</div>
+                <div class="stat-label">일평균 지출</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="budgetStatus">78%</div>
+                <div class="stat-label">예산 사용률</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value" id="topCategory">식비</div>
+                <div class="stat-label">최대 지출 카테고리</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-card">
+                <h3 class="chart-title">카테고리별 지출 분포</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">월별 지출 추이</h3>
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+        <div class="expense-table">
+            <h3 class="table-title">최근 지출 내역</h3>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label>기간</label>
+                    <select id="periodFilter">
+                        <option value="7">최근 7일</option>
+                        <option value="30" selected>최근 30일</option>
+                        <option value="90">최근 3개월</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>카테고리</label>
+                    <select id="categoryFilter">
+                        <option value="">전체</option>
+                        <option value="식비">식비</option>
+                        <option value="교통비">교통비</option>
+                        <option value="쇼핑">쇼핑</option>
+                        <option value="의료비">의료비</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>최소 금액</label>
+                    <input type="number" id="minAmount" placeholder="0">
+                </div>
+                <div class="filter-group">
+                    <label></label>
+                    <button class="btn" onclick="applyFilters()">필터 적용</button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>데이터를 불러오는 중...</p>
+            </div>
+
+            <table id="expenseTable">
+                <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>카테고리</th>
+                        <th>내용</th>
+                        <th>금액</th>
+                        <th>결제수단</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseTableBody">
+                    <!-- 데이터가 여기에 동적으로 삽입됩니다 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 샘플 데이터 (실제로는 Spring Boot API에서 가져올 데이터)
+        let expenseData = [
+            {date: '2024-06-05', category: '식비', description: '점심 식사', amount: 12000, method: '카드'},
+            {date: '2024-06-05', category: '교통비', description: '지하철', amount: 1500, method: '교통카드'},
+            {date: '2024-06-04', category: '쇼핑', description: '의류 구매', amount: 89000, method: '카드'},
+            {date: '2024-06-04', category: '식비', description: '저녁 식사', amount: 25000, method: '현금'},
+            {date: '2024-06-03', category: '의료비', description: '병원 진료', amount: 15000, method: '카드'},
+            {date: '2024-06-03', category: '식비', description: '카페', amount: 6500, method: '카드'},
+            {date: '2024-06-02', category: '교통비', description: '택시', amount: 8500, method: '카드'},
+            {date: '2024-06-02', category: '쇼핑', description: '생필품', amount: 34000, method: '카드'},
+            {date: '2024-06-01', category: '식비', description: '마트 장보기', amount: 67000, method: '카드'},
+            {date: '2024-06-01', category: '기타', description: '영화 관람', amount: 14000, method: '카드'}
+        ];
+
+        // 카테고리별 차트 생성
+        function createCategoryChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            // 카테고리별 합계 계산
+            const categoryTotals = {};
+            expenseData.forEach(item => {
+                categoryTotals[item.category] = (categoryTotals[item.category] || 0) + item.amount;
+            });
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryTotals),
+                    datasets: [{
+                        data: Object.values(categoryTotals),
+                        backgroundColor: [
+                            '#FFD700',
+                            '#FFB347',
+                            '#FFA500',
+                            '#FF8C00',
+                            '#FF7F50',
+                            '#FF6347'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 3,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ₩' + context.parsed.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true
+                    }
+                }
+            });
+        }
+
+        // 월별 차트 생성
+        function createMonthlyChart() {
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            
+            // 샘플 월별 데이터
+            const monthlyData = {
+                labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+                datasets: [{
+                    label: '월별 지출',
+                    data: [1200000, 1350000, 1180000, 1420000, 1150000, 1234567],
+                    borderColor: '#FFD700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#FFB347',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'line',
+                data: monthlyData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₩' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '지출: ₩' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+
+        // 테이블 데이터 로드
+        function loadTableData(filteredData = expenseData) {
+            const tbody = document.getElementById('expenseTableBody');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.date}</td>
+                    <td><span style="color: #FF8C00; font-weight: bold;">${item.category}</span></td>
+                    <td>${item.description}</td>
+                    <td style="font-weight: bold; color: #B8860B;">₩${item.amount.toLocaleString()}</td>
+                    <td>${item.method}</td>
+                `;
+            });
+        }
+
+        // 필터 적용
+        function applyFilters() {
+            const loading = document.getElementById('loading');
+            const table = document.getElementById('expenseTable');
+            
+            // 로딩 표시
+            loading.style.display = 'block';
+            table.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                const period = document.getElementById('periodFilter').value;
+                const category = document.getElementById('categoryFilter').value;
+                const minAmount = document.getElementById('minAmount').value;
+                
+                let filteredData = expenseData;
+                
+                // 기간 필터
+                const today = new Date();
+                const periodDate = new Date(today.getTime() - (period * 24 * 60 * 60 * 1000));
+                filteredData = filteredData.filter(item => new Date(item.date) >= periodDate);
+                
+                // 카테고리 필터
+                if (category) {
+                    filteredData = filteredData.filter(item => item.category === category);
+                }
+                
+                // 최소 금액 필터
+                if (minAmount) {
+                    filteredData = filteredData.filter(item => item.amount >= parseInt(minAmount));
+                }
+                
+                loadTableData(filteredData);
+                
+                // 로딩 숨기기
+                loading.style.display = 'none';
+                table.style.opacity = '1';
+            }, 800);
+        }
+
+        // 통계 업데이트 (실제로는 API에서 가져올 데이터)
+        function updateStats() {
+            // 애니메이션 효과와 함께 숫자 업데이트
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                stat.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    stat.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            createCategoryChart();
+            createMonthlyChart();
+            loadTableData();
+            updateStats();
+            
+            // 통계 카드 호버 효과
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+
+        // Spring Boot와의 연동을 위한 API 호출 함수들 (예시)
+        async function fetchExpenseData() {
+            try {
+                // const response = await fetch('/api/expenses');
+                // const data = await response.json();
+                // expenseData = data;
+                console.log('API 호출: 지출 데이터 가져오기');
+            } catch (error) {
+                console.error('데이터 로드 실패:', error);
+            }
+        }
+
+        async function fetchStats() {
+            try {
+                // const response = await fetch('/api/stats');
+                // const stats = await response.json();
+                // 통계 데이터 업데이트
+                console.log('API 호출: 통계 데이터 가져오기');
+            } catch (error) {
+                console.error('통계 로드 실패:', error);
+            }
+        }
+    </script>
+</body>
+</html>
