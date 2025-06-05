@@ -1,0 +1,19 @@
+<div th:fragment="header">
+	<header class="header">
+		<div class="header-container">
+			<div class="header-top">
+				<a href="/" class="logo">야금야금</a>
+				<div class="user-info">
+					<span class="welcome-msg" th:text="'안녕하세요, ' + ${user?.name ?: '사용자'} + '님!'">안녕하세요, 사용자님!</span>
+					<button class="btn-logout" onclick="logout()">로그아웃</button>
+				</div>
+			</div>
+			<nav>
+				<ul class="nav-menu">
+					<li><a href="/accountbook">가계부</a></li>
+					<li><a href="/analysis">소비 분석</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+</div>

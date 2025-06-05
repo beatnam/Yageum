@@ -1,0 +1,213 @@
+
+        /* ---------- 공통 ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Gowun Dodum", sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #4E342E;
+            min-height: 100vh;
+        }
+
+        /* ---------- 헤더 ---------- */
+        .header {
+            background-color: white;
+            border-bottom: 3px solid #FFD44D;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            max-width: 1350px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFD44D;
+            font-family: "Black Han Sans", sans-serif;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .btn-logout {
+            background-color: #FF8A80;
+            color: #FFF9E5;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-logout:hover {
+            background-color: #ff5252;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .nav-menu a:hover {
+            background-color: #FFD44D;
+            color: white;
+        }
+
+ 
+
+        /* ---------- 사이드바 ---------- */
+        .app-container {
+           display: flex;
+            max-width: 1350px;     /* 헤더, 푸터와 동일한 너비 */
+            margin: 0 auto;        /* 가운데 정렬 */
+            padding: 0 20px;       /* ✅ 좌우 여백 추가 */
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(78, 52, 46, 0.1);
+            padding: 2rem 0;
+            height: calc(100vh - 110px); /* 헤더 높이 제외 */
+            position: sticky;
+            top: 110px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            color: #4E342E;
+            position: relative;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #FFC6C7;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #FFD44D;
+            transform: scaleY(0);
+            transition: 0.3s;
+        }
+
+        .sidebar-menu a:hover::before,
+        .sidebar-menu a.active::before {
+            transform: scaleY(1);
+        }
+
+        /* ---------- 본문 ---------- */
+        .content {
+            flex: 1;
+            padding: 2rem;
+            background: #FFF9E5;
+        }
+
+        .content-header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .content-body {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+
+        /* ---------- 푸터 ---------- */
+        .footer {
+            background-color: #4E342E;
+            color: white;
+            padding: 40px 0 20px 0;
+        }
+
+        .footer-container {
+            max-width: 1350px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFD44D;
+            font-family: "Black Han Sans", sans-serif;
+        }
+
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            text-align: center;
+            padding-top: 20px;
+            color: #95a5a6;
+            font-size: 14px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .header-top { flex-direction: column; gap: 10px; }
+            .nav-menu { gap: 20px; flex-wrap: wrap; }
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; position: relative; top: 0; height: auto; }
+        }

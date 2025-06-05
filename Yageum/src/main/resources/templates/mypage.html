@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>나의 가계부</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="css/my_page.css">
+</head>
+
+<body>
+	<!-- 헤더 -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="accountbook-container">
+		<nav class="accountbook-sidebar">
+			<h2>메뉴</h2>
+			<ul class="accountbook-sidebar-menu">
+				<li><a href="#overview" class="active">🏠 자산 현황</a></li>
+				<li><a href="#transactions">📝 거래 내역</a></li>
+				<li><a href="#statistics">📊 통계 및 분석</a></li>
+				<li><a href="#input-form">➕ 새 거래 추가</a></li>
+				<li><a href="#">⚙️ 설정</a></li>
+				<li><a href="#">❓ 도움말</a></li>
+			</ul>
+		</nav>
+
+		<main class="accountbook-main-content">
+			<h1>나의 가계부</h1>
+
+			<section id="overview" class="accountbook-section">
+				<h2>자산 현황 요약</h2>
+				<p>현재 자산, 월별 수입 및 지출을 한눈에 볼 수 있습니다.</p>
+				<div>
+					<h3>총 자산: <span class="accountbook-income">₩ 1,234,567</span></h3>
+					<p>이번 달 수입: <span class="accountbook-income">₩ 500,000</span></p>
+					<p>이번 달 지출: <span class="accountbook-expense">₩ 250,000</span></p>
+				</div>
+			</section>
+
+			<section id="transactions" class="accountbook-section">
+				<h2>최신 거래 내역</h2>
+				<p>가장 최근에 기록된 수입 및 지출 내역입니다.</p>
+				<ul class="accountbook-list">
+					<li><span>2025-06-05 | 식비 | 점심 식사</span> <span class="accountbook-expense">-₩ 15,000</span></li>
+					<li><span>2025-06-04 | 교통비 | 버스</span> <span class="accountbook-expense">-₩ 1,500</span></li>
+					<li><span>2025-06-03 | 급여 | 월급</span> <span class="accountbook-income">+₩ 1,000,000</span></li>
+					<li><span>2025-06-02 | 통신비 | 휴대폰 요금</span> <span class="accountbook-expense">-₩ 50,000</span></li>
+				</ul>
+			</section>
+
+			<section id="statistics" class="accountbook-section">
+				<h2>📊 지출 통계 및 분석</h2>
+				<p>월별, 카테고리별 지출을 시각적으로 보여주는 차트 영역입니다.</p>
+				<div style="background-color: #e9e9e9; padding: 50px; text-align: center; border-radius: 5px;">
+					<p>여기에 지출/수입 차트가 표시됩니다.</p>
+				</div>
+			</section>
+
+			<section id="input-form" class="accountbook-section">
+				<h2>새 거래 추가</h2>
+				<p>수입 또는 지출 내역을 입력할 수 있는 폼입니다.</p>
+				<form class="accountbook-form">
+					<label for="date">날짜:</label>
+					<input type="date" id="date" name="date" value="2025-06-05" required><br><br>
+
+					<label for="type">분류:</label>
+					<select id="type" name="type">
+						<option value="expense">지출</option>
+						<option value="income">수입</option>
+					</select><br><br>
+
+					<label for="category">카테고리:</label>
+					<input type="text" id="category" name="category" placeholder="예: 식비, 교통비" required><br><br>
+
+					<label for="description">내용:</label>
+					<input type="text" id="description" name="description" placeholder="예: 점심 식사, 월급" required><br><br>
+
+					<label for="amount">금액:</label>
+					<input type="number" id="amount" name="amount" placeholder="예: 15000" required><br><br>
+
+					<button type="submit">추가하기</button>
+				</form>
+			</section>
+
+		</main>
+	</div>
+
+	<!-- 푸터 -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+
+</body>
+
+</html>
