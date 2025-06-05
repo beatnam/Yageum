@@ -1,11 +1,124 @@
-<html xmlns th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
-
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title>main title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>야금야금 - 스마트 가계부</title>
+
+<link rel="stylesheet" href="css/slide_main.css">
 </head>
 <body>
-	
-	hi
+    <div class="slider-container">
+        <div class="logo">야금야금</div>
+        
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <div class="slide-content">
+                <h1 class="slide-title">보기 불편하고<br>필요없는 정보만 가득한<br>가계부 이제 그만.</h1>
+                <a href="/main" class="start-button">시작하기</a>
+            </div>
+        </div>
+        
+        <!-- Slide 2 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="slide-title">내역 그대로 입력되기만 하는<br>오픈 뱅킹 가계부 몰편하셨죠?</h1>
+                <a href="/main" class="start-button">시작하기</a>
+            </div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="slide-title">스마트한 분석과<br>직관적인 인터페이스로<br>새로운 가계부 경험을</h1>
+                <a href="/main" class="start-button">시작하기</a>
+            </div>
+        </div>
+        
+        <!-- Navigation Arrows -->
+        <div class="navigation-arrows prev-arrow" onclick="changeSlide(-1)">
+            <span>‹</span>
+        </div>
+        <div class="navigation-arrows next-arrow" onclick="changeSlide(1)">
+            <span>›</span>
+        </div>
+        
+        <!-- Slide Indicators -->
+        <div class="slide-indicators">
+            <div class="indicator active" onclick="goToSlide(0)"></div>
+            <div class="indicator" onclick="goToSlide(1)"></div>
+            <div class="indicator" onclick="goToSlide(2)"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = slides.length;
+        
+        function showSlide(index) {
+            // Remove active class from all slides and indicators
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(indicator => indicator.classList.remove('active'));
+            
+            // Add active class to current slide and indicator
+            slides[index].classList.add('active');
+            indicators[index].classList.add('active');
+            
+            currentSlide = index;
+        }
+        
+        function changeSlide(direction) {
+            let newSlide = currentSlide + direction;
+            
+            if (newSlide >= totalSlides) {
+                newSlide = 0;
+            } else if (newSlide < 0) {
+                newSlide = totalSlides - 1;
+            }
+            
+            showSlide(newSlide);
+        }
+        
+        function goToSlide(index) {
+            showSlide(index);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+        
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    changeSlide(1); // Swipe left -> next slide
+                } else {
+                    changeSlide(-1); // Swipe right -> previous slide
+                }
+            }
+        }
+    </script>
 </body>
 </html>
