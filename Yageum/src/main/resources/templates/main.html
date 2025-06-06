@@ -41,22 +41,12 @@
 			</div>
 		</main>
 	</div>
+	
 <!--	푸터-->
 	<div th:replace="fragments/footer :: footer"></div>
 
 
 	<script>
-		// 사이드바 메뉴 클릭 시 active 클래스 토글
-		document.querySelectorAll('.sidebar-menu a').forEach(link => {
-			link.addEventListener('click', function (e) {
-				e.preventDefault();
-				document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-				this.classList.add('active');
-				const menuText = this.textContent.trim();
-				document.querySelector('.content-header h2').textContent = menuText;
-				document.querySelector('.content-header p').textContent = `${menuText} 페이지입니다.`;
-			});
-		});
 
 		function logout() {
 			if (confirm('로그아웃 하시겠습니까?')) {

@@ -1,0 +1,178 @@
+
+
+/* 날짜 네비게이션 */
+.date-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    gap: 8px;
+
+     margin: 0 auto 1.5rem auto;      
+    max-width: 600px;  
+    width: fit-content;
+}
+
+.date-nav-btn {
+    background-color: #FFD54F; /* 연노랑 배경 */
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #5D4037; /* 진한 갈색 */
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.date-nav-btn:hover {
+    background-color: #FFC107;
+    transform: scale(1.05);
+}
+
+.date-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4E342E;
+}
+
+/* 거래 내역 리스트 */
+.transaction-list {
+    margin-bottom: 1.5rem;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.transaction-icon {
+    font-size: 24px;
+    margin-right: 1rem;
+    width: 40px;
+    text-align: center;
+}
+
+.transaction-info {
+    flex: 1;
+}
+
+.transaction-name {
+    font-weight: 500;
+    color: #4E342E;
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.transaction-method {
+    color: #888;
+    font-size: 13px;
+}
+
+.transaction-amount {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.transaction-amount.income {
+    color: #FF5722;
+}
+
+.transaction-amount.expense {
+    color: #2196F3;
+}
+
+
+
+/* 일일 합계 */
+.daily-summary {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-top: 3px solid #FFD44D;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #4E342E;
+}
+
+.summary-row .income {
+    color: #FF5722;
+    font-weight: bold;
+}
+
+.summary-row .expense {
+    color: #2196F3;
+    font-weight: bold;
+}
+
+.summary-row .balance {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.summary-row .total {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+/* 반응형
+@media (max-width: 768px) {
+    .date-navigation {
+        padding: 0.75rem 1rem;
+    }
+    
+    .date-nav-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+    
+    .date-text {
+        font-size: 16px;
+    }
+    
+    .transaction-item {
+        padding: 0.75rem;
+    }
+    
+    .transaction-icon {
+        font-size: 20px;
+        margin-right: 0.75rem;
+        width: 30px;
+    }
+    
+    .transaction-name {
+        font-size: 14px;
+    }
+    
+    .transaction-method {
+        font-size: 12px;
+    }
+    
+    .transaction-amount {
+        font-size: 14px;
+    }
+    
+    .summary-row {
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 13px;
+    }
+} */
