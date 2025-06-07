@@ -48,7 +48,23 @@
 
 	<!-- 푸터 -->
 	<div th:replace="fragments/footer :: footer"></div>
-
+	
+<script>
+		function handlePasswordConfirm(event) {
+			event.preventDefault();
+			const password = document.getElementById('password').value;
+			
+			// 여기서 실제로는 서버에 비밀번호 확인 요청을 보내야 합니다
+			// 현재는 데모용으로 간단한 확인만 구현
+			if (password) {
+				alert('비밀번호 확인 완료! 회원탈퇴 페이지로 이동합니다.');
+				// 실제로는 회원탈퇴 페이지로 리다이렉트
+				// window.location.href = '/withdraw';
+			} else {
+				alert('비밀번호를 입력해주세요.');
+			}
+		}
+	</script>
 
 </body>
 
