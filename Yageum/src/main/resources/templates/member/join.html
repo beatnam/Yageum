@@ -10,7 +10,7 @@
 		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
 		rel="stylesheet">
 	<title>회원가입</title>
-<link rel="stylesheet" href="css/join.css">
+	<link rel="stylesheet" href="../css/join.css">
 </head>
 
 <body>
@@ -20,108 +20,193 @@
 			<p>새로운 계정을 만들고 가계부를 작성해봐요!</p>
 		</div>
 
-		<form th:action="@{/member/joinPro}" method="post" th:object="${memberForm}">
+		<form id="signupForm" action="/member/joinPro" method="post">
 			<div class="form-row">
 				<div class="form-group">
 					<label for="memberId">아이디 <span class="required">*</span></label>
-					<input type="text" id="memberId" name="memberId" th:field="*{memberId}" class="form-control"
-						placeholder="아이디를 입력하세요" required>
-					<div class="error-message" th:if="${#fields.hasErrors('memberId')}" th:errors="*{memberId}"></div>
+					<input type="text" id="memberId" name="memberId" class="form-control" placeholder="아이디를 입력하세요">
+					<div class="error-message" id="memberIdError"></div>
 				</div>
 
 				<div class="form-group">
 					<label for="memberName">이름 <span class="required">*</span></label>
-					<input type="text" id="memberName" name="memberName" th:field="*{memberName}" class="form-control"
-						placeholder="이름을 입력하세요" required>
-					<div class="error-message" th:if="${#fields.hasErrors('memberName')}" th:errors="*{memberName}">
-					</div>
+					<input type="text" id="memberName" name="memberName" class="form-control" placeholder="이름을 입력하세요">
+					<div class="error-message" id="memberNameError"></div>
 				</div>
 			</div>
 
 			<div class="form-row">
 				<div class="form-group">
 					<label for="memberPasswd">비밀번호 <span class="required">*</span></label>
-					<input type="password" id="memberPasswd" name="memberPasswd" th:field="*{memberPasswd}"
-						class="form-control" placeholder="비밀번호를 입력하세요" required>
-					<div class="error-message" th:if="${#fields.hasErrors('memberPasswd')}" th:errors="*{memberPasswd}">
-					</div>
+					<input type="password" id="memberPasswd" name="memberPasswd" class="form-control" placeholder="비밀번호를 입력하세요">
+					<div class="error-message" id="memberPasswdError"></div>
 				</div>
 
 				<div class="form-group">
 					<label for="memberPassWd2">비밀번호 확인 <span class="required">*</span></label>
-					<input type="password" id="memberPassWd2" name="memberPassWd2" th:field="*{memberPassWd2}"
-						class="form-control" placeholder="비밀번호를 다시 입력하세요" required>
+					<input type="password" id="memberPassWd2" name="memberPassWd2" class="form-control" placeholder="비밀번호를 다시 입력하세요">
 					<div class="password-match" id="passwordMatch"></div>
-					<div class="error-message" th:if="${#fields.hasErrors('memberPassWd2')}"
-						th:errors="*{memberPassWd2}"></div>
+					<div class="error-message" id="memberPassWd2Error"></div>
 				</div>
 			</div>
 
 			<div class="form-row">
 				<div class="form-group">
 					<label for="memberBirth">생년월일</label>
-					<input type="date" id="memberBirth" name="memberBirth" th:field="*{memberBirth}"
-						class="form-control">
-					<div class="error-message" th:if="${#fields.hasErrors('memberBirth')}" th:errors="*{memberBirth}">
-					</div>
+					<input type="date" id="memberBirth" name="memberBirth" class="form-control">
+					<div class="error-message" id="memberBirthError"></div>
 				</div>
 
 				<div class="form-group">
 					<label for="memberPhone">휴대폰 번호</label>
-					<input type="tel" id="memberPhone" name="memberPhone" th:field="*{memberPhone}" class="form-control"
-						placeholder="010-1234-5678">
-					<div class="error-message" th:if="${#fields.hasErrors('memberPhone')}" th:errors="*{memberPhone}">
-					</div>
+					<input type="tel" id="memberPhone" name="memberPhone" class="form-control" placeholder="010-1234-5678">
+					<div class="error-message" id="memberPhoneError"></div>
 				</div>
 			</div>
 
 			<div class="form-group full-width">
 				<label for="memberEmail">이메일 <span class="required">*</span></label>
-				<input type="email" id="memberEmail" name="memberEmail" th:field="*{memberEmail}" class="form-control"
-					placeholder="example@email.com" required>
-				<div class="error-message" th:if="${#fields.hasErrors('memberEmail')}" th:errors="*{memberEmail}"></div>
+				<input type="email" id="memberEmail" name="memberEmail" class="form-control" placeholder="example@email.com">
+				<div class="error-message" id="memberEmailError"></div>
 			</div>
 
 			<div class="form-group full-width">
 				<label>성별</label>
 				<div class="radio-group">
 					<div class="radio-item">
-						<input type="radio" id="genderMale" name="memberGender" value="M" th:field="*{memberGender}">
+						<input type="radio" id="genderMale" name="memberGender" value="M">
 						<label for="genderMale">남성</label>
 					</div>
 					<div class="radio-item">
-						<input type="radio" id="genderFemale" name="memberGender" value="F" th:field="*{memberGender}">
+						<input type="radio" id="genderFemale" name="memberGender" value="F">
 						<label for="genderFemale">여성</label>
 					</div>
 					<div class="radio-item">
-						<input type="radio" id="genderOther" name="memberGender" value="O" th:field="*{memberGender}">
+						<input type="radio" id="genderOther" name="memberGender" value="O">
 						<label for="genderOther">기타</label>
 					</div>
 				</div>
-				<div class="error-message" th:if="${#fields.hasErrors('memberGender')}" th:errors="*{memberGender}">
-				</div>
+				<div class="error-message" id="memberGenderError"></div>
 			</div>
 
 			<div class="form-group full-width">
 				<label for="memberAddress">주소</label>
-				<input type="text" id="memberAddress" name="memberAddress" th:field="*{memberAddress}"
-					class="form-control" placeholder="주소를 입력하세요">
-				<div class="error-message" th:if="${#fields.hasErrors('memberAddress')}" th:errors="*{memberAddress}">
-				</div>
+				<input type="text" id="memberAddress" name="memberAddress" class="form-control" placeholder="주소를 입력하세요">
+				<div class="error-message" id="memberAddressError"></div>
 			</div>
 
-			<!-- 전체 폼 에러 메시지 -->
-			<div class="error-message" th:if="${signupError}" th:text="${signupError}"></div>
+			<div class="error-message" id="signupError"></div>
 
 			<button type="submit" class="btn-signup">회원가입</button>
 		</form>
 
 		<div class="links">
-			<a href="#" th:href="@{/login}">이미 계정이 있으신가요? 로그인</a>
+			<a href="/login">이미 계정이 있으신가요? 로그인</a>
 		</div>
 	</div>
 
 	<script>
+		// 유효성 검사 함수들
+		const validation = {
+			// 에러 메시지 표시
+			showError: function(fieldId, message) {
+				const errorElement = document.getElementById(fieldId + 'Error');
+				const inputElement = document.getElementById(fieldId);
+				
+				errorElement.textContent = message;
+				errorElement.classList.add('show');
+				inputElement.classList.add('error');
+				inputElement.classList.remove('success');
+			},
+
+			// 에러 메시지 숨기기
+			hideError: function(fieldId) {
+				const errorElement = document.getElementById(fieldId + 'Error');
+				const inputElement = document.getElementById(fieldId);
+				
+				errorElement.classList.remove('show');
+				inputElement.classList.remove('error');
+				inputElement.classList.add('success');
+			},
+
+			// 아이디 검사
+			validateId: function(id) {
+				if (!id.trim()) {
+					this.showError('memberId', '아이디를 입력해주세요.');
+					return false;
+				}
+				if (id.length < 4 || id.length > 20) {
+					this.showError('memberId', '아이디는 4~20자로 입력해주세요.');
+					return false;
+				}
+				if (!/^[a-zA-Z0-9_]+$/.test(id)) {
+					this.showError('memberId', '아이디는 영문, 숫자, 언더스코어만 사용 가능합니다.');
+					return false;
+				}
+				this.hideError('memberId');
+				return true;
+			},
+
+			// 이름 검사
+			validateName: function(name) {
+				if (!name.trim()) {
+					this.showError('memberName', '이름을 입력해주세요.');
+					return false;
+				}
+				if (name.length < 2 || name.length > 10) {
+					this.showError('memberName', '이름은 2~10자로 입력해주세요.');
+					return false;
+				}
+				this.hideError('memberName');
+				return true;
+			},
+
+			// 비밀번호 검사
+			validatePassword: function(password) {
+				if (!password.trim()) {
+					this.showError('memberPasswd', '비밀번호를 입력해주세요.');
+					return false;
+				}
+				if (password.length < 8 || password.length > 20) {
+					this.showError('memberPasswd', '비밀번호는 8~20자로 입력해주세요.');
+					return false;
+				}
+				if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
+					this.showError('memberPasswd', '비밀번호는 영문과 숫자를 포함해야 합니다.');
+					return false;
+				}
+				this.hideError('memberPasswd');
+				return true;
+			},
+
+			// 이메일 검사
+			validateEmail: function(email) {
+				if (!email.trim()) {
+					this.showError('memberEmail', '이메일을 입력해주세요.');
+					return false;
+				}
+				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+				if (!emailRegex.test(email)) {
+					this.showError('memberEmail', '올바른 이메일 형식을 입력해주세요.');
+					return false;
+				}
+				this.hideError('memberEmail');
+				return true;
+			},
+
+			// 휴대폰 번호 검사
+			validatePhone: function(phone) {
+				if (phone && !/^\d{3}-\d{4}-\d{4}$/.test(phone)) {
+					this.showError('memberPhone', '올바른 휴대폰 번호 형식을 입력해주세요. (예: 010-1234-5678)');
+					return false;
+				}
+				if (phone) {
+					this.hideError('memberPhone');
+				}
+				return true;
+			}
+		};
+
 		// 비밀번호 확인 검사
 		function checkPasswordMatch() {
 			const password = document.getElementById('memberPasswd').value;
@@ -137,15 +222,38 @@
 			if (password === confirmPassword) {
 				matchElement.textContent = '✓ 비밀번호가 일치합니다';
 				matchElement.className = 'password-match match';
+				validation.hideError('memberPassWd2');
 			} else {
 				matchElement.textContent = '✗ 비밀번호가 일치하지 않습니다';
 				matchElement.className = 'password-match no-match';
+				validation.showError('memberPassWd2', '비밀번호가 일치하지 않습니다.');
 			}
 		}
 
-		// 비밀번호 필드에 이벤트 리스너 추가
+		// 실시간 유효성 검사 이벤트 리스너
+		document.getElementById('memberId').addEventListener('blur', function() {
+			validation.validateId(this.value);
+		});
+
+		document.getElementById('memberName').addEventListener('blur', function() {
+			validation.validateName(this.value);
+		});
+
+		document.getElementById('memberPasswd').addEventListener('blur', function() {
+			validation.validatePassword(this.value);
+			checkPasswordMatch();
+		});
+
 		document.getElementById('memberPasswd').addEventListener('input', checkPasswordMatch);
 		document.getElementById('memberPassWd2').addEventListener('input', checkPasswordMatch);
+
+		document.getElementById('memberEmail').addEventListener('blur', function() {
+			validation.validateEmail(this.value);
+		});
+
+		document.getElementById('memberPhone').addEventListener('blur', function() {
+			validation.validatePhone(this.value);
+		});
 
 		// 휴대폰 번호 자동 포맷팅
 		document.getElementById('memberPhone').addEventListener('input', function (e) {
@@ -158,34 +266,39 @@
 			e.target.value = value;
 		});
 
-		// 폼 제출 시 유효성 검사
-		document.querySelector('form').addEventListener('submit', function (e) {
-			const password = document.getElementById('memberPasswd').value;
-			const confirmPassword = document.getElementById('memberPassWd2').value;
+		// 폼 제출 시 전체 유효성 검사
+		document.getElementById('signupForm').addEventListener('submit', function (e) {
+			e.preventDefault();
+			
+			const memberId = document.getElementById('memberId').value;
+			const memberName = document.getElementById('memberName').value;
+			const memberPasswd = document.getElementById('memberPasswd').value;
+			const memberPassWd2 = document.getElementById('memberPassWd2').value;
+			const memberEmail = document.getElementById('memberEmail').value;
+			const memberPhone = document.getElementById('memberPhone').value;
 
-			if (password !== confirmPassword) {
-				e.preventDefault();
-				alert('비밀번호가 일치하지 않습니다.');
-				return false;
+			let isValid = true;
+
+			// 모든 필수 필드 검사
+			if (!validation.validateId(memberId)) isValid = false;
+			if (!validation.validateName(memberName)) isValid = false;
+			if (!validation.validatePassword(memberPasswd)) isValid = false;
+			if (!validation.validateEmail(memberEmail)) isValid = false;
+			if (!validation.validatePhone(memberPhone)) isValid = false;
+
+			// 비밀번호 확인 검사
+			if (memberPasswd !== memberPassWd2) {
+				validation.showError('memberPassWd2', '비밀번호가 일치하지 않습니다.');
+				isValid = false;
 			}
 
-			// 필수 필드 검사
-			const requiredFields = ['memberId', 'memberName', 'memberPasswd', 'memberEmail'];
-			for (let field of requiredFields) {
-				if (!document.getElementById(field).value.trim()) {
-					e.preventDefault();
-					alert('필수 항목을 모두 입력해주세요.');
-					return false;
-				}
-			}
-
-			// 이메일 형식 검사
-			const email = document.getElementById('memberEmail').value;
-			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			if (!emailRegex.test(email)) {
-				e.preventDefault();
-				alert('올바른 이메일 형식을 입력해주세요.');
-				return false;
+			if (isValid) {
+				// 실제 서버로 전송하거나 처리
+				alert('회원가입이 완료되었습니다!');
+				// this.submit(); // 실제 서버 전송시 사용
+			} else {
+				document.getElementById('signupError').textContent = '입력 정보를 다시 확인해주세요.';
+				document.getElementById('signupError').classList.add('show');
 			}
 		});
 
@@ -197,6 +310,19 @@
 
 			input.addEventListener('blur', function () {
 				this.style.transform = 'translateY(0)';
+			});
+		});
+
+		// 성공시 에러 메시지 숨기기
+		document.querySelectorAll('.form-control').forEach(input => {
+			input.addEventListener('input', function() {
+				if (this.classList.contains('success')) {
+					const errorId = this.id + 'Error';
+					const errorElement = document.getElementById(errorId);
+					if (errorElement) {
+						errorElement.classList.remove('show');
+					}
+				}
 			});
 		});
 	</script>
