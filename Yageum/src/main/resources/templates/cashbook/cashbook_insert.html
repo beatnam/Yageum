@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>야금야금 가계부 입력</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap" rel="stylesheet">
+
+ <link rel="stylesheet" href="../css/common.css">
+ <link rel="stylesheet" href="../css/cashbook_insert.css">
+
+</head>
+<body>
+	<!-- 헤더 -->
+	<div th:replace="fragments/header :: header"></div>
+
+
+    <!-- 사이드바 + 본문 -->
+    <div class="app-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="active">나의 캘린더</a></li>
+                <li><a href="#income">수입 / 지출 관리</a></li>
+                <li><a href="#quest">나의 퀘스트</a></li>
+                <li><a href="#budget">예산 계획</a></li>
+            </ul>
+        </aside>
+
+            <main class="content">
+            <div class="content-header">
+                <h2>내역 수기 입력</h2>
+                <p>오늘의 수입 / 지출 내역을 입력하세요!</p>
+            </div>
+            <div class="content-body">
+              <div class="form-container">
+        <form id="transactionForm" onsubmit="handleSubmit(event)">
+            <!-- 금액 입력 -->
+            <div class="form-group">
+                <label class="form-label">금액 <span class="required">*</span></label>
+                <input type="text" class="amount-input" id="amount" name="amount" placeholder="금액을 입력하세요" required>
+                <div class="error-message">금액을 입력해주세요.</div>
+            </div>
+
+            <!-- 유형 선택 -->
+            <div class="form-group">
+                <label class="form-label">유형 <span class="required">*</span></label>
+                <div class="type-buttons">
+                    <button type="button" class="type-btn income" onclick="selectType('income')">수입</button>
+                    <button type="button" class="type-btn expense" onclick="selectType('expense')">지출</button>
+                </div>
+                <input type="hidden" id="type" name="type" required>
+                <div class="error-message">유형을 선택해주세요.</div>
+            </div>
+
+            <!-- 내용 입력 -->
+            <div class="form-group">
+                <label class="form-label">내용 <span class="required">*</span></label>
+                <input type="text" class="form-input" id="content" name="content" placeholder="내용을 입력하세요" required>
+                <div class="error-message">내용을 입력해주세요.</div>
+            </div>
+
+            <!-- 수단 선택 -->
+            <div class="form-group">
+                <label class="form-label">수단 <span class="required">*</span></label>
+                <div class="select-group">
+                    <select class="form-select" id="method1" name="method1" onchange="updateMethod2()" required>
+                        <option value="">선택</option>
+                        <option value="card">카드</option>
+                        <option value="cash">현금</option>
+                        <option value="account">계좌이체</option>
+                    </select>
+                    <select class="form-select" id="method2" name="method2" disabled required>
+                        <option value="">상세 선택</option>
+                    </select>
+                </div>
+                <div class="error-message">수단을 선택해주세요.</div>
+            </div>
+
+            <!-- 카테고리 선택 -->
+            <div class="form-group">
+                <label class="form-label">카테고리 <span class="required">*</span></label>
+                <div class="category-selector">
+                    <div class="category-display" id="categoryDisplay">카테고리를 선택하세요</div>
+                    <button type="button" class="category-btn" onclick="openCategoryPopup()">선택</button>
+                </div>
+                <input type="hidden" id="category" name="category" required>
+                <div class="error-message">카테고리를 선택해주세요.</div>
+            </div>
+
+            <!-- 메모 입력 -->
+            <div class="form-group">
+                <label class="form-label">메모</label>
+                <textarea class="form-textarea" id="memo" name="memo" placeholder="메모를 입력하세요 (선택사항)"></textarea>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <button type="submit" class="submit-btn">저장하기</button>
+        </form>
+    </div>
+            </div>
+        </main>
+    </div>
+
+	<!-- 푸터 -->
+		<div th:replace="fragments/footer :: footer"></div>
+
+    <script>
+     
+  
+        function logout() {
+            if(confirm('로그아웃 하시겠습니까?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+
+         let selectedType = '';
+        let selectedCategory = '';
+
+        // 유형 선택 함수
+        function selectType(type) {
+            selectedType = type;
+            document.getElementById('type').value = type;
+            
+            // 모든 버튼에서 active 클래스 제거
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 선택된 버튼에 active 클래스 추가
+            event.target.classList.add('active');
+            
+            // 에러 상태 제거
+            removeError('type');
+        }
+
+        // 수단 2단계 선택 업데이트
+        function updateMethod2() {
+            const method1 = document.getElementById('method1').value;
+            const method2 = document.getElementById('method2');
+            
+            // 두 번째 선택 박스 초기화
+            method2.innerHTML = '<option value="">상세 선택</option>';
+            method2.disabled = true;
+            
+            if (method1) {
+                method2.disabled = false;
+                
+                switch(method1) {
+                    case 'card':
+                        method2.innerHTML += '<option value="credit">신용카드</option>';
+                        method2.innerHTML += '<option value="debit">체크카드</option>';
+                        break;
+                    case 'cash':
+                        method2.innerHTML += '<option value="cash_hand">현금</option>';
+                        break;
+                    case 'account':
+                        method2.innerHTML += '<option value="transfer">계좌이체</option>';
+                        method2.innerHTML += '<option value="auto">자동이체</option>';
+                        break;
+                }
+                
+                removeError('method1');
+            }
+        }
+
+        // 카테고리 선택 팝업 (실제로는 팝업창으로 구현)
+        function openCategoryPopup() {
+            // 임시로 간단한 프롬프트로 구현 (실제로는 팝업창)
+            const categories = ['식비', '교통비', '쇼핑', '의료비', '문화/여가', '기타'];
+            const selected = prompt('카테고리를 입력하세요:\n' + categories.join(', '));
+            
+            if (selected && categories.includes(selected)) {
+                selectedCategory = selected;
+                document.getElementById('category').value = selected;
+                document.getElementById('categoryDisplay').textContent = selected;
+                document.getElementById('categoryDisplay').style.color = '#333';
+                removeError('category');
+            }
+        }
+
+        // 에러 상태 제거
+        function removeError(fieldName) {
+            const formGroup = document.querySelector(`[name="${fieldName}"]`).closest('.form-group');
+            if (formGroup) {
+                formGroup.classList.remove('error');
+            }
+        }
+
+        // 폼 검증 및 제출
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            let isValid = true;
+            
+            // 필수 필드 검증
+            const requiredFields = ['amount', 'type', 'content', 'method1', 'method2', 'category'];
+            
+            requiredFields.forEach(fieldName => {
+                const field = document.getElementById(fieldName);
+                const formGroup = field.closest('.form-group');
+                
+                if (!field.value.trim()) {
+                    formGroup.classList.add('error');
+                    isValid = false;
+                } else {
+                    formGroup.classList.remove('error');
+                }
+            });
+            
+            // 유형 선택 특별 검증
+            if (!selectedType) {
+                const typeGroup = document.querySelector('.type-buttons').closest('.form-group');
+                typeGroup.classList.add('error');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // 폼 데이터 수집
+                const formData = new FormData(event.target);
+                 formData.set('amount', formData.get('amount').replace(/,/g, '')); //쉼표 제거
+                const data = Object.fromEntries(formData);
+                
+                console.log('제출된 데이터:', data);
+                alert('데이터가 성공적으로 저장되었습니다!');
+                
+                // 실제로는 서버로 데이터 전송
+                // fetch('/api/transactions', { method: 'POST', body: formData })
+            }
+        }
+
+        // 금액 입력 시 숫자만 허용하고 포맷팅
+        document.getElementById('amount').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^\d]/g, '');
+            if (value) {
+                e.target.value = parseInt(value).toLocaleString();
+            }
+            removeError('amount');
+        });
+
+        // 다른 필드들도 입력 시 에러 상태 제거
+        document.querySelectorAll('.form-input, .form-select').forEach(element => {
+            element.addEventListener('input', function() {
+                removeError(this.name);
+            });
+        });
+    
+    </script>
+</body>
+</html>

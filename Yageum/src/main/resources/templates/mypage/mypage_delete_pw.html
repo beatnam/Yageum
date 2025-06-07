@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>마이 페이지</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="../css/my_page.css">
+	<link rel="stylesheet" href="../css/my_page_deletepw.css">
+</head>
+
+<body>
+	<!-- 헤더 -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="accountbook-container">
+		<nav class="accountbook-sidebar">
+			<h2>메뉴</h2>
+			<ul class="accountbook-sidebar-menu">
+				<li><a href="#overview" class="active">🏠 자산 현황</a></li>
+				<li><a href="#transactions">📝 거래 내역</a></li>
+				<li><a href="#statistics">📊 통계 및 분석</a></li>
+				<li><a href="#">⚙️ 설정</a></li>
+				<li><a href="#">❓ 도움말</a></li>
+			</ul>
+		</nav>
+
+		<main class="accountbook-main-content">
+			<div class="password-confirm-container">
+				<h2 class="password-confirm-title">비밀번호 확인</h2>
+				<p class="password-confirm-message">
+					고객님의 소중한 개인정보 보호를 위하여 비밀번호를 확인하고 있습니다.
+				</p>
+				<form class="password-form" onsubmit="handlePasswordConfirm(event)">
+					<div class="password-input-group">
+						<label class="password-label" for="password">비밀번호 입력</label>
+						<input type="password" id="password" class="password-input" required>
+					</div>
+					<button type="submit" class="confirm-btn">확인</button>
+				</form>
+			</div>
+		</main>
+	</div>
+
+	<!-- 푸터 -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+
+</body>
+
+</html>
