@@ -1,0 +1,55 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<meta charset="UTF-8">
+	<title>야금야금 - 오픈뱅킹 가계부</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
+		rel="stylesheet">
+<link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+	
+
+<body>
+    <div class="login-container">
+        <div class="title">야금야금</div>
+        
+        <form th:action="@{/member/loginPro}" method="post">
+            <div class="input-group">
+                <input type="text" name="memberId" class="input-field" placeholder="ID" required>
+            </div>
+            
+            <div class="input-group">
+                <input type="password" name="memberPasswd" class="input-field" placeholder="PW" required>
+            </div>
+            
+            <div class="button-group">
+                <button type="button" class="btn-naver" th:onclick="|location.href='@{/oauth2/authorization/naver}'|">NAVER</button>
+                <button type="button" class="btn-kakao" th:onclick="|location.href='@{/oauth2/authorization/kakao}'|">카카오</button>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="keepLogin" name="keepLogin">
+                <label for="keepLogin">로그인 유지</label>
+            </div>
+            		<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
+
+            <button type="submit" class="btn-login">로그인</button>
+        </form>
+        
+        <div class="signup-link">
+            <a th:href="@{/join}">아직 아름아름 회원이 아니신가요?<br></a>
+        </div>
+    </div>
+</body>
+</html>
+
+</body>
+
+</html>

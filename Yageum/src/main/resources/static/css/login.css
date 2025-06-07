@@ -1,0 +1,115 @@
+body {
+           margin: 0;
+           padding: 20px;
+           font-family: "Gowun Dodum", sans-serif;
+           background-color: #f5f5f5;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           min-height: 100vh;
+       }
+       
+       .login-container {
+           background-color: #e8e8e8;
+           border: 3px solid #FFD44D ;
+           border-radius: 10px;
+           padding: 30px;
+           width: 350px;
+           text-align: center;
+       }
+       
+       .title {
+           color: #ff6b6b;
+           font-size: 24px;
+           font-weight: bold;
+           margin-bottom: 30px;
+       }
+       
+       .input-group {
+           margin-bottom: 15px;
+       }
+       
+       .input-field {
+           width: 100%;
+           padding: 12px;
+           border: 2px solid #FFD44D ;
+           border-radius: 8px;
+           font-size: 16px;
+           box-sizing: border-box;
+       }
+       
+       .button-group {
+           margin: 20px 0;
+           display: flex;
+           gap: 10px;
+       }
+       
+       .btn-naver {
+           background-color: #00c73c;
+           color: white;
+           border: none;
+           padding: 12px 25px;
+           border-radius: 8px;
+           font-size: 16px;
+           font-weight: bold;
+           cursor: pointer;
+           flex: 1;
+       }
+       
+       .btn-kakao {
+           background-color: #4a3728;
+           color: white;
+           border: 2px solid #FFD44D ;
+           padding: 12px 25px;
+           border-radius: 8px;
+           font-size: 16px;
+           font-weight: bold;
+           cursor: pointer;
+           flex: 1;
+       }
+       
+       .checkbox-group {
+           margin: 20px 0;
+           text-align: left;
+       }
+       
+       .checkbox-group input[type="checkbox"] {
+           margin-right: 8px;
+       }
+       
+       .btn-login {
+           background-color: white;
+           border: 2px solid #FFD44D;
+           padding: 12px 30px;
+           border-radius: 8px;
+           font-size: 16px;
+           cursor: pointer;
+           margin-bottom: 20px;
+       }
+       
+       .signup-link {
+           color: #ff6b6b;
+           font-size: 14px;
+           margin-top: 20px;
+       }
+       
+       .signup-link a {
+           color: #ff6b6b;
+           text-decoration: none;
+       }
+       
+       .signup-link a:hover {
+           text-decoration: underline;
+       }
+       
+       .btn-naver:hover {
+           background-color: #00b33c;
+       }
+       
+       .btn-kakao:hover {
+           background-color: #3d2f22;
+       }
+       
+       .btn-login:hover {
+           background-color: #f9f9f9;
+       }
