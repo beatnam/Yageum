@@ -1,0 +1,134 @@
+/* 카드 추가 폼 스타일 */
+.card-form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #4E342E;
+    font-size: 14px;
+}
+
+.form-label.required::after {
+    content: " *";
+    color: #FF8A80;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: "Gowun Dodum", sans-serif;
+    transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #FFD44D;
+    box-shadow: 0 0 0 3px rgba(255, 212, 77, 0.2);
+}
+
+.form-input.error {
+    border-color: #FF8A80;
+}
+
+.card-number-group {
+    display: flex;
+    gap: 10px;
+}
+
+.card-number-input {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+.card-number-input.masked {
+    -webkit-text-security: disc;
+    text-security: disc;
+}
+
+.expiry-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 150px;
+}
+
+.expiry-input {
+    width: 60px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.expiry-slash {
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+}
+
+.cvc-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cvc-input {
+    width: 80px;
+    text-align: center;
+    font-size: 16px;
+    -webkit-text-security: disc;
+    text-security: disc;
+}
+
+.cvc-hint {
+    font-size: 12px;
+    color: #666;
+}
+
+.save-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #FFD44D;
+    color: #4E342E;
+    border: none;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.save-button:hover {
+    background-color: #FFC107;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.save-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.error-message {
+    color: #FF8A80;
+    font-size: 12px;
+    margin-top: 5px;
+}
