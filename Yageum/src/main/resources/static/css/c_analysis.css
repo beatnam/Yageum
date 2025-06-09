@@ -1,17 +1,17 @@
 @charset "UTF-8";
 		
-		
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            margin-left: 220px;
         }
 
         .header {
             text-align: center;
             margin-bottom: 40px;
             background: rgba(255, 255, 255, 0.9);
-            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(253, 203, 110, 0.3);
             backdrop-filter: blur(10px);
@@ -220,12 +220,6 @@
 
         .trend-down {
             color: #e17055;
-        }
-
-        .animated-bg {
-            background: linear-gradient(-45deg, #fff7e6, #ffeaa7, #fdcb6e, #e17055);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
         }
 
         @keyframes gradientShift {

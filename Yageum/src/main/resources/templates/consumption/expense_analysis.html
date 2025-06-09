@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>가계부 소비분석</title>
+    <title>가계부 소비분석 및 피드백</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 	<link rel="stylesheet" href="../css/e_analysis.css">
 	<link rel="stylesheet" href="../css/common.css">
-	
+	<link rel="stylesheet" href="../css/c_sidebar.css">
 </head>
 <body>
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
     <div class="container">
-		<div th:replace="fragments/header :: header"></div>
-
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">💳</div>
@@ -105,8 +105,6 @@
             <button class="btn" onclick="move()">예산 설정</button>
         </div>
     </div>
-    
-    
     
     
 	<div th:replace="fragments/footer :: footer"></div>
