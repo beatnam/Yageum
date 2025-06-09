@@ -1,0 +1,223 @@
+/* 필터 영역 */
+      .filter-section {
+          background: #FFF9E5;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          border: 2px solid #FFE082;
+      }
+
+      .filter-row {
+          display: flex;
+          gap: 15px;
+          align-items: center;
+          flex-wrap: wrap;
+          margin-bottom: 15px;
+      }
+
+      .filter-row:last-child {
+          margin-bottom: 0;
+      }
+
+      .filter-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+      }
+
+      .filter-label {
+          font-weight: 500;
+          color: #4E342E;
+          min-width: 60px;
+      }
+
+      .filter-select {
+          padding: 8px 12px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          background: white;
+          color: #4E342E;
+          font-size: 14px;
+          min-width: 120px;
+      }
+
+      .filter-input {
+          padding: 8px 12px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          background: white;
+          color: #4E342E;
+          font-size: 14px;
+          width: 200px;
+      }
+
+      .btn-search {
+          background-color: #FFD44D;
+          color: #4E342E;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: 0.3s;
+      }
+
+      .btn-search:hover {
+          background-color: #FFC107;
+      }
+
+      /* 내역 리스트 */
+      .transaction-list {
+          background: white;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .transaction-header {
+          background: #F5F5F5;
+          padding: 15px 20px;
+          border-bottom: 1px solid #ddd;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+
+      .transaction-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #4E342E;
+      }
+
+      .transaction-summary {
+          display: flex;
+          gap: 20px;
+          font-size: 14px;
+      }
+
+      .summary-item {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+      }
+
+      .income {
+          color: #4CAF50;
+          font-weight: 600;
+      }
+
+      .expense {
+          color: #F44336;
+          font-weight: 600;
+      }
+
+      .transaction-item {
+          padding: 15px 20px;
+          border-bottom: 1px solid #f0f0f0;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          transition: 0.2s;
+      }
+
+      .transaction-item:hover {
+          background: #FFF9E5;
+      }
+
+      .transaction-item:last-child {
+          border-bottom: none;
+      }
+
+      .transaction-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          color: white;
+      }
+
+      .icon-income {
+          background: #4CAF50;
+      }
+
+      .icon-expense {
+          background: #F44336;
+      }
+
+      .icon-home { background: #FF8A80; }
+      .icon-maintenance { background: #FFB74D; }
+      .icon-salary { background: #81C784; }
+      .icon-food { background: #FFAB91; }
+      .icon-shopping { background: #CE93D8; }
+
+      .transaction-details {
+          flex: 1;
+      }
+
+      .transaction-desc {
+          font-size: 16px;
+          font-weight: 500;
+          color: #4E342E;
+          margin-bottom: 4px;
+      }
+
+      .transaction-meta {
+          font-size: 13px;
+          color: #888;
+          display: flex;
+          gap: 10px;
+      }
+
+      .transaction-amount {
+          font-size: 18px;
+          font-weight: 600;
+          text-align: right;
+      }
+
+      .transaction-date {
+          text-align: right;
+          font-size: 14px;
+          color: #666;
+      }
+
+      /* 빈 상태 */
+      .empty-state {
+          text-align: center;
+          padding: 60px 20px;
+          color: #888;
+      }
+
+      .empty-icon {
+          font-size: 48px;
+          margin-bottom: 15px;
+      }
+
+      /* 반응형 */
+      @media (max-width: 768px) {
+          .filter-row {
+              flex-direction: column;
+              align-items: stretch;
+          }
+          
+          .filter-group {
+              justify-content: space-between;
+          }
+          
+          .filter-input {
+              width: 100%;
+          }
+          
+          .transaction-item {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 10px;
+          }
+          
+          .transaction-amount {
+              text-align: left;
+              align-self: flex-end;
+          }
+      }

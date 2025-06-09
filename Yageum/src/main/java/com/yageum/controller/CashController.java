@@ -48,6 +48,13 @@ public class CashController {
 		return "/cashbook/cashbook_insert";
 	}
 	
+	@GetMapping("/search")
+	public String search() {
+		log.info("CashController search()");
+		
+		return "/cashbook/cashbook_search";
+	}
+	
 	
 
 }

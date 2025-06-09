@@ -103,8 +103,8 @@
             background: white;
             box-shadow: 2px 0 10px rgba(78, 52, 46, 0.1);
             padding: 2rem 0;
-            height: calc(100vh - 110px); /* 헤더 높이 제외 */
-            position: sticky;
+			/* height: calc(100vh - 110px);  헤더 높이 제외 */
+			/* position: sticky;*/
             top: 110px;
         }
 
