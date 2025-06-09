@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가계부 예산 설정</title>
+	<link rel="stylesheet" href="../css/b_planner.css">
+	<link rel="stylesheet" href="../css/common.css">
+	
+</head>
+<body>
+    <div class="container">
+    	<div th:replace="fragments/header :: header"></div>
+        <div class="budget-header pulse-animation">
+            <h1>💰 가계부 예산 설정</h1>
+            <p>현명한 가계 관리를 위한 예산 계획을 세워보세요</p>
+        </div>
+
+        <div class="budget-grid">
+            <div class="budget-card">
+                <h2 class="card-title">📊 수입 설정</h2>
+                <div class="input-group">
+                    <label for="income-source">수입원</label>
+                    <select id="income-source">
+                        <option value="">수입원을 선택하세요</option>
+                        <option value="급여">급여</option>
+                        <option value="부업">부업</option>
+                        <option value="투자수익">투자수익</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="income-amount">금액 (원)</label>
+                    <input type="number" id="income-amount" placeholder="수입 금액을 입력하세요">
+                </div>
+                <button class="btn btn-add" onclick="addIncome()">수입 추가</button>
+                
+                <div class="category-list" id="income-list">
+                    <div class="category-item">
+                        <span class="category-name">등록된 수입이 없습니다</span>
+                        <span class="category-amount">₩0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="budget-card">
+                <h2 class="card-title">💸 지출 예산 설정</h2>
+                <div class="input-group">
+                    <label for="expense-category">지출 카테고리</label>
+                    <select id="expense-category">
+                        <option value="">카테고리를 선택하세요</option>
+                        <option value="식비">🍽️ 식비</option>
+                        <option value="교통비">🚗 교통비</option>
+                        <option value="주거비">🏠 주거비</option>
+                        <option value="의료비">🏥 의료비</option>
+                        <option value="교육비">📚 교육비</option>
+                        <option value="쇼핑">🛍️ 쇼핑</option>
+                        <option value="문화생활">🎬 문화생활</option>
+                        <option value="기타">📝 기타</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="expense-amount">예산 금액 (원)</label>
+                    <input type="number" id="expense-amount" placeholder="예산 금액을 입력하세요">
+                </div>
+                <button class="btn btn-add" onclick="addExpense()">예산 추가</button>
+                
+                <div class="category-list" id="expense-list">
+                    <div class="category-item">
+                        <span class="category-name">등록된 예산이 없습니다</span>
+                        <span class="category-amount">₩0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="total-section">
+            <h2>📈 예산 요약</h2>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; margin: 20px 0;">
+                <div>
+                    <p>총 수입</p>
+                    <div class="total-amount" id="total-income">₩0</div>
+                </div>
+                <div>
+                    <p>총 예산</p>
+                    <div class="total-amount" id="total-expense">₩0</div>
+                </div>
+                <div>
+                    <p>잔여 예산</p>
+                    <div class="total-amount" id="remaining-budget">₩0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-save" onclick="saveBudget()">💾 예산 저장</button>
+            <button class="btn btn-reset" onclick="resetBudget()">🔄 초기화</button>
+        </div>
+    </div>
+	
+	<div th:replace="fragments/footer :: footer"></div>
+    <script>
+        let incomes = [];
+        let expenses = [];
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('ko-KR', {
+                style: 'currency',
+                currency: 'KRW'
+            }).format(amount);
+        }
+
+        function addIncome() {
+            const source = document.getElementById('income-source').value;
+            const amount = parseInt(document.getElementById('income-amount').value);
+
+            if (!source || !amount || amount <= 0) {
+                alert('수입원과 유효한 금액을 입력해주세요.');
+                return;
+            }
+
+            incomes.push({ source, amount });
+            updateIncomeList();
+            updateTotals();
+            
+            document.getElementById('income-source').value = '';
+            document.getElementById('income-amount').value = '';
+        }
+
+        function addExpense() {
+            const category = document.getElementById('expense-category').value;
+            const amount = parseInt(document.getElementById('expense-amount').value);
+
+            if (!category || !amount || amount <= 0) {
+                alert('카테고리와 유효한 금액을 입력해주세요.');
+                return;
+            }
+
+            expenses.push({ category, amount });
+            updateExpenseList();
+            updateTotals();
+            
+            document.getElementById('expense-category').value = '';
+            document.getElementById('expense-amount').value = '';
+        }
+
+        function updateIncomeList() {
+            const list = document.getElementById('income-list');
+            
+            if (incomes.length === 0) {
+                list.innerHTML = '<div class="category-item"><span class="category-name">등록된 수입이 없습니다</span><span class="category-amount">₩0</span></div>';
+                return;
+            }
+
+            list.innerHTML = incomes.map((income, index) => `
+                <div class="category-item">
+                    <span class="category-name">${income.source}</span>
+                    <div>
+                        <span class="category-amount">${formatCurrency(income.amount)}</span>
+                        <button class="delete-btn" onclick="removeIncome(${index})">삭제</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateExpenseList() {
+            const list = document.getElementById('expense-list');
+            
+            if (expenses.length === 0) {
+                list.innerHTML = '<div class="category-item"><span class="category-name">등록된 예산이 없습니다</span><span class="category-amount">₩0</span></div>';
+                return;
+            }
+
+            list.innerHTML = expenses.map((expense, index) => `
+                <div class="category-item">
+                    <span class="category-name">${expense.category}</span>
+                    <div>
+                        <span class="category-amount">${formatCurrency(expense.amount)}</span>
+                        <button class="delete-btn" onclick="removeExpense(${index})">삭제</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeIncome(index) {
+            incomes.splice(index, 1);
+            updateIncomeList();
+            updateTotals();
+        }
+
+        function removeExpense(index) {
+            expenses.splice(index, 1);
+            updateExpenseList();
+            updateTotals();
+        }
+
+        function updateTotals() {
+            const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
+            const totalExpense = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const remaining = totalIncome - totalExpense;
+
+            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
+            document.getElementById('total-expense').textContent = formatCurrency(totalExpense);
+            
+            const remainingElement = document.getElementById('remaining-budget');
+            remainingElement.textContent = formatCurrency(remaining);
+            remainingElement.style.color = remaining >= 0 ? '#2ecc71' : '#e74c3c';
+        }
+
+        function saveBudget() {
+            if (incomes.length === 0 && expenses.length === 0) {
+                alert('저장할 예산 데이터가 없습니다.');
+                return;
+            }
+
+            const budgetData = {
+                incomes,
+                expenses,
+                savedAt: new Date().toISOString()
+            };
+
+            // 실제 구현에서는 서버로 데이터를 전송하거나 localStorage에 저장
+            console.log('Budget saved:', budgetData);
+            alert('예산이 성공적으로 저장되었습니다! 💾');
+        }
+
+        function resetBudget() {
+            if (confirm('모든 예산 데이터를 초기화하시겠습니까?')) {
+                incomes = [];
+                expenses = [];
+                updateIncomeList();
+                updateExpenseList();
+                updateTotals();
+                alert('예산이 초기화되었습니다. 🔄');
+            }
+        }
+
+        // 페이지 로드시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            updateIncomeList();
+            updateExpenseList();
+            updateTotals();
+        });
+    </script>
+</body>
+</html>
