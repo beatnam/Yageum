@@ -19,6 +19,12 @@ public class MemberController {
 		log.info("MemberController login()");
 		return "/member/login";
 	}
+	
+	@PostMapping("/loginPro")
+	public String loginPro() {
+		
+		return "redirect:/main";
+	}
 
 	@GetMapping("/terms_join")
 	public String termsJoin() {
