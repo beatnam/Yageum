@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>야금야금 - 나의 차트</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/common.css">
+	<link rel="stylesheet" href="css/my_chart.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <style>
+       
+    </style>
+</head>
+
+<body>
+    <!-- 헤더 -->
+    <iframe src="./header.html"></iframe>
+
+    <!-- 사이드바 + 본문 -->
+    <div class="app-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard">나의 캘린더</a></li>
+                <li><a href="#income">수입 / 지출 관리</a></li>
+                <li><a href="#quest">나의 퀘스트</a></li>
+                <li><a href="#chart" class="active">나의 차트</a></li>
+                <li><a href="#budget">예산 계획</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="content-header">
+                <h2>나의 차트</h2>
+                <p>가계부 내역을 시각적으로 확인해보세요</p>
+            </div>
+
+            <div class="content-body">
+                <!-- 차트 헤더 -->
+                <div class="chart-header">
+                    <div class="chart-title">월별 차트</div>
+                    <div class="date-navigator">
+                        <button class="nav-arrow" onclick="previousMonth()">◀</button>
+                        <div class="current-date" onclick="openDateModal()">2025년 06월</div>
+                        <button class="nav-arrow" onclick="nextMonth()">▶</button>
+                    </div>
+                </div>
+
+                <!-- 총계 요약 -->
+                <div class="total-summary">
+                    <div class="summary-item">
+                        <div class="summary-label">총 수입</div>
+                        <div class="summary-amount income">+ 2,560,000원</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">총 지출</div>
+                        <div class="summary-amount expense">- 731,600원</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">잔액</div>
+                        <div class="summary-amount balance">1,828,400원</div>
+                    </div>
+                </div>
+
+                <!-- 차트 컨테이너 -->
+                <div class="charts-container">
+                    <div class="chart-box">
+                        <h3>카테고리별 지출 (원형 차트)</h3>
+                        <div class="chart-canvas">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-box">
+                        <h3>일별 수입/지출 현황 (막대 차트)</h3>
+                        <div class="chart-canvas">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 지출 내역 상세 -->
+                <div class="expense-table">
+                    <div class="table-header">
+                        카테고리별 지출 내역
+                    </div>
+                    <div class="expense-list">
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #FF6B6B;"></div>
+                                <span>생활비</span>
+                            </div>
+                            <div class="expense-amount">108,000원</div>
+                        </div>
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #4ECDC4;"></div>
+                                <span>교육비</span>
+                            </div>
+                            <div class="expense-amount">13,500원</div>
+                        </div>
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #45B7D1;"></div>
+                                <span>주거/통신</span>
+                            </div>
+                            <div class="expense-amount">305,000원</div>
+                        </div>
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #F9CA24;"></div>
+                                <span>의료비</span>
+                            </div>
+                            <div class="expense-amount">25,000원</div>
+                        </div>
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #6C5CE7;"></div>
+                                <span>식비</span>
+                            </div>
+                            <div class="expense-amount">250,000원</div>
+                        </div>
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #A29BFE;"></div>
+                                <span>교통비</span>
+                            </div>
+                            <div class="expense-amount">79,500원</div>
+                        </div>
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #FD79A8;"></div>
+                                <span>쇼핑</span>
+                            </div>
+                            <div class="expense-amount">200,500원</div>
+                        </div>
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #00B894;"></div>
+                                <span>카페/간식</span>
+                            </div>
+                            <div class="expense-amount">60,500원</div>
+                        </div>
+                        <div class="expense-item">
+                            <div class="expense-category">
+                                <div class="category-dot" style="background-color: #E17055;"></div>
+                                <span>문화/여가</span>
+                            </div>
+                            <div class="expense-amount">89,900원</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 날짜 선택 모달 -->
+    <div id="dateModal" class="date-modal">
+        <div class="date-modal-content">
+            <div class="modal-header">날짜 선택</div>
+            <div class="date-selectors">
+                <div class="date-selector">
+                    <label>년도</label>
+                    <select id="yearSelect">
+                        <option value="2023">2023년</option>
+                        <option value="2024">2024년</option>
+                        <option value="2025" selected>2025년</option>
+                        <option value="2026">2026년</option>
+                    </select>
+                </div>
+                <div class="date-selector">
+                    <label>월</label>
+                    <select id="monthSelect">
+                        <option value="1">1월</option>
+                        <option value="2">2월</option>
+                        <option value="3">3월</option>
+                        <option value="4">4월</option>
+                        <option value="5">5월</option>
+                        <option value="6" selected>6월</option>
+                        <option value="7">7월</option>
+                        <option value="8">8월</option>
+                        <option value="9">9월</option>
+                        <option value="10">10월</option>
+                        <option value="11">11월</option>
+                        <option value="12">12월</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-confirm" onclick="confirmDateChange()">확인</button>
+                <button class="modal-btn btn-cancel" onclick="closeDateModal()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <iframe src="./footer.html"></iframe>
+
+    <script>
+        // 현재 날짜 변수
+        let currentYear = 2025;
+        let currentMonth = 6;
+
+        // Chart.js 차트 변수
+        let pieChart, barChart;
+
+        // 페이지 로드 시 차트 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+
+        // 차트 초기화
+        function initializeCharts() {
+            initPieChart();
+            initBarChart();
+        }
+
+        // 원형 차트 초기화
+        function initPieChart() {
+            const ctx = document.getElementById('pieChart').getContext('2d');
+            
+            if (pieChart) {
+                pieChart.destroy();
+            }
+
+            pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['생활비', '교육비', '주거/통신', '의료비', '식비', '교통비', '쇼핑', '카페/간식', '문화/여가'],
+                    datasets: [{
+                        data: [108000, 13500, 305000, 25000, 250000, 79500, 200500, 60500, 89900],
+                        backgroundColor: [
+                            '#FF6B6B',
+                            '#4ECDC4', 
+                            '#45B7D1',
+                            '#F9CA24',
+                            '#6C5CE7',
+                            '#A29BFE',
+                            '#FD79A8',
+                            '#00B894',
+                            '#E17055'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    family: 'Gowun Dodum'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed.toLocaleString() + '원';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 막대 차트 초기화
+        function initBarChart() {
+            const ctx = document.getElementById('barChart').getContext('2d');
+            
+            if (barChart) {
+                barChart.destroy();
+            }
+
+            barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['6/1', '6/2', '6/3', '6/4', '6/5', '6/6', '6/7'],
+                    datasets: [{
+                        label: '수입',
+                        data: [0, 0, 0, 0, 2560000, 0, 0],
+                        backgroundColor: '#4CAF50',
+                        borderColor: '#4CAF50',
+                        borderWidth: 1
+                    }, {
+                        label: '지출',
+                        data: [-58600, 0, -13500, 0, -25000, -455500, -179500],
+                        backgroundColor: '#FF8A80',
+                        borderColor: '#FF8A80',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + '원';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Gowun Dodum'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + Math.abs(context.parsed.y).toLocaleString() + '원';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 이전 달로 이동
+        function previousMonth() {
+            if (currentMonth === 1) {
+                currentMonth = 12;
+                currentYear--;
+            } else {
+                currentMonth--;
+            }
+            updateDateDisplay();
+            loadMonthData();
+        }
+
+        // 다음 달로 이동
+        function nextMonth() {
+            if (currentMonth === 12) {
+                currentMonth = 1;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+            updateDateDisplay();
+            loadMonthData();
+        }
+
+        // 날짜 표시 업데이트
+        function updateDateDisplay() {
+            const dateElement = document.querySelector('.current-date');
+            dateElement.textContent = `${currentYear}년 ${currentMonth.toString().padStart(2, '0')}월`;
+        }
+
+        // 월별 데이터 로드 (실제로는 서버에서 데이터를 가져와야 함)
+        function loadMonthData() {
+            // 여기서 실제로는 AJAX로 서버에서 해당 월의 데이터를 가져와야 합니다.
+            // 지금은 예시 데이터로 차트를 업데이트합니다.
+            console.log(`Loading data for ${currentYear}-${currentMonth}`);
+            
+            // 차트 데이터 업데이트 (예시)
+            updateChartData();
+        }
+
+        // 차트 데이터 업데이트
+        function updateChartData() {
+            // 실제로는 서버에서 받은 데이터로 업데이트
+            initializeCharts();
+        }
+
+        // 날짜 선택 모달 열기
+        function openDateModal() {
+            document.getElementById('yearSelect').value = currentYear;
+            document.getElementById('monthSelect').value = currentMonth;
+            document.getElementById('dateModal').style.display = 'block';
+        }
+
+        // 날짜 선택 모달 닫기
+        function closeDateModal() {
+            document.getElementById('dateModal').style.display = 'none';
+        }
+
+        // 날짜 변경 확인
+        function confirmDateChange() {
+            const newYear = parseInt(document.getElementById('yearSelect').value);
+            const newMonth = parseInt(document.getElementById('monthSelect').value);
+            
+            currentYear = newYear;
+            currentMonth = newMonth;
+            
+            updateDateDisplay();
+            loadMonthData();
+            closeDateModal();
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('dateModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDateModal();
+            }
+        });
+
+        // 사이드바 메뉴 클릭 시 active 클래스 토글
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+                const menuText = this.textContent.trim();
+                document.querySelector('.content-header h2').textContent = menuText;
+                document.querySelector('.content-header p').textContent = `${menuText} 페이지입니다.`;
+            });
+        });
+
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                window.location.href = '/logout';
+            }
+        }
+    </script>
+
+</body>
+
+</html>
