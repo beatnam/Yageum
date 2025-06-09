@@ -232,6 +232,7 @@
             border: none;
             padding: 10px 20px;
             border-radius: 8px;
+            margin-top : 22px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
