@@ -23,7 +23,7 @@ public class MemberController {
 	@PostMapping("/loginPro")
 	public String loginPro() {
 		
-		return "redirect:/main";
+		return "redirect:/cashback/main";
 	}
 
 	@GetMapping("/terms_join")

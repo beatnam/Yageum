@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	 <link rel="stylesheet" href="css/admin_state.css">
+	 <link rel="stylesheet" href="../css/admin_state.css">
     <title>통계 / 리포트</title>
     
 </head>
 <body>
     <div class="container">
         <!-- 사이드바 -->
-        <div class="sidebar">
-            <h2>관리자 페이지</h2>
-            
-            <div class="menu-item">
-                <a href="admin_user.html" class="menu-link">사용자 관리</a>
-            </div>
-            
-            <div class="menu-item">
-                <a href="admin_state.html" class="menu-link active">통계 / 리포트</a>
-            </div>
-            
-            <div class="menu-item">
-                <a href="#" class="menu-link" onclick="toggleSubmenu(event)">사이트 설정</a>
-                <div class="submenu" id="siteSettingsSubmenu">
-                    <div class="submenu-item">
-                        <a href="admin_quest.html" class="submenu-link">퀘스트 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="admin_item.html" class="submenu-link">구매항목 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="admin_category.html" class="submenu-link">카테고리 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="admin_noticfication.html" class="submenu-link">공지사항 관리</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+		<div class="sidebar">
+		           <h2>관리자 페이지</h2>
+		            
+		            <div class="menu-item">
+		                <a href="/admin/user" class="menu-link">사용자 관리</a>
+		            </div>
+		            
+		            <div class="menu-item">
+		                <a href="/admin/state" class="menu-link active">통계 / 리포트</a>
+		            </div>
+		            
+		            <div class="menu-item">
+		                <a href="#" class="menu-link" onclick="toggleSubmenu(event)">사이트 설정</a>
+		                <div class="submenu" id="siteSettingsSubmenu">
+		                    <div class="submenu-item">
+		                        <a href="/admin/quest" class="submenu-link">퀘스트 관리</a>
+		                    </div>
+		                    <div class="submenu-item">
+		                        <a href="/admin/item" class="submenu-link">구매항목 관리</a>
+		                    </div>
+		                    <div class="submenu-item">
+		                        <a href="/admin/category" class="submenu-link">카테고리 관리</a>
+		                    </div>
+		                    <div class="submenu-item">
+		                        <a href="/admin/noticfication" class="submenu-link">공지사항 관리</a>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
 
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
