@@ -31,4 +31,10 @@ public class ConsumptionController {
 		return "/consumption/consumption_analysis";
 	}
 	
+	@GetMapping("/bplanner")
+	public String bplanner() {
+		log.info("ConsumptionController bplanner()");
+		return "/consumption/budget_planner";
+	}
+	
 }
