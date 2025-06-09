@@ -102,8 +102,11 @@
                     <!-- 데이터가 여기에 동적으로 삽입됩니다 -->
                 </tbody>
             </table>
+            <button class="btn" onclick="move()">예산 설정</button>
         </div>
     </div>
+    
+    
     
     
 	<div th:replace="fragments/footer :: footer"></div>
@@ -350,6 +353,20 @@
             } catch (error) {
                 console.error('통계 로드 실패:', error);
             }
+        }
+        
+        function move() {
+            const btn = event.target;
+            btn.textContent = '예산 설정으로 가는 중...';
+            btn.disabled = true;
+            
+            // API 호출 시뮬레이션
+            setTimeout(() => {
+                btn.textContent = '새로운 예산 생성하기';
+                btn.disabled = false;
+                
+                window.location.href = '/consumption/bplanner';
+            }, 2000);
         }
     </script>
 </body>
