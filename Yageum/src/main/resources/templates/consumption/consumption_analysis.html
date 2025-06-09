@@ -9,17 +9,17 @@
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="../css/c_analysis.css">
 	<link rel="stylesheet" href="../css/common.css">
-	<link rel="stylesheet" href="../css/c_sidebar.css">
 
 </head>
 <div th:replace="fragments/header :: header"></div>
+
 <body>
-
+<div class="app-container">
 <div th:replace="fragments/c_sidebar :: c_sidebar"></div>
-
         <!-- 메인 컨텐츠 -->
         <div class="main-wrapper">
             <div class="container">
+            
                 <!-- 헤더 섹션 -->
                 <div class="header">
                     <h1>💰 소비분석 종합결과</h1>
@@ -123,7 +123,7 @@
                 </div>
             </div>
         </div>
-
+</div>
 	<div th:replace="fragments/footer :: footer"></div>
 
     <script>

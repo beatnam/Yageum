@@ -10,10 +10,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 	<link rel="stylesheet" href="../css/e_analysis.css">
 	<link rel="stylesheet" href="../css/common.css">
-	<link rel="stylesheet" href="../css/c_sidebar.css">
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
+<div class="app-container">
 <div th:replace="fragments/c_sidebar :: c_sidebar"></div>
     <div class="container">
         <div class="stats-grid">
@@ -105,8 +105,7 @@
             <button class="btn" onclick="move()">예산 설정</button>
         </div>
     </div>
-    
-    
+</div>
 	<div th:replace="fragments/footer :: footer"></div>
 
     <script>
