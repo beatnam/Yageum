@@ -1,103 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <meta charset="UTF-8">
-    <title>야금야금 - 오픈뱅킹 가계부</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<title>야금야금 - 오픈뱅킹 가계부</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap" rel="stylesheet">
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
+		rel="stylesheet">
 
- <link rel="stylesheet" href="../css/common.css">
- <link rel="stylesheet" href="../css/cashbook_detail.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/cashbook_detail.css">
 
 </head>
+
 <body>
 	<!-- 헤더 -->
-		<div th:replace="fragments/header :: header"></div>
+	<div th:replace="fragments/header :: header"></div>
 
-    <!-- 사이드바 + 본문 -->
-    <div class="app-container">
-        <aside class="sidebar">
-            <ul class="sidebar-menu">
-                <li><a href="#dashboard" class="active">나의 캘린더</a></li>
-                <li><a href="#income">수입 / 지출 관리</a></li>
-                <li><a href="#quest">나의 퀘스트</a></li>
-                <li><a href="#budget">예산 계획</a></li>
-            </ul>
-        </aside>
+	<!-- 사이드바 + 본문 -->
+	<div class="app-container">
+		<div th:replace="fragments/sidebar :: sidebar"></div>
+		<main class="content">
+			<div class="content-header">
+				<h2>일별 수입 / 지출</h2>
+				<p>오늘의 수입 / 지출 내역을 확인하세요!</p>
+			</div>
+			<div class="content-body">
+				<div class="transaction-detail-box">
+					<!-- 금액 및 아이콘 -->
+					<div class="transaction-amount">
+						<div class="transaction-icon">💰</div>
+						<span class="amount income">+ 2,500,000</span>
+					</div>
 
-            <main class="content">
-            <div class="content-header">
-                <h2>일별 수입 / 지출</h2>
-                <p>오늘의 수입 / 지출 내역을 확인하세요!</p>
-            </div>
-            <div class="content-body">
-               <div class="transaction-detail-box">
-    <!-- 금액 및 아이콘 -->
-    <div class="transaction-amount">
-        <div class="transaction-icon">💰</div>
-        <span class="amount income">+ 2,500,000</span>
-    </div>
+					<!-- 거래 정보 -->
+					<table class="transaction-info">
+						<tr>
+							<td><strong>유형</strong></td>
+							<td class="right">수입</td>
+						</tr>
+						<tr>
+							<td><strong>내용</strong></td>
+							<td class="right">아이티월 6월 월급</td>
+						</tr>
+						<tr>
+							<td><strong>수단</strong></td>
+							<td class="right">국민은행 계좌</td>
+						</tr>
+						<tr>
+							<td><strong>카테고리</strong></td>
+							<td class="right">월급 / 월급</td>
+						</tr>
+					</table>
 
-    <!-- 거래 정보 -->
-    <table class="transaction-info">
-        <tr>
-            <td><strong>유형</strong></td>
-            <td class="right">수입</td>
-        </tr>
-        <tr>
-            <td><strong>내용</strong></td>
-            <td class="right">아이티월 6월 월급</td>
-        </tr>
-        <tr>
-            <td><strong>수단</strong></td>
-            <td class="right">국민은행 계좌</td>
-        </tr>
-        <tr>
-            <td><strong>카테고리</strong></td>
-            <td class="right">월급 / 월급</td>
-        </tr>
-    </table>
+					<!-- 메모 -->
+					<div class="memo-section">
+						<label for="memo">메모</label><br>
+						<textarea id="memo" name="memo" rows="3">6월 월급</textarea>
+					</div>
 
-    <!-- 메모 -->
-    <div class="memo-section">
-        <label for="memo">메모</label><br>
-        <textarea id="memo" name="memo" rows="3">6월 월급</textarea>
-    </div>
-
-    <!-- 버튼 -->
-    <div class="btn-section">
-        <button type="button" class="btn-edit">수정하기</button>
-    </div>
-</div>
-            </div>
-        </main>
-    </div>
+					<!-- 버튼 -->
+					<div class="btn-section">
+						<button type="button" class="btn-edit">수정하기</button>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
 
 	<!--	푸터-->
-		<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="fragments/footer :: footer"></div>
 
-    <script>
-     
-  
-        function logout() {
-            if(confirm('로그아웃 하시겠습니까?')) {
-                window.location.href = '/logout';
-            }
-        }
+	<script>
 
-            function previousDay() {
-            // 이전 날짜로 이동하는 로직
-            console.log('이전 날짜로 이동');
-        }
 
-        function nextDay() {
-            // 다음 날짜로 이동하는 로직
-            console.log('다음 날짜로 이동');
-        }
-    </script>
+		function logout() {
+			if (confirm('로그아웃 하시겠습니까?')) {
+				window.location.href = '/logout';
+			}
+		}
+
+		function previousDay() {
+			// 이전 날짜로 이동하는 로직
+			console.log('이전 날짜로 이동');
+		}
+
+		function nextDay() {
+			// 다음 날짜로 이동하는 로직
+			console.log('다음 날짜로 이동');
+		}
+	</script>
 </body>
+
 </html>

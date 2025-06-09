@@ -29,14 +29,7 @@
 
     <!-- 사이드바 + 본문 -->
     <div class="app-container">
-        <aside class="sidebar">
-            <ul class="sidebar-menu">
-                <li><a href="#dashboard">나의 캘린더</a></li>
-                <li><a href="#income">수입 / 지출 관리</a></li>
-                <li><a href="#quest" class="active">나의 퀘스트</a></li>
-                <li><a href="#budget">예산 계획</a></li>
-            </ul>
-        </aside>
+       		<div th:replace="fragments/sidebar :: sidebar"></div>
 
         <main class="content">
             <div class="content-header">
@@ -155,7 +148,7 @@
         // 사이드바 메뉴 클릭 시 active 클래스 토글
         document.querySelectorAll('.sidebar-menu a').forEach(link => {
             link.addEventListener('click', function (e) {
-                e.preventDefault();
+            
                 document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
                 this.classList.add('active');
                 const menuText = this.textContent.trim();

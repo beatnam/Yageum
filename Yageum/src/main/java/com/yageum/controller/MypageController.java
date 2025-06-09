@@ -14,6 +14,7 @@ import lombok.extern.java.Log;
 public class MypageController {
 	
 	@GetMapping("/deletepw")
+
 	public String deletepw() {
 		log.info("MypageController deletepw()");
 		
