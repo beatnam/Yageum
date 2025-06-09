@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>계좌 및 결제 수단 관리</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="../css/my_page.css">
+	<link rel="stylesheet" href="../css/my_page_method.css">
+</head>
+
+<body>
+	<!-- 헤더 -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="accountbook-container">
+		<nav class="accountbook-sidebar">
+			<h2>메뉴</h2>
+			<ul class="accountbook-sidebar-menu">
+				<li><a href="#overview" class="active">🏠 자산 현황</a></li>
+				<li><a href="#transactions">📝 거래 내역</a></li>
+				<li><a href="#statistics">📊 통계 및 분석</a></li>
+				<li><a href="#">⚙️ 설정</a></li>
+				<li><a href="#">❓ 도움말</a></li>
+			</ul>
+		</nav>
+
+		<main class="accountbook-main-content">
+			<h1>결제 수단 관리</h1>
+
+			<!-- 계좌 섹션 -->
+			<section class="payment-section" data-section="account">
+				<div class="section-header">
+					<h2 class="section-title">💰 계좌 & 현금</h2>
+					<div class="section-controls">
+						<button class="btn btn-edit">편집</button>
+						<button class="btn btn-add">추가</button>
+						<button class="btn btn-delete">삭제</button>
+						<button class="btn btn-cancel" style="display: none;">취소</button>
+					</div>
+				</div>
+				<ul class="payment-list">
+					<li class="payment-item">
+						<div class="checkbox-container">
+							<input type="checkbox" class="select-checkbox">
+							<div class="payment-info">
+								<div class="payment-name">KB Star★ 통장</div>
+								<div class="payment-details">KB국민은행 • ****-****-****-1234</div>
+							</div>
+						</div>
+						<span class="payment-status status-active">사용중</span>
+					</li>
+					<li class="payment-item">
+						<div class="checkbox-container">
+							<input type="checkbox" class="select-checkbox">
+							<div class="payment-info">
+								<div class="payment-name">더나은미래통장</div>
+								<div class="payment-details">우리은행 • ****-****-****-5678</div>
+							</div>
+						</div>
+						<span class="payment-status status-active">사용중</span>
+					</li>
+					<li class="payment-item">
+						<div class="checkbox-container">
+							<input type="checkbox" class="select-checkbox">
+							<div class="payment-info">
+								<div class="payment-name">솔편한 입출금통장</div>
+								<div class="payment-details">신한은행 • ****-****-****-9012</div>
+							</div>
+						</div>
+						<span class="payment-status status-active">사용중</span>
+					</li>
+					<li class="payment-item">
+						<div class="checkbox-container">
+							<input type="checkbox" class="select-checkbox">
+							<div class="payment-info">
+								<div class="payment-name">우리신세대 저축예금</div>
+								<div class="payment-details">우리은행 • ****-****-****-3456</div>
+							</div>
+						</div>
+						<span class="payment-status status-inactive">미사용</span>
+					</li>
+					<li class="payment-item">
+						<div class="checkbox-container">
+							<input type="checkbox" class="select-checkbox">
+							<div class="payment-info">
+								<div class="payment-name">듀얼K 입출금통장</div>
+								<div class="payment-details">KB국민은행 • ****-****-****-7890</div>
+							</div>
+						</div>
+						<span class="payment-status status-active">사용중</span>
+					</li>
+				</ul>
+			</section>
+
+			<!-- 신용카드 섹션 -->
+			<section class="payment-section" data-section="credit">
+				<div class="section-header">
+					<h2 class="section-title">💳 신용카드</h2>
+					<div class="section-controls">
+						<button class="btn btn-edit">편집</button>
+						<button class="btn btn-add">추가</button>
+						<button class="btn btn-delete">삭제</button>
+						<button class="btn btn-cancel" style="display: none;">취소</button>
+					</div>
+				</div>
+				<ul class="payment-list">
+					<li class="payment-item">
+						<div class="checkbox-container">
+							<input type="checkbox" class="select-checkbox">
+							<div class="payment-info">
+								<div class="payment-name">케이뱅크 체크카드</div>
+								<div class="payment-details">케이뱅크 • **** **** **** 1234</div>
+							</div>
+						</div>
+						<span class="payment-status status-active">사용중</span>
+					</li>
+					<li class="payment-item">
+						<div class="checkbox-container">
+							<input type="checkbox" class="select-checkbox">
+							<div class="payment-info">
+								<div class="payment-name">네이버삼성카드</div>
+								<div class="payment-details">삼성카드 • **** **** **** 5678</div>
+							</div>
+						</div>
+						<span class="payment-status status-active">사용중</span>
+					</li>
+				</ul>
+			</section>
+
+			<!-- 체크카드 섹션 -->
+			<section class="payment-section" data-section="debit">
+				<div class="section-header">
+					<h2 class="section-title">💴 체크카드</h2>
+					<div class="section-controls">
+						<button class="btn btn-edit">편집</button>
+						<button class="btn btn-add">추가</button>
+						<button class="btn btn-delete">삭제</button>
+						<button class="btn btn-cancel" style="display: none;">취소</button>
+					</div>
+				</div>
+				<ul class="payment-list">
+					<li class="payment-item">
+						<div class="checkbox-container">
+							<input type="checkbox" class="select-checkbox">
+							<div class="payment-info">
+								<div class="payment-name">현대카드 M</div>
+								<div class="payment-details">현대카드 • **** **** **** 9012</div>
+							</div>
+						</div>
+						<span class="payment-status status-active">사용중</span>
+					</li>
+				</ul>
+			</section>
+		</main>
+	</div>
+
+	<!-- 푸터 -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+<script>
+		// 편집 모드 토글 기능 (새로 추가된 JavaScript)
+		document.addEventListener('DOMContentLoaded', function() {
+			const sections = document.querySelectorAll('.payment-section');
+			
+			sections.forEach(section => {
+				const editBtn = section.querySelector('.btn-edit');
+				const deleteBtn = section.querySelector('.btn-delete');
+				const addBtn = section.querySelector('.btn-add');
+				const cancelBtn = section.querySelector('.btn-cancel');
+				const checkboxes = section.querySelectorAll('.select-checkbox');
+				
+				// 편집 버튼 클릭 시 - 편집 모드 활성화
+				editBtn.addEventListener('click', function() {
+					section.classList.add('edit-mode');
+					editBtn.style.display = 'none';
+					cancelBtn.style.display = 'inline-block';
+					
+					// 모든 체크박스 해제
+					checkboxes.forEach(checkbox => {
+						checkbox.checked = false;
+					});
+				});
+				
+				// 취소 버튼 클릭 시 - 편집 모드 비활성화
+				cancelBtn.addEventListener('click', function() {
+					section.classList.remove('edit-mode');
+					editBtn.style.display = 'inline-block';
+					cancelBtn.style.display = 'none';
+					
+					// 모든 체크박스 해제
+					checkboxes.forEach(checkbox => {
+						checkbox.checked = false;
+					});
+				});
+				
+				// 추가 버튼 클릭 시
+				addBtn.addEventListener('click', function() {
+					alert('새 결제 수단을 추가할 수 있습니다.');
+				});
+				
+				// 삭제 버튼 클릭 시 - 편집 모드에서만 작동
+				deleteBtn.addEventListener('click', function() {
+					const checkedBoxes = section.querySelectorAll('.select-checkbox:checked');
+					if (checkedBoxes.length === 0) {
+						alert('삭제할 항목을 선택해주세요.');
+						return;
+					}
+					
+					if (confirm(`선택한 ${checkedBoxes.length}개의 결제 수단을 삭제하시겠습니까?`)) {
+						checkedBoxes.forEach(checkbox => {
+							checkbox.closest('.payment-item').remove();
+						});
+						
+						// 삭제 후 편집 모드 유지
+						alert('선택한 결제 수단이 삭제되었습니다.');
+					}
+				});
+			});
+		});
+	</script>
+</body>
+
+</html>
