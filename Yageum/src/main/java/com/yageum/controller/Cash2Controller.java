@@ -27,4 +27,8 @@ public class Cash2Controller {
 		
 		return "/cashbook/cashbook_quest";
 	}
+	
+	
+	
+	
 }
