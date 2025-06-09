@@ -1,10 +1,3 @@
-body {
-    font-family: 'Gowun Dodum', sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #FFF9E5;
-}
-
 .form-container {
     max-width: 600px;
     margin: 0 auto;
@@ -29,6 +22,13 @@ body {
 
 .required {
     color: #FF8A80;
+}
+
+/* main content 영역 배경색 지정 */
+main.content {
+    background-color: #FFF9E5;  
+    padding: 20px;             
+    min-height: 100vh;         
 }
 
 /* 금액 입력 */
@@ -195,3 +195,5 @@ body {
 .form-group.error .error-message {
     display: block;
 }
+
+
