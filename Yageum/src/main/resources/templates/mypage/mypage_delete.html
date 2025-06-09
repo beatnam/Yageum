@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>회원 탈퇴</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="../css/my_page.css">
+	<link rel="stylesheet" href="../css/my_page_delete.css">
+</head>
+
+<body>
+	<!-- 헤더 -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="accountbook-container">
+		<nav class="accountbook-sidebar">
+			<h2>메뉴</h2>
+			<ul class="accountbook-sidebar-menu">
+				<li><a href="#overview" class="active">🏠 자산 현황</a></li>
+				<li><a href="#transactions">📝 거래 내역</a></li>
+				<li><a href="#statistics">📊 통계 및 분석</a></li>
+				<li><a href="#">⚙️ 설정</a></li>
+				<li><a href="#">❓ 도움말</a></li>
+			</ul>
+		</nav>
+
+		<main class="accountbook-main-content">
+			<div class="withdraw-container">
+				<h2 class="withdraw-title">회원 탈퇴 시 유의사항</h2>
+				
+				<div class="withdraw-notice">
+					<ol>
+						<li>회원 탈퇴 시 작성하신 <span class="highlight-red">모든 가계부 데이터는 즉시 삭제되며</span>, 복구가 불가능합니다.</li>
+						<li>탈퇴 후에는 동일한 계정으로 <span class="highlight-red">이전 데이터를 다시 조회하거나 복원할 수 없습니다</span>.</li>
+						<li>복구, 복원에 관가능하므로 신중히 결정하시오.</li>
+					</ol>
+				</div>
+
+				<div class="withdraw-question">
+					정말 탈퇴 하시겠습니까?
+				</div>
+				<div class="withdraw-subtext">
+					한 번 탈퇴하시면 모든 정보가 삭제되며, 복원할 수 없습니다!
+				</div>
+
+				<form onsubmit="handleWithdraw(event)">
+					<div class="agreement-section">
+						<input type="checkbox" id="agreement" class="agreement-checkbox">
+						<label for="agreement" class="agreement-label">동의합니다.</label>
+					</div>
+
+					<div class="button-group">
+						<button type="button" class="btn-cancel" onclick="goBack()">취소</button>
+						<button type="submit" class="btn-confirm">확인</button>
+					</div>
+				</form>
+			</div>
+		</main>
+	</div>
+
+	<!-- 푸터 -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+<script>
+		function handleWithdraw(event) {
+			event.preventDefault();
+			const agreement = document.getElementById('agreement');
+			
+			if (!agreement.checked) {
+				alert('동의하셔야 탈퇴가 가능합니다.');
+				return false;
+			}
+			
+			// 추가 확인 메시지
+			if (confirm('정말로 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.')) {
+				alert('회원탈퇴가 완료되었습니다.');
+				// 실제로는 서버에 탈퇴 요청을 보내고 메인 페이지로 리다이렉트
+				// window.location.href = '/';
+			}
+		}
+
+		function goBack() {
+			if (confirm('탈퇴를 취소하고 이전 페이지로 돌아가시겠습니까?')) {
+				// 실제로는 이전 페이지로 이동
+				// window.history.back();
+				alert('이전 페이지로 돌아갑니다.');
+			}
+		}
+	</script>
+</body>
+
+</html>

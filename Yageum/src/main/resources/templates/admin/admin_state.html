@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	 <link rel="stylesheet" href="css/admin_state.css">
+    <title>통계 / 리포트</title>
+    
+</head>
+<body>
+    <div class="container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <h2>관리자 페이지</h2>
+            
+            <div class="menu-item">
+                <a href="admin_user.html" class="menu-link">사용자 관리</a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="admin_state.html" class="menu-link active">통계 / 리포트</a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="#" class="menu-link" onclick="toggleSubmenu(event)">사이트 설정</a>
+                <div class="submenu" id="siteSettingsSubmenu">
+                    <div class="submenu-item">
+                        <a href="admin_quest.html" class="submenu-link">퀘스트 관리</a>
+                    </div>
+                    <div class="submenu-item">
+                        <a href="admin_item.html" class="submenu-link">구매항목 관리</a>
+                    </div>
+                    <div class="submenu-item">
+                        <a href="admin_category.html" class="submenu-link">카테고리 관리</a>
+                    </div>
+                    <div class="submenu-item">
+                        <a href="admin_noticfication.html" class="submenu-link">공지사항 관리</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <div class="header">
+                <h1>통계 / 리포트</h1>
+            </div>
+
+            <!-- 상단 통계 박스들 -->
+            <div class="stats-container">
+                <!-- 5월의 가입자 수 -->
+                <div class="stats-box pink">
+                    <div class="stats-title"><h3>5월의 가입자 수</h3></div>
+                    <div class="date-selector">
+					
+					<input type="date">
+<!--
+						<select id="yearSelect" onchange="updateMemberStats()">
+                            <option value="2024">2024년</option>
+                            <option value="2025" selected>2025년</option>
+                        </select>
+                        <select id="monthSelect" onchange="updateMemberStats()">
+                            <option value="1">1월</option>
+                            <option value="2">2월</option>
+                            <option value="3">3월</option>
+                            <option value="4">4월</option>
+                            <option value="5" selected>5월</option>
+                            <option value="6">6월</option>
+                            <option value="7">7월</option>
+                            <option value="8">8월</option>
+                            <option value="9">9월</option>
+                            <option value="10">10월</option>
+                            <option value="11">11월</option>
+                            <option value="12">12월</option>
+                        </select>
+						-->
+                    </div>
+                    <div class="graph-placeholder">그래프 부분</div>
+                </div>
+
+                <!-- 월별 가입자 수 -->
+                <div class="stats-box pink">
+                    <div class="stats-title"><h3>현재까지 가입자 수</h3></div>
+                    <div class="graph-placeholder">그래프 부분</div>
+                </div>
+            </div>
+
+            <!-- 중간 통계 자료 -->
+            <div class="middle-stats">
+                <div class="stat-card beige">
+                    <div class="stat-title">총 가입자 수</div>
+                    <div class="stat-value">123</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">지출 비율이 높은 카테고리</div>
+                    <div class="stat-value">교통비</div>
+                </div>
+                
+                <div class="stat-card beige">
+                    <div class="stat-title">총 연결된 카드</div>
+                    <div class="stat-value">123</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">총 연결된 계좌</div>
+                    <div class="stat-value">123</div>
+                </div>
+            </div>
+
+            <!-- 하단 통계 박스들 -->
+            <div class="bottom-stats">
+                <!-- 이달의 질의응답 통계 -->
+                <div class="stats-box beige">
+                    <div class="stats-title">카테고리 별 지출 비율</div>
+                    <div class="graph-placeholder">그래프 부분</div>
+                </div>
+
+                <!-- 이달의 질의응답 -->
+                <div class="large-stat-card">
+                    <div class="large-stat-title">이달의 절약 왕</div>
+                    <div class="center-text">홍길동 님</div>
+                </div>
+            </div>
+
+            <!-- 최하단 통계 박스들 -->
+            <div class="bottom-stats" style="margin-top: 20px;">
+                <div class="large-stat-card">
+                    <div class="large-stat-title">사용자 별 평균 연결 수</div>
+                    <div class="large-stat-content">
+                        <div class="large-stat-item">
+                            <div class="large-stat-label">평균 계좌 연결 수</div>
+                            <div class="large-stat-number">1</div>
+                        </div>
+                        <div class="large-stat-item">
+                            <div class="large-stat-label">평균 카드 연결 수</div>
+                            <div class="large-stat-number">1</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="large-stat-card">
+                    <div class="large-stat-title">추가 통계 정보</div>
+                    <div class="center-text">데이터</div>
+                </div>
+				
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 사이트 설정 하위 메뉴 토글
+        function toggleSubmenu(event) {
+            event.preventDefault();
+            const submenu = document.getElementById('siteSettingsSubmenu');
+            submenu.classList.toggle('show');
+        }
+
+        // 가입자 수 통계 데이터 (예시)
+        const memberStatsData = {
+            2024: {
+                1: 85, 2: 92, 3: 78, 4: 96, 5: 103, 6: 89,
+                7: 94, 8: 87, 9: 99, 10: 105, 11: 91, 12: 88
+            },
+            2025: {
+                1: 112, 2: 98, 3: 106, 4: 89, 5: 125, 6: 94,
+                7: 87, 8: 102, 9: 95, 10: 108, 11: 93, 12: 97
+            }
+        };
+
+        // 월별 가입자 수 업데이트 함수
+        function updateMemberStats() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            
+            // 실제로는 여기서 서버에서 데이터를 가져오거나
+            // 차트 라이브러리를 사용하여 그래프를 업데이트할 것입니다.
+            console.log(`${year}년 ${month}월 데이터 로드`);
+            console.log(`가입자 수: ${memberStatsData[year][month]}명`);
+            
+            // 예시: 선택된 월의 데이터를 표시
+            // 실제 구현에서는 그래프를 다시 그리거나 데이터를 업데이트합니다.
+        }
+
+        // 페이지 로드 시 초기 데이터 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMemberStats();
+        });
+    </script>
+</body>
+</html>

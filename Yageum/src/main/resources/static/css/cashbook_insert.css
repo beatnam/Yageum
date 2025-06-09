@@ -1,0 +1,197 @@
+body {
+    font-family: 'Gowun Dodum', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #FFF9E5;
+}
+
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(78, 52, 46, 0.1);
+    border: 2px solid #FFC6C7;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #4E342E;
+    font-size: 14px;
+}
+
+.required {
+    color: #FF8A80;
+}
+
+/* 금액 입력 */
+.amount-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #FFC6C7;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.amount-input:focus {
+    outline: none;
+    border-color: #FFD44D;
+}
+
+/* 유형 선택 버튼 */
+.type-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.type-btn {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #FFC6C7;
+    background: white;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.type-btn.income {
+    color: #FFD44D;
+}
+
+.type-btn.expense {
+    color: #FF8A80;
+}
+
+.type-btn.active.income {
+    background: #FFD44D;
+    border-color: #FFD44D;
+    color: white;
+}
+
+.type-btn.active.expense {
+    background: #FF8A80;
+    border-color: #FF8A80;
+    color: white;
+}
+
+/* 일반 입력 필드 */
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #FFC6C7;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: #FFD44D;
+}
+
+/* Select 박스들 */
+.select-group {
+    display: flex;
+    gap: 10px;
+}
+
+.select-group .form-select {
+    flex: 1;
+}
+
+.form-select:disabled {
+    background-color: #FFF9E5;
+    color: #4E342E;
+    opacity: 0.6;
+}
+
+/* 카테고리 선택 */
+.category-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-display {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #FFC6C7;
+    border-radius: 8px;
+    background: #FFF9E5;
+    color: #4E342E;
+    font-size: 14px;
+}
+
+.category-btn {
+    padding: 12px 20px;
+    background: #FFD44D;
+    color: #4E342E;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.category-btn:hover {
+    background: #FFBF00;
+}
+
+/* 텍스트에어리어 */
+.form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* 제출 버튼 */
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: #FFD44D;
+    color: #4E342E;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+    background: #FFBF00;
+}
+
+.submit-btn:disabled {
+    background: #FFC6C7;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* 에러 메시지 */
+.error-message {
+    color: #FF8A80;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.form-group.error .form-input,
+.form-group.error .form-select {
+    border-color: #FF8A80;
+}
+
+.form-group.error .error-message {
+    display: block;
+}

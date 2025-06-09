@@ -1,0 +1,80 @@
+.transaction-detail-box {
+    border: 2px solid #FFD44D;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: white;
+    color: #4E342E;
+}
+
+.transaction-amount {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+
+.amount {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.amount.income {
+    color: #FF5722;
+}
+
+.aamount.expense {
+    color: #2196F3;
+;
+}
+
+.transaction-info {
+    width: 100%;
+    font-size: 15px;
+    border-spacing: 0 8px;
+}
+
+.transaction-info .right {
+    text-align: right;
+}
+
+.memo-section {
+    margin-top: 20px;
+}
+
+.memo-section label {
+    font-weight: bold;
+    color: #4E342E;
+}
+
+.memo-section textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.btn-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn-edit {
+    background-color: #FFD44D;
+    color: #4E342E;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-edit:hover {
+    background-color: #ffce1e;
+}

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>결제 수단 추가</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="../css/my_page.css">
+	<link rel="stylesheet" href="../css/my_page_method_insert.css">
+</head>
+
+<body>
+	<!-- 헤더 -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="accountbook-container">
+		<nav class="accountbook-sidebar">
+			<h2>메뉴</h2>
+			<ul class="accountbook-sidebar-menu">
+				<li><a href="#overview" class="active">🏠 자산 현황</a></li>
+				<li><a href="#transactions">📝 거래 내역</a></li>
+				<li><a href="#statistics">📊 통계 및 분석</a></li>
+				<li><a href="#">⚙️ 설정</a></li>
+				<li><a href="#">❓ 도움말</a></li>
+			</ul>
+		</nav>
+
+		<main class="accountbook-main-content">
+			<h1>내 카드 추가</h1>
+			
+			<div class="card-form-container">
+				<form id="cardAddForm">
+					<!-- 카드번호 -->
+					<div class="form-group">
+						<label class="form-label required">카드번호</label>
+						<div class="card-number-group">
+							<input type="text" class="form-input card-number-input" id="card1" maxlength="4" placeholder="1234">
+							<input type="text" class="form-input card-number-input masked" id="card2" maxlength="4" placeholder="••••">
+							<input type="text" class="form-input card-number-input masked" id="card3" maxlength="4" placeholder="••••">
+							<input type="text" class="form-input card-number-input" id="card4" maxlength="4" placeholder="1234">
+						</div>
+						<div class="error-message" id="cardNumberError"></div>
+					</div>
+
+					<!-- 유효기간 -->
+					<div class="form-group">
+						<label class="form-label required">유효기간</label>
+						<div class="expiry-group">
+							<input type="text" class="form-input expiry-input" id="expiryMM" maxlength="2" placeholder="MM">
+							<span class="expiry-slash">/</span>
+							<input type="text" class="form-input expiry-input" id="expiryYY" maxlength="2" placeholder="YY">
+						</div>
+						<div class="error-message" id="expiryError"></div>
+					</div>
+
+					<!-- 소유자명 -->
+					<div class="form-group">
+						<label class="form-label required">소유자명</label>
+						<input type="text" class="form-input" id="cardHolder" placeholder="카드 소유자 이름을 입력하세요">
+						<div class="error-message" id="cardHolderError"></div>
+					</div>
+
+					<!-- 보안코드(CVC) -->
+					<div class="form-group">
+						<label class="form-label required">보안코드(CVC)</label>
+						<div class="cvc-group">
+							<input type="text" class="form-input cvc-input" id="cvc" maxlength="3" placeholder="•••">
+							<span class="cvc-hint">* 3글자만 입력하세요</span>
+						</div>
+						<div class="error-message" id="cvcError"></div>
+					</div>
+
+					<!-- 카드이름 -->
+					<div class="form-group">
+						<label class="form-label required">카드이름</label>
+						<input type="text" class="form-input" id="cardName" placeholder="예: 삼성카드, 신한카드 등">
+						<div class="error-message" id="cardNameError"></div>
+					</div>
+
+					<!-- 카드별칭 -->
+					<div class="form-group">
+						<label class="form-label">카드별칭</label>
+						<input type="text" class="form-input" id="cardAlias" placeholder="개인적으로 사용할 별칭 (선택사항)">
+					</div>
+
+					<!-- 저장 버튼 -->
+					<button type="submit" class="save-button">저장하기</button>
+				</form>
+			</div>
+		</main>
+	</div>
+
+	<!-- 푸터 -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+<script>
+			// 카드 추가 폼 유효성 검사 및 기능 (새로 추가된 JavaScript)
+		document.addEventListener('DOMContentLoaded', function() {
+			const form = document.getElementById('cardAddForm');
+			const cardInputs = document.querySelectorAll('.card-number-input');
+			const expiryInputs = document.querySelectorAll('.expiry-input');
+			
+			// 카드번호 입력 시 자동 포커스 이동
+			cardInputs.forEach((input, index) => {
+				input.addEventListener('input', function(e) {
+					// 숫자만 입력 허용
+					this.value = this.value.replace(/[^0-9]/g, '');
+					
+					// 4자리 입력 시 다음 필드로 자동 이동
+					if (this.value.length === 4 && index < cardInputs.length - 1) {
+						cardInputs[index + 1].focus();
+					}
+				});
+
+				// 백스페이스 키 처리
+				input.addEventListener('keydown', function(e) {
+					if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+						cardInputs[index - 1].focus();
+					}
+				});
+			});
+
+			// 유효기간 입력 처리
+			expiryInputs.forEach((input, index) => {
+				input.addEventListener('input', function(e) {
+					this.value = this.value.replace(/[^0-9]/g, '');
+					
+					if (this.value.length === 2 && index === 0) {
+						expiryInputs[1].focus();
+					}
+				});
+
+				input.addEventListener('keydown', function(e) {
+					if (e.key === 'Backspace' && this.value.length === 0 && index === 1) {
+						expiryInputs[0].focus();
+					}
+				});
+			});
+
+			// CVC 입력 처리 (숫자만)
+			document.getElementById('cvc').addEventListener('input', function(e) {
+				this.value = this.value.replace(/[^0-9]/g, '');
+			});
+
+			// 폼 제출 처리
+			form.addEventListener('submit', function(e) {
+				e.preventDefault();
+				
+				if (validateForm()) {
+					// 폼 데이터 수집
+					const formData = {
+						cardNumber: Array.from(cardInputs).map(input => input.value).join(''),
+						expiryMonth: document.getElementById('expiryMM').value,
+						expiryYear: document.getElementById('expiryYY').value,
+						cardHolder: document.getElementById('cardHolder').value,
+						cvc: document.getElementById('cvc').value,
+						cardName: document.getElementById('cardName').value,
+						cardAlias: document.getElementById('cardAlias').value
+					};
+					
+					console.log('카드 정보:', formData);
+					alert('카드가 성공적으로 추가되었습니다!');
+					
+					// 결제 수단 페이지로 이동 (실제로는 페이지 리다이렉트 구현)
+					// window.location.href = '/payment-methods';
+				}
+			});
+
+			// 폼 유효성 검사
+			function validateForm() {
+				let isValid = true;
+				
+				// 카드번호 검사
+				const cardNumber = Array.from(cardInputs).map(input => input.value).join('');
+				if (cardNumber.length !== 16) {
+					showError('cardNumberError', '카드번호 16자리를 모두 입력해주세요.');
+					cardInputs.forEach(input => input.classList.add('error'));
+					isValid = false;
+				} else {
+					hideError('cardNumberError');
+					cardInputs.forEach(input => input.classList.remove('error'));
+				}
+
+				// 유효기간 검사
+				const month = document.getElementById('expiryMM').value;
+				const year = document.getElementById('expiryYY').value;
+				if (!month || !year || month < 1 || month > 12) {
+					showError('expiryError', '올바른 유효기간을 입력해주세요.');
+					expiryInputs.forEach(input => input.classList.add('error'));
+					isValid = false;
+				} else {
+					hideError('expiryError');
+					expiryInputs.forEach(input => input.classList.remove('error'));
+				}
+
+				// 소유자명 검사
+				const cardHolder = document.getElementById('cardHolder').value.trim();
+				if (!cardHolder) {
+					showError('cardHolderError', '소유자명을 입력해주세요.');
+					document.getElementById('cardHolder').classList.add('error');
+					isValid = false;
+				} else {
+					hideError('cardHolderError');
+					document.getElementById('cardHolder').classList.remove('error');
+				}
+
+				// CVC 검사
+				const cvc = document.getElementById('cvc').value;
+				if (cvc.length !== 3) {
+					showError('cvcError', '보안코드 3자리를 입력해주세요.');
+					document.getElementById('cvc').classList.add('error');
+					isValid = false;
+				} else {
+					hideError('cvcError');
+					document.getElementById('cvc').classList.remove('error');
+				}
+
+				// 카드이름 검사
+				const cardName = document.getElementById('cardName').value.trim();
+				if (!cardName) {
+					showError('cardNameError', '카드이름을 입력해주세요.');
+					document.getElementById('cardName').classList.add('error');
+					isValid = false;
+				} else {
+					hideError('cardNameError');
+					document.getElementById('cardName').classList.remove('error');
+				}
+
+				return isValid;
+			}
+
+			// 에러 메시지 표시
+			function showError(elementId, message) {
+				document.getElementById(elementId).textContent = message;
+			}
+
+			// 에러 메시지 숨기기
+			function hideError(elementId) {
+				document.getElementById(elementId).textContent = '';
+			}
+		});
+	</script>
+</body>
+
+</html>
