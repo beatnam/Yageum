@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>가계부 예산 설정</title>
-	<link rel="stylesheet" href="../css/b_planner.css">
 	<link rel="stylesheet" href="../css/common.css">
-	<link rel="stylesheet" href="../css/c_sidebar.css">
+	<link rel="stylesheet" href="../css/b_planner.css">
 	
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
+<div class="app-container">
 <div th:replace="fragments/c_sidebar :: c_sidebar"></div>
     <div class="container">
+    
         <div class="budget-header pulse-animation">
             <h1>가계부 예산 설정</h1>
             <p>현명한 가계 관리를 위한 예산 계획을 세워보세요</p>
@@ -93,12 +94,13 @@
                 </div>
             </div>
         </div>
-</div>
         <div class="action-buttons">
             <button class="btn btn-save" onclick="saveBudget()">예산 저장</button>
             <button class="btn btn-reset" onclick="resetBudget()">초기화</button>
         </div>
-
+	</div>	
+</div>
+        
 	<div th:replace="fragments/footer :: footer"></div>
     <script>
         let incomes = [];
