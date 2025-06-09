@@ -16,13 +16,16 @@
     <!--
 		<link rel="stylesheet" href="css/common.css">
 	-->
-	<link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/my_quest.css">
+	<link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/cashbook_quest.css">
 </head>
 
 <body>
-    <!-- 헤더 -->
-    <iframe src="./header.html"></iframe>
+	<!-- 헤더 -->
+	 <div th:replace="fragments/header :: header"></div>
+
+	
+	
 
     <!-- 사이드바 + 본문 -->
     <div class="app-container">
@@ -145,8 +148,8 @@
         </main>
     </div>
 
-    <!-- 푸터 -->
-    <iframe src="./footer.html"></iframe>
+	<!--	푸터-->
+				<div th:replace="fragments/footer :: footer"></div>
 
     <script>
         // 사이드바 메뉴 클릭 시 active 클래스 토글
