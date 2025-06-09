@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/admin_common.css">
+    <title>구매항목 관리</title>
+   
+</head>
+<body>
+    <div class="container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <h2>관리자 페이지</h2>
+            
+            <div class="menu-item">
+                <a href="admin_user.html" class="menu-link">사용자 관리</a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="admin_state.html" class="menu-link">통계 / 리포트</a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="#" class="menu-link active" onclick="toggleSubmenu(event)">사이트 설정</a>
+                <div class="submenu show" id="siteSettingsSubmenu">
+                    <div class="submenu-item">
+                        <a href="admin_quest.html" class="submenu-link">퀘스트 관리</a>
+                    </div>
+                    <div class="submenu-item">
+                        <a href="admin_item.html" class="submenu-link active">구매항목 관리</a>
+                    </div>
+                    <div class="submenu-item">
+                        <a href="admin_category.html" class="submenu-link">카테고리 관리</a>
+                    </div>
+                    <div class="submenu-item">
+                        <a href="admin_noticfication.html" class="submenu-link">공지사항 관리</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <div class="header">
+                <h1>구매항목 목록</h1>
+                <button class="add-btn" onclick="addItem()">추가하기</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>항목 번호</th>
+                            <th>항목 ID</th>
+                            <th>상품명</th>
+                            <th>가격</th>
+                            <th>종류</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemTableBody">
+                        <tr>
+                            <td>1</td>
+                            <td>item1</td>
+                            <td>프리미엄 패키지</td>
+                            <td>10,000원</td>
+                            <td>패키지</td>
+                            <td>
+                                <button class="action-btn edit" onclick="editItem(1)">변경</button>
+                                <button class="action-btn delete" onclick="deleteItem(1)">삭제</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>item2</td>
+                            <td>포인트 1000</td>
+                            <td>1,000원</td>
+                            <td>포인트</td>
+                            <td>
+                                <button class="action-btn edit" onclick="editItem(2)">변경</button>
+                                <button class="action-btn delete" onclick="deleteItem(2)">삭제</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>item3</td>
+                            <td>포인트 5000</td>
+                            <td>5,000원</td>
+                            <td>포인트</td>
+                            <td>
+                                <button class="action-btn edit" onclick="editItem(3)">변경</button>
+                                <button class="action-btn delete" onclick="deleteItem(3)">삭제</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>item4</td>
+                            <td>스페셜 아이템</td>
+                            <td>3,000원</td>
+                            <td>아이템</td>
+                            <td>
+                                <button class="action-btn edit" onclick="editItem(4)">변경</button>
+                                <button class="action-btn delete" onclick="deleteItem(4)">삭제</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>item5</td>
+                            <td>월간 구독권</td>
+                            <td>9,900원</td>
+                            <td>구독</td>
+                            <td>
+                                <button class="action-btn edit" onclick="editItem(5)">변경</button>
+                                <button class="action-btn delete" onclick="deleteItem(5)">삭제</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>item6</td>
+                            <td>연간 구독권</td>
+                            <td>99,000원</td>
+                            <td>구독</td>
+                            <td>
+                                <button class="action-btn edit" onclick="editItem(6)">변경</button>
+                                <button class="action-btn delete" onclick="deleteItem(6)">삭제</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span>이전</span>
+                <a href="#">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">4</a>
+                <a href="#">5</a>
+                <span>다음</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 사이트 설정 하위 메뉴 토글
+        function toggleSubmenu(event) {
+            event.preventDefault();
+            const submenu = document.getElementById('siteSettingsSubmenu');
+            submenu.classList.toggle('show');
+        }
+
+        // 구매항목 추가 기능
+        function addItem() {
+            alert('구매항목 추가 페이지로 이동합니다.');
+            // 실제로는 구매항목 추가 페이지로 이동하거나 모달을 띄움
+        }
+
+        // 구매항목 변경 기능
+        function editItem(id) {
+            alert('구매항목 ID ' + id + ' 변경 페이지로 이동합니다.');
+            // 실제로는 구매항목 변경 페이지로 이동하거나 모달을 띄움
+        }
+
+        // 구매항목 삭제 기능
+        function deleteItem(id) {
+            if (confirm('정말로 이 구매항목을 삭제하시겠습니까?')) {
+                alert('구매항목 ID ' + id + '가 삭제되었습니다.');
+                // 실제로는 서버에 삭제 요청을 보냄
+            }
+        }
+    </script>
+</body>
+</html>
