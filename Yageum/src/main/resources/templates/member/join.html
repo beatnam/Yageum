@@ -38,13 +38,15 @@
 			<div class="form-row">
 				<div class="form-group">
 					<label for="memberPasswd">비밀번호 <span class="required">*</span></label>
-					<input type="password" id="memberPasswd" name="memberPasswd" class="form-control" placeholder="비밀번호를 입력하세요">
+					<input type="password" id="memberPasswd" name="memberPasswd" class="form-control"
+						placeholder="비밀번호를 입력하세요">
 					<div class="error-message" id="memberPasswdError"></div>
 				</div>
 
 				<div class="form-group">
 					<label for="memberPassWd2">비밀번호 확인 <span class="required">*</span></label>
-					<input type="password" id="memberPassWd2" name="memberPassWd2" class="form-control" placeholder="비밀번호를 다시 입력하세요">
+					<input type="password" id="memberPassWd2" name="memberPassWd2" class="form-control"
+						placeholder="비밀번호를 다시 입력하세요">
 					<div class="password-match" id="passwordMatch"></div>
 					<div class="error-message" id="memberPassWd2Error"></div>
 				</div>
@@ -59,14 +61,16 @@
 
 				<div class="form-group">
 					<label for="memberPhone">휴대폰 번호</label>
-					<input type="tel" id="memberPhone" name="memberPhone" class="form-control" placeholder="010-1234-5678">
+					<input type="tel" id="memberPhone" name="memberPhone" class="form-control"
+						placeholder="010-1234-5678">
 					<div class="error-message" id="memberPhoneError"></div>
 				</div>
 			</div>
 
 			<div class="form-group full-width">
 				<label for="memberEmail">이메일 <span class="required">*</span></label>
-				<input type="email" id="memberEmail" name="memberEmail" class="form-control" placeholder="example@email.com">
+				<input type="email" id="memberEmail" name="memberEmail" class="form-control"
+					placeholder="example@email.com">
 				<div class="error-message" id="memberEmailError"></div>
 			</div>
 
@@ -96,7 +100,23 @@
 			</div>
 
 			<div class="error-message" id="signupError"></div>
+			<div class="terms-section">
+				<h2 class="section-title">선택 약관</h2>
 
+				<div class="agreement-item">
+					<div class="agreement-header" onclick="toggleContent('terms3')">
+						<div class="agreement-checkbox">
+							<input type="checkbox" id="terms3" name="emailConsent" value="True">
+							<label for="terms3" class="agreement-text">
+								<span class="optional">[선택]</span> 이메일 수신 동의
+							</label>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
 			<button type="submit" class="btn-signup">회원가입</button>
 		</form>
 
@@ -106,31 +126,25 @@
 	</div>
 
 	<script>
-		// 유효성 검사 함수들
 		const validation = {
-			// 에러 메시지 표시
-			showError: function(fieldId, message) {
+			showError(fieldId, message) {
 				const errorElement = document.getElementById(fieldId + 'Error');
 				const inputElement = document.getElementById(fieldId);
-				
 				errorElement.textContent = message;
 				errorElement.classList.add('show');
 				inputElement.classList.add('error');
 				inputElement.classList.remove('success');
 			},
 
-			// 에러 메시지 숨기기
-			hideError: function(fieldId) {
+			hideError(fieldId) {
 				const errorElement = document.getElementById(fieldId + 'Error');
 				const inputElement = document.getElementById(fieldId);
-				
 				errorElement.classList.remove('show');
 				inputElement.classList.remove('error');
 				inputElement.classList.add('success');
 			},
 
-			// 아이디 검사
-			validateId: function(id) {
+			validateId(id) {
 				if (!id.trim()) {
 					this.showError('memberId', '아이디를 입력해주세요.');
 					return false;
@@ -140,15 +154,14 @@
 					return false;
 				}
 				if (!/^[a-zA-Z0-9_]+$/.test(id)) {
-					this.showError('memberId', '아이디는 영문, 숫자, 언더스코어만 사용 가능합니다.');
+					this.showError('memberId', '아이디는 영문, 숫자, 언더바만 사용 가능합니다.');
 					return false;
 				}
 				this.hideError('memberId');
 				return true;
 			},
 
-			// 이름 검사
-			validateName: function(name) {
+			validateName(name) {
 				if (!name.trim()) {
 					this.showError('memberName', '이름을 입력해주세요.');
 					return false;
@@ -161,8 +174,7 @@
 				return true;
 			},
 
-			// 비밀번호 검사
-			validatePassword: function(password) {
+			validatePassword(password) {
 				if (!password.trim()) {
 					this.showError('memberPasswd', '비밀번호를 입력해주세요.');
 					return false;
@@ -171,16 +183,15 @@
 					this.showError('memberPasswd', '비밀번호는 8~20자로 입력해주세요.');
 					return false;
 				}
-				if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
-					this.showError('memberPasswd', '비밀번호는 영문과 숫자를 포함해야 합니다.');
+				if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).+$/.test(password)) {
+					this.showError('memberPasswd', '비밀번호는 영문 대소문자, 특수문자를 각각 1개 이상 포함해야 합니다.');
 					return false;
 				}
 				this.hideError('memberPasswd');
 				return true;
 			},
 
-			// 이메일 검사
-			validateEmail: function(email) {
+			validateEmail(email) {
 				if (!email.trim()) {
 					this.showError('memberEmail', '이메일을 입력해주세요.');
 					return false;
@@ -194,26 +205,22 @@
 				return true;
 			},
 
-			// 휴대폰 번호 검사
-			validatePhone: function(phone) {
+			validatePhone(phone) {
 				if (phone && !/^\d{3}-\d{4}-\d{4}$/.test(phone)) {
 					this.showError('memberPhone', '올바른 휴대폰 번호 형식을 입력해주세요. (예: 010-1234-5678)');
 					return false;
 				}
-				if (phone) {
-					this.hideError('memberPhone');
-				}
+				this.hideError('memberPhone');
 				return true;
 			}
 		};
 
-		// 비밀번호 확인 검사
 		function checkPasswordMatch() {
 			const password = document.getElementById('memberPasswd').value;
 			const confirmPassword = document.getElementById('memberPassWd2').value;
 			const matchElement = document.getElementById('passwordMatch');
 
-			if (confirmPassword === '') {
+			if (!confirmPassword) {
 				matchElement.textContent = '';
 				matchElement.className = 'password-match';
 				return;
@@ -230,32 +237,14 @@
 			}
 		}
 
-		// 실시간 유효성 검사 이벤트 리스너
-		document.getElementById('memberId').addEventListener('blur', function() {
-			validation.validateId(this.value);
-		});
-
-		document.getElementById('memberName').addEventListener('blur', function() {
-			validation.validateName(this.value);
-		});
-
-		document.getElementById('memberPasswd').addEventListener('blur', function() {
-			validation.validatePassword(this.value);
-			checkPasswordMatch();
-		});
-
+		document.getElementById('memberId').addEventListener('blur', e => validation.validateId(e.target.value));
+		document.getElementById('memberName').addEventListener('blur', e => validation.validateName(e.target.value));
+		document.getElementById('memberPasswd').addEventListener('blur', e => {validation.validatePassword(e.target.value); checkPasswordMatch();});
 		document.getElementById('memberPasswd').addEventListener('input', checkPasswordMatch);
 		document.getElementById('memberPassWd2').addEventListener('input', checkPasswordMatch);
+		document.getElementById('memberEmail').addEventListener('blur', e => validation.validateEmail(e.target.value));
+		document.getElementById('memberPhone').addEventListener('blur', e => validation.validatePhone(e.target.value));
 
-		document.getElementById('memberEmail').addEventListener('blur', function() {
-			validation.validateEmail(this.value);
-		});
-
-		document.getElementById('memberPhone').addEventListener('blur', function() {
-			validation.validatePhone(this.value);
-		});
-
-		// 휴대폰 번호 자동 포맷팅
 		document.getElementById('memberPhone').addEventListener('input', function (e) {
 			let value = e.target.value.replace(/[^0-9]/g, '');
 			if (value.length >= 4 && value.length <= 7) {
@@ -266,10 +255,9 @@
 			e.target.value = value;
 		});
 
-		// 폼 제출 시 전체 유효성 검사
 		document.getElementById('signupForm').addEventListener('submit', function (e) {
 			e.preventDefault();
-			
+
 			const memberId = document.getElementById('memberId').value;
 			const memberName = document.getElementById('memberName').value;
 			const memberPasswd = document.getElementById('memberPasswd').value;
@@ -278,52 +266,29 @@
 			const memberPhone = document.getElementById('memberPhone').value;
 
 			let isValid = true;
-
-			// 모든 필수 필드 검사
 			if (!validation.validateId(memberId)) isValid = false;
 			if (!validation.validateName(memberName)) isValid = false;
 			if (!validation.validatePassword(memberPasswd)) isValid = false;
 			if (!validation.validateEmail(memberEmail)) isValid = false;
 			if (!validation.validatePhone(memberPhone)) isValid = false;
 
-			// 비밀번호 확인 검사
 			if (memberPasswd !== memberPassWd2) {
 				validation.showError('memberPassWd2', '비밀번호가 일치하지 않습니다.');
 				isValid = false;
 			}
 
 			if (isValid) {
-				// 실제 서버로 전송하거나 처리
 				alert('회원가입이 완료되었습니다!');
-				// this.submit(); // 실제 서버 전송시 사용
+				this.submit(); // 서버로 실제 전송
 			} else {
 				document.getElementById('signupError').textContent = '입력 정보를 다시 확인해주세요.';
 				document.getElementById('signupError').classList.add('show');
 			}
-		});
+			function toggleContent(termId) {
+				const content = document.getElementById('content-' + termId);
+				content.classList.toggle('active');
+			}
 
-		// 입력 필드 애니메이션 효과
-		document.querySelectorAll('.form-control').forEach(input => {
-			input.addEventListener('focus', function () {
-				this.style.transform = 'translateY(-2px)';
-			});
-
-			input.addEventListener('blur', function () {
-				this.style.transform = 'translateY(0)';
-			});
-		});
-
-		// 성공시 에러 메시지 숨기기
-		document.querySelectorAll('.form-control').forEach(input => {
-			input.addEventListener('input', function() {
-				if (this.classList.contains('success')) {
-					const errorId = this.id + 'Error';
-					const errorElement = document.getElementById(errorId);
-					if (errorElement) {
-						errorElement.classList.remove('show');
-					}
-				}
-			});
 		});
 	</script>
 </body>

@@ -195,6 +195,10 @@
             color: #bdc3c7;
             text-decoration: none;
         }
+        
+        .footer-links li {
+        	list-style-type: none;
+        }
 
         .footer-bottom {
             border-top: 1px solid #34495e;

@@ -1,39 +1,26 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>소비분석 종합결과</title>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소비분석 종합결과</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="../css/c_analysis.css">
 	<link rel="stylesheet" href="../css/common.css">
 
 </head>
-<<<<<<< HEAD
-<div th:replace="fragments/header :: header"></div>
-
-=======
->>>>>>> branch 'TeamTest' of https://github.com/beatnam/Yageum.git
 <body>
-<<<<<<< HEAD
-
-	<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
-
-	<!-- 메인 컨텐츠 -->
-	<div class="main-wrapper">
-		<div class="container">
-			<!-- 헤더 섹션 -->
-			<div class="header">
-				<h1>💰 소비분석 종합결과</h1>
-				<p>2024년 12월 기준 • 개인 소비 패턴 분석 리포트</p>
-			</div>
-=======
 <div th:replace="fragments/header :: header"></div>
 <div class="app-container">
+	
+	<!-- 사이드 바 메뉴-->
 <div th:replace="fragments/c_sidebar :: c_sidebar"></div>
+
+
+
+
         <!-- 메인 컨텐츠 -->
         <div class="main-wrapper">
             <div class="container">
@@ -43,107 +30,95 @@
                     <h1>💰 소비분석 종합결과</h1>
                     <p>2024년 12월 기준 • 개인 소비 패턴 분석 리포트</p>
                 </div>
->>>>>>> branch 'TeamTest' of https://github.com/beatnam/Yageum.git
 
-			<!-- 주요 통계 카드 -->
-			<div class="stats-grid">
-				<div class="stat-card">
-					<div class="stat-number">₩2,450,000</div>
-					<div class="stat-label">이번 달 총 지출</div>
-					<div class="trend-indicator trend-down">↓ 12.5%</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-number">₩98,000</div>
-					<div class="stat-label">일평균 지출</div>
-					<div class="trend-indicator trend-up">↑ 8.2%</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-number">156</div>
-					<div class="stat-label">총 거래 건수</div>
-					<div class="trend-indicator trend-up">↑ 15.3%</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-number">₩750,000</div>
-					<div class="stat-label">이번 달 절약액</div>
-					<div class="trend-indicator trend-up">↑ 22.1%</div>
-				</div>
-			</div>
+                <!-- 주요 통계 카드 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">₩2,450,000</div>
+                        <div class="stat-label">이번 달 총 지출</div>
+                        <div class="trend-indicator trend-down">↓ 12.5%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">₩98,000</div>
+                        <div class="stat-label">일평균 지출</div>
+                        <div class="trend-indicator trend-up">↑ 8.2%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">총 거래 건수</div>
+                        <div class="trend-indicator trend-up">↑ 15.3%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">₩750,000</div>
+                        <div class="stat-label">이번 달 절약액</div>
+                        <div class="trend-indicator trend-up">↑ 22.1%</div>
+                    </div>
+                </div>
 
-			<!-- 메인 컨텐츠 -->
-			<div class="main-content">
-				<div class="chart-section">
-					<h2 class="section-title">📊 월별 지출 추이</h2>
-					<div class="chart-placeholder">
-						월별 지출 그래프<br>
-						(차트 라이브러리 연동 필요)
-					</div>
-				</div>
+                <!-- 메인 컨텐츠 -->
+                <div class="main-content">
+                    <div class="chart-section">
+                        <h2 class="section-title">📊 월별 지출 추이</h2>
+                        <div class="chart-placeholder">
+                            월별 지출 그래프<br>
+                            (차트 라이브러리 연동 필요)
+                        </div>
+                    </div>
 
-				<div class="insights-section">
-					<h2 class="section-title">💡 주요 인사이트</h2>
-					<div class="insight-item">
-						<div class="insight-title">절약 성공</div>
-						<div class="insight-text">이번 달 식비 지출이 목표 대비 15% 절약되었습니다.</div>
-					</div>
-					<div class="insight-item">
-						<div class="insight-title">지출 패턴 변화</div>
-						<div class="insight-text">온라인 쇼핑 비중이 전월 대비 25% 증가했습니다.</div>
-					</div>
-					<div class="insight-item">
-						<div class="insight-title">추천 개선사항</div>
-						<div class="insight-text">카페 지출을 월 50만원으로 제한하면 연간 120만원 절약 가능합니다.</div>
-					</div>
-				</div>
-			</div>
+                    <div class="insights-section">
+                        <h2 class="section-title">💡 주요 인사이트</h2>
+                        <div class="insight-item">
+                            <div class="insight-title">절약 성공</div>
+                            <div class="insight-text">이번 달 식비 지출이 목표 대비 15% 절약되었습니다.</div>
+                        </div>
+                        <div class="insight-item">
+                            <div class="insight-title">지출 패턴 변화</div>
+                            <div class="insight-text">온라인 쇼핑 비중이 전월 대비 25% 증가했습니다.</div>
+                        </div>
+                        <div class="insight-item">
+                            <div class="insight-title">추천 개선사항</div>
+                            <div class="insight-text">카페 지출을 월 50만원으로 제한하면 연간 120만원 절약 가능합니다.</div>
+                        </div>
+                    </div>
+                </div>
 
-			<!-- 카테고리별 지출 -->
-			<div class="categories-section">
-				<h2 class="section-title">🏷️ 카테고리별 지출 현황</h2>
-				<div class="category-grid">
-					<div class="category-item">
-						<div class="category-icon">🍽️</div>
-						<div class="category-name">식비</div>
-						<div class="category-amount">₩680,000</div>
-					</div>
-					<div class="category-item">
-						<div class="category-icon">🚗</div>
-						<div class="category-name">교통비</div>
-						<div class="category-amount">₩240,000</div>
-					</div>
-					<div class="category-item">
-						<div class="category-icon">🛍️</div>
-						<div class="category-name">쇼핑</div>
-						<div class="category-amount">₩420,000</div>
-					</div>
-					<div class="category-item">
-						<div class="category-icon">🎬</div>
-						<div class="category-name">문화생활</div>
-						<div class="category-amount">₩180,000</div>
-					</div>
-					<div class="category-item">
-						<div class="category-icon">☕</div>
-						<div class="category-name">카페</div>
-						<div class="category-amount">₩320,000</div>
-					</div>
-					<div class="category-item">
-						<div class="category-icon">💊</div>
-						<div class="category-name">의료/건강</div>
-						<div class="category-amount">₩110,000</div>
-					</div>
-				</div>
-			</div>
+                <!-- 카테고리별 지출 -->
+                <div class="categories-section">
+                    <h2 class="section-title">🏷️ 카테고리별 지출 현황</h2>
+                    <div class="category-grid">
+                        <div class="category-item">
+                            <div class="category-icon">🍽️</div>
+                            <div class="category-name">식비</div>
+                            <div class="category-amount">₩680,000</div>
+                        </div>
+                        <div class="category-item">
+                            <div class="category-icon">🚗</div>
+                            <div class="category-name">교통비</div>
+                            <div class="category-amount">₩240,000</div>
+                        </div>
+                        <div class="category-item">
+                            <div class="category-icon">🛍️</div>
+                            <div class="category-name">쇼핑</div>
+                            <div class="category-amount">₩420,000</div>
+                        </div>
+                        <div class="category-item">
+                            <div class="category-icon">🎬</div>
+                            <div class="category-name">문화생활</div>
+                            <div class="category-amount">₩180,000</div>
+                        </div>
+                        <div class="category-item">
+                            <div class="category-icon">☕</div>
+                            <div class="category-name">카페</div>
+                            <div class="category-amount">₩320,000</div>
+                        </div>
+                        <div class="category-item">
+                            <div class="category-icon">💊</div>
+                            <div class="category-name">의료/건강</div>
+                            <div class="category-amount">₩110,000</div>
+                        </div>
+                    </div>
+                </div>
 
-<<<<<<< HEAD
-			<!-- 푸터 -->
-			<div class="footer">
-				<p>📈 스마트한 소비 관리로 더 나은 미래를 만들어보세요</p>
-				<p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.7;">
-					데이터 업데이트: 2024.12.31 | 분석 기간: 2024.12.01 - 2024.12.31
-				</p>
-			</div>
-		</div>
-	</div>
-=======
                 <!-- 푸터 -->
                 <div class="footer">
                     <p>📈 스마트한 소비 관리로 더 나은 미래를 만들어보세요</p>
@@ -154,56 +129,54 @@
             </div>
         </div>
 </div>
->>>>>>> branch 'TeamTest' of https://github.com/beatnam/Yageum.git
 
 	<div th:replace="fragments/footer :: footer"></div>
 
-	<script>
-		// 카드 호버 효과 강화
-		document.querySelectorAll('.stat-card, .category-item').forEach(card => {
-			card.addEventListener('mouseenter', function () {
-				this.style.transform = 'translateY(-10px) scale(1.02)';
-			});
+    <script>
+        // 카드 호버 효과 강화
+        document.querySelectorAll('.stat-card, .category-item').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
 
-			card.addEventListener('mouseleave', function () {
-				this.style.transform = 'translateY(0) scale(1)';
-			});
-		});
+        // 인사이트 카드 클릭 효과
+        document.querySelectorAll('.insight-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.backgroundColor = '#fdcb6e';
+                setTimeout(() => {
+                    this.style.backgroundColor = '';
+                }, 200);
+            });
+        });
 
-		// 인사이트 카드 클릭 효과
-		document.querySelectorAll('.insight-item').forEach(item => {
-			item.addEventListener('click', function () {
-				this.style.backgroundColor = '#fdcb6e';
-				setTimeout(() => {
-					this.style.backgroundColor = '';
-				}, 200);
-			});
-		});
+        // 숫자 카운트업 애니메이션
+        function animateNumbers() {
+            document.querySelectorAll('.stat-number').forEach(element => {
+                const text = element.textContent;
+                const number = parseInt(text.replace(/[^\d]/g, ''));
+                if (number > 0) {
+                    let current = 0;
+                    const increment = number / 100;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= number) {
+                            element.textContent = text;
+                            clearInterval(timer);
+                        } else {
+                            element.textContent = text.replace(number, Math.floor(current).toLocaleString());
+                        }
+                    }, 20);
+                }
+            });
+        }
 
-		// 숫자 카운트업 애니메이션
-		function animateNumbers() {
-			document.querySelectorAll('.stat-number').forEach(element => {
-				const text = element.textContent;
-				const number = parseInt(text.replace(/[^\d]/g, ''));
-				if (number > 0) {
-					let current = 0;
-					const increment = number / 100;
-					const timer = setInterval(() => {
-						current += increment;
-						if (current >= number) {
-							element.textContent = text;
-							clearInterval(timer);
-						} else {
-							element.textContent = text.replace(number, Math.floor(current).toLocaleString());
-						}
-					}, 20);
-				}
-			});
-		}
-
-		// 페이지 로드 시 애니메이션 실행
-		window.addEventListener('load', animateNumbers);
-	</script>
+        // 페이지 로드 시 애니메이션 실행
+        window.addEventListener('load', animateNumbers);
+    </script>
 </body>
-
 </html>
