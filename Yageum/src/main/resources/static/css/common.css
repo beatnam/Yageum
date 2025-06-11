@@ -91,22 +91,39 @@
  
 
         /* ---------- 사이드바 ---------- */
-        .app-container {
-           display: flex;
-            max-width: 1350px;     /* 헤더, 푸터와 동일한 너비 */
-            margin: 0 auto;        /* 가운데 정렬 */
-            padding: 0 20px;       /* ✅ 좌우 여백 추가 */
-        }
+/*        .app-container {*/
+/*           display: flex;*/
+/*            max-width: 1350px;      헤더, 푸터와 동일한 너비 */
+/*            margin: 0 auto;         가운데 정렬 */
+/*            padding: 0 20px;        ✅ 좌우 여백 추가 */
+/*        }*/
 
-        .sidebar {
-            width: 200px;
-            background: white;
-            box-shadow: 2px 0 10px rgba(78, 52, 46, 0.1);
-            padding: 2rem 0;
-			/* height: calc(100vh - 110px);  헤더 높이 제외 */
-			/* position: sticky;*/
-            top: 110px;
-        }
+		.app-container {
+		    display: flex;
+		    max-width: 1350px;
+		    margin: 20px auto;
+		    border-radius: 12px;             
+		    overflow: hidden;            
+		    background-color: white;      
+		    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		}
+
+/*        .sidebar {*/
+/*            width: 200px;*/
+/*            background: white;*/
+/*            box-shadow: 2px 0 10px rgba(78, 52, 46, 0.1);*/
+/*            padding: 2rem 0;*/
+/*			 height: calc(100vh - 110px);  헤더 높이 제외 */
+/*			 position: sticky;*/
+/*            top: 110px;*/
+/*        }*/
+
+		.sidebar {
+		    width: 200px;
+		    background: none;                
+		    padding: 2rem 0;
+		    box-shadow: none;      
+		}
 
         .sidebar-menu {
             list-style: none;
@@ -154,12 +171,18 @@
 	
 
         /* ---------- 본문 ---------- */
-        .content {
-            flex: 1;
-            padding: 2rem;
+/*        .content {*/
+/*            flex: 1;*/
+/*            padding: 2rem;*/
 /*            background: #FFF9E5;*/
-        }
+/*        }*/
 
+		.content {
+		    flex: 1;
+		    padding: 2rem;
+		    background-color: #FFF9E5;      
+		    border-radius: 0;               
+		}
         .content-header {
             background: white;
             padding: 1.5rem;
