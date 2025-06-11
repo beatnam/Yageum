@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>야금야금 - 오픈뱅킹 가계부</title>
+	<title>내역 상세보기</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<!-- Google Fonts -->
@@ -27,8 +27,8 @@
 		<div th:replace="fragments/sidebar :: sidebar"></div>
 		<main class="content">
 			<div class="content-header">
-				<h2>일별 수입 / 지출</h2>
-				<p>오늘의 수입 / 지출 내역을 확인하세요!</p>
+				<h2>내역 상세보기</h2>
+				<p>자세한 내역을 확인하세요!</p>
 			</div>
 			<div class="content-body">
 				<div class="transaction-detail-box">
@@ -40,6 +40,10 @@
 
 					<!-- 거래 정보 -->
 					<table class="transaction-info">
+						<tr>
+							<td><strong>날짜</strong></td>
+							<td class="right" id="transactionDate"></td>
+						</tr>
 						<tr>
 							<td><strong>유형</strong></td>
 							<td class="right">수입</td>
@@ -77,6 +81,36 @@
 	<div th:replace="fragments/footer :: footer"></div>
 
 	<script>
+		function getDateFromURL() {
+				const params = new URLSearchParams(window.location.search);
+				return params.get("date");
+			}
+
+		function formatDateToKorean(dateStr) {
+			const [year, month, day] = dateStr.split("-");
+			return `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
+			}
+
+		document.addEventListener("DOMContentLoaded", function () {
+					const dateStr = getDateFromURL();
+					if (dateStr) {
+						const koreanDate = formatDateToKorean(dateStr);
+						const dateCell = document.getElementById("transactionDate");
+						if (dateCell) {
+							dateCell.textContent = koreanDate;
+						}
+					}
+				});
+
+		
+		
+		//수정하기 버튼 누르면 수정 페이지로 넘어감
+		document.querySelector(".btn-edit").addEventListener("click", function () {
+			const dateStr = getDateFromURL();
+			window.location.href = `/cashbook/update?date=${dateStr}`;
+		});
+		
+		
 
 
 		function logout() {

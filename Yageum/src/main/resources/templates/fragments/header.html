@@ -5,7 +5,7 @@
 				<a href="/" class="logo"><img style="width:125px; height:125px;" src="../a.png"></a>
 
 				<div class="user-info">
-					<span class="welcome-msg" th:text="'안녕하세요, ' + ${user?.name ?: '사용자'} + '님!'">안녕하세요, 사용자님!</span>
+					<span class="welcome-msg">안녕하세요, <a href="/mypage/mlist" th:text="${user?.name ?: '사용자'}">사용자</a>님!</span>
 					<button class="btn-logout" onclick="logout()">로그아웃</button>
 				</div>
 			</div>
