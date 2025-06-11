@@ -12,7 +12,7 @@ import lombok.ToString;
 public class MemberDTO {
 
 	private int memberIn;
-	private String memberLevel;
+	private String memberRole;
 	private String memberId;
 	private String memberPasswd;
 	private String memberRepasswd;
@@ -23,7 +23,7 @@ public class MemberDTO {
 	private String memberPhone;
 	private String memberAddress;
 	private LocalDate createDate;
-	private LocalDate updateDate;
+	private LocalDate lastLoginDate;
 	private boolean memberConsent;
 	private boolean emailConsent;
 	private String memberState;

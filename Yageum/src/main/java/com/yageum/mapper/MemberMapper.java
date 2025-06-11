@@ -13,4 +13,8 @@ public interface MemberMapper {
 
 	public void joinMember(MemberDTO memberDTO);
 
+	public MemberDTO infoMember(String id);
+
+	public MemberDTO loginMember(String memberId);
+
 }

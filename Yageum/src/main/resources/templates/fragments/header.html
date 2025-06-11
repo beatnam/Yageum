@@ -2,10 +2,10 @@
 	<header class="header">
 		<div class="header-container">
 			<div class="header-top">
-				<a href="/" class="logo"><img style="width:125px; height:125px;" src="../a.png"></a>
+				<a href="/" class="logo"><img style="width:125px; height:125px;" src="../img/a.png"></a>
 
 				<div class="user-info">
-					<span class="welcome-msg" th:text="'안녕하세요, ' + ${user?.name ?: '사용자'} + '님!'">안녕하세요, 사용자님!</span>
+					<span class="welcome-msg" sec:authentication="name">안녕하세요</span>
 					<button class="btn-logout" onclick="logout()">로그아웃</button>
 				</div>
 			</div>
