@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>회원정보 수정</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="../css/my_page.css">
+	<link rel="stylesheet" href="../css/my_page_update.css">
+</head>
+
+<body>
+	<!-- 헤더 -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="accountbook-container">
+		<div th:replace="fragments/m_sidebar :: m_sidebar"></div>
+
+		<main class="accountbook-main-content">
+			<div class="edit-header">
+			<h1>회원 정보 수정</h1>
+			<p>개인정보를 수정하고 개인정보 동의 내역을 확인해보세요!</p>
+			</div>
+
+			<form id="editForm" action="/member/editPro" method="post">
+			<!-- 개인정보 동의 내역 섹션 -->
+			<div class="consent-section">
+				<h2>개인정보 동의 내역</h2>
+				<div class="consent-group">
+					<h3>필수 동의 항목</h3>
+					<div class="consent-item">
+						<input type="radio" id="requiredConsent1" name="requiredConsent1" value="Y" checked disabled>
+						<label for="requiredConsent1">개인정보 수집·이용 동의 (필수)</label>
+						<span class="consent-status required">동의됨</span>
+					</div>
+					<div class="consent-item">
+						<input type="radio" id="requiredConsent2" name="requiredConsent2" value="Y" checked disabled>
+						<label for="requiredConsent2">서비스 이용약관 동의 (필수)</label>
+						<span class="consent-status required">동의됨</span>
+					</div>
+				</div>
+			
+				<div class="consent-group">
+					<h3>선택 동의 항목</h3>
+					<div class="consent-item">
+						<input type="checkbox" id="emailConsent" name="emailConsent" value="Y" checked>
+						<label for="emailConsent">이메일 수신 동의 (선택)</label>
+						<span class="consent-status optional">수정 가능</span>
+					</div>
+					<div class="consent-item">
+						<input type="checkbox" id="smsConsent" name="smsConsent" value="Y">
+						<label for="smsConsent">SMS 수신 동의 (선택)</label>
+						<span class="consent-status optional">수정 가능</span>
+					</div>
+					<div class="consent-item">
+						<input type="checkbox" id="marketingConsent" name="marketingConsent" value="Y" checked>
+						<label for="marketingConsent">마케팅 정보 수신 동의 (선택)</label>
+						<span class="consent-status optional">수정 가능</span>
+					</div>
+				</div>
+			</div>
+			
+			<!-- 회원정보 수정 섹션 -->
+			<div class="member-info-section">
+				<h2>회원 정보</h2>
+				<div class="form-container">
+					<div class="form-group">
+						<label for="memberId">아이디</label>
+						<input type="text" id="memberId" name="memberId" class="form-control" value="user123" readonly>
+						<div class="input-note">아이디는 변경할 수 없습니다.</div>
+					</div>
+			
+					<div class="form-group">
+						<label for="memberName">이름 <span class="required">*</span></label>
+						<input type="text" id="memberName" name="memberName" class="form-control" value="홍길동"
+							placeholder="이름을 입력하세요">
+						<div class="error-message" id="memberNameError"></div>
+					</div>
+			
+					<div class="form-group">
+						<label for="currentPassword">현재 비밀번호 <span class="required">*</span></label>
+						<input type="password" id="currentPassword" name="currentPassword" class="form-control"
+							placeholder="현재 비밀번호를 입력하세요">
+						<div class="error-message" id="currentPasswordError"></div>
+					</div>
+			
+					<div class="form-group">
+						<label for="newPassword">새 비밀번호</label>
+						<input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="새 비밀번호를 입력하세요">
+						<div class="input-note">비밀번호를 변경하지 않으려면 비워두세요.</div>
+						<div class="error-message" id="newPasswordError"></div>
+					</div>
+			
+					<div class="form-group">
+						<label for="confirmPassword">새 비밀번호 확인</label>
+						<input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+							placeholder="새 비밀번호를 다시 입력하세요">
+						<div class="password-match" id="passwordMatch"></div>
+						<div class="error-message" id="confirmPasswordError"></div>
+					</div>
+			
+					<div class="form-group">
+						<label for="memberBirth">생년월일</label>
+						<input type="date" id="memberBirth" name="memberBirth" class="form-control" value="1990-01-01">
+						<div class="error-message" id="memberBirthError"></div>
+					</div>
+			
+					<div class="form-group">
+						<label for="memberPhone">휴대폰 번호</label>
+						<input type="tel" id="memberPhone" name="memberPhone" class="form-control" value="010-1234-5678"
+							placeholder="010-1234-5678">
+						<div class="error-message" id="memberPhoneError"></div>
+					</div>
+			
+					<div class="form-group">
+						<label for="memberEmail">이메일 <span class="required">*</span></label>
+						<input type="email" id="memberEmail" name="memberEmail" class="form-control" value="user@example.com"
+							placeholder="example@email.com">
+						<div class="error-message" id="memberEmailError"></div>
+					</div>
+			
+					<div class="form-group">
+						<label>성별</label>
+						<div class="radio-group">
+							<div class="radio-item">
+								<input type="radio" id="genderMale" name="memberGender" value="M" checked>
+								<label for="genderMale">남성</label>
+							</div>
+							<div class="radio-item">
+								<input type="radio" id="genderFemale" name="memberGender" value="F">
+								<label for="genderFemale">여성</label>
+							</div>
+							<div class="radio-item">
+								<input type="radio" id="genderOther" name="memberGender" value="O">
+								<label for="genderOther">기타</label>
+							</div>
+						</div>
+						<div class="error-message" id="memberGenderError"></div>
+					</div>
+			
+					<div class="form-group">
+						<label for="memberAddress">주소</label>
+						<input type="text" id="memberAddress" name="memberAddress" class="form-control" value="서울시 강남구"
+							placeholder="주소를 입력하세요">
+						<div class="error-message" id="memberAddressError"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="error-message" id="editError"></div>
+			
+			<div class="button-group">
+				<button type="button" class="btn-cancel" onclick="history.back()">취소</button>
+				<button type="submit" class="btn-save">정보 수정</button>
+			</div>
+			</form>
+
+		</main>
+	</div>
+
+	<!-- 푸터 -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+<script>
+	// 비밀번호 확인 검증
+	document.getElementById('confirmPassword').addEventListener('input', function() {
+	const newPassword = document.getElementById('newPassword').value;
+	const confirmPassword = this.value;
+	const matchDiv = document.getElementById('passwordMatch');
+	    
+	if (newPassword && confirmPassword) {
+	if (newPassword === confirmPassword) {
+	matchDiv.textContent = '비밀번호가 일치합니다.';
+	matchDiv.className = 'password-match success';
+	} else {
+	matchDiv.textContent = '비밀번호가 일치하지 않습니다.';
+	matchDiv.className = 'password-match error';
+	}
+	} else {
+	matchDiv.textContent = '';
+	matchDiv.className = 'password-match';
+	}
+	});
+
+	// 새 비밀번호 입력 시 확인 필드 초기화
+	document.getElementById('newPassword').addEventListener('input', function() {
+	const confirmPassword = document.getElementById('confirmPassword');
+	const matchDiv = document.getElementById('passwordMatch');
+	    
+	if (confirmPassword.value) {
+	confirmPassword.value = '';
+	matchDiv.textContent = '';
+	matchDiv.className = 'password-match';
+	}
+	});
+	</script>
+</body>
+
+</html>

@@ -86,7 +86,7 @@
         const sampleTransactions = {
             '2025-6-1': { income: 0, expense: 15000 },
             '2025-6-3': { income: 50000, expense: 0 },
-            '2025-6-5': { income: 0, expense: 25000 },
+            '2025-6-5': { income: 32000, expense: 25000 },
             '2025-6-7': { income: 0, expense: 8000 },
             '2025-6-10': { income: 2500000, expense: 0 },
             '2025-6-12': { income: 0, expense: 45000 },
@@ -139,6 +139,19 @@
                     if (currentDate.toDateString() === today.toDateString()) {
                         dateDiv.classList.add('today');
                     }
+					
+					// 날짜 공간 클릭하면 리스트 페이지로 이동
+					cell.addEventListener('click', () => {
+					    const y = currentDate.getFullYear();
+					    const m = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+					    const d = currentDate.getDate().toString().padStart(2, '0');
+					    const dateStr = `${y}-${m}-${d}`;
+					    
+						// 현재 월의 날짜만 이동 가능
+						   if (currentDate.getMonth() === month) {
+						       window.location.href = `/cashbook/list?date=${dateStr}`;
+						   }
+					});
                     
                     cell.appendChild(dateDiv);
                     
