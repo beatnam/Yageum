@@ -1,10 +1,17 @@
 package com.yageum.controller;
 
+import java.time.LocalDate;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.yageum.domain.MemberDTO;
+import com.yageum.service.MemberService;
+
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
@@ -14,15 +21,17 @@ import lombok.extern.java.Log;
 @RequestMapping("/member/*")
 public class MemberController {
 
+	private final MemberService memberService;
+
 	@GetMapping("/login")
 	public String login() {
 		log.info("MemberController login()");
 		return "/member/login";
 	}
-	
+
 	@PostMapping("/loginPro")
 	public String loginPro() {
-		
+
 		return "redirect:/cashbook/main";
 	}
 
@@ -46,10 +55,16 @@ public class MemberController {
 	}
 
 	@PostMapping("/joinPro")
-	public String joinPro() {
+	public String joinPro(MemberDTO memberDTO, HttpSession Session) {
 		log.info("MemberController joinPro()");
-		return "/login";
+		memberDTO.setMemberConsent(true);
+		memberDTO.setCreateDate(LocalDate.now());
+		memberDTO.setMemberState("정상");
+		memberDTO.setMemberIsFirst(true);
+
+		memberService.joinMember(memberDTO);
+
+		return "redirect:/member/login";
 	}
-	
-	
+
 }
