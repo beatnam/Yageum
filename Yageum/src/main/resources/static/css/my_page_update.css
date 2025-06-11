@@ -1,0 +1,265 @@
+/* 회원 정보 수정 페이지 스타일 */
+.edit-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.edit-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.edit-header h1 {
+    color: #4E342E;
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.edit-header p {
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* 개인정보 동의 내역 섹션 */
+.consent-section {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 100%; /* 부모 요소 너비에 맞춤 */
+}
+
+
+.consent-section h2 {
+    color: #4E342E;
+    border-bottom: 2px solid #FFD44D;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.consent-group {
+    margin-bottom: 20px;
+}
+
+.consent-group h3 {
+    color: #6D4C41;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.consent-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 10px;
+    background-color: #fafafa;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+.consent-item input[type="radio"],
+.consent-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.consent-item label {
+    flex-grow: 1;
+    color: #4E342E;
+    font-weight: 500;
+}
+
+.consent-status {
+    font-size: 0.9em;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+.consent-status.required {
+    background-color: #FFD44D;
+    color: #4E342E;
+}
+
+.consent-status.optional {
+    background-color: #E8F5E8;
+    color: #2E7D32;
+}
+
+/* 회원정보 섹션 */
+.member-info-section {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 100%; /* 부모 요소 너비에 맞춤 */
+}
+
+.member-info-section h2 {
+    color: #4E342E;
+    border-bottom: 2px solid #FFD44D;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    max-width: 100%; /* 부모 요소 너비에 맞춤 */
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/*.form-group.full-width {*/
+/*    width: 100%;*/
+/*}*/
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #4E342E;
+}
+
+.required {
+    color: #FF8A80;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: "Gowun Dodum", sans-serif;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+	box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #FFD44D;
+    box-shadow: 0 0 0 2px rgba(255, 212, 77, 0.2);
+}
+
+.form-control:readonly {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.input-note {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+	flex-wrap: wrap;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+}
+
+.radio-item input[type="radio"] {
+    margin-right: 8px;
+}
+
+.radio-item label {
+    margin-bottom: 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #FF8A80;
+    font-size: 0.85em;
+    margin-top: 5px;
+    display: none;
+}
+
+.password-match {
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+.password-match.success {
+    color: #2E7D32;
+}
+
+.password-match.error {
+    color: #FF8A80;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.btn-cancel {
+    padding: 12px 30px;
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-save {
+    padding: 12px 30px;
+    background-color: #FF7043;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-save:hover {
+    background-color: #F4511E;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+	.form-container {
+	      max-width: 100%;
+	  }
+    
+    .radio-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-cancel, .btn-save {
+        width: 200px;
+    }
+}

@@ -13,8 +13,15 @@ import lombok.extern.java.Log;
 @RequestMapping("/mypage/*")
 public class MypageController {
 	
+	@GetMapping("/update")
+	public String update() {
+		log.info("MypageController update()");
+		
+		return "/mypage/mypage_update";
+	}
+	
+	
 	@GetMapping("/deletepw")
-
 	public String deletepw() {
 		log.info("MypageController deletepw()");
 		
