@@ -42,7 +42,7 @@
 				<div class="agreement-item">
 					<div class="agreement-header" onclick="toggleContent('terms1')">
 						<div class="agreement-checkbox">
-							<input type="checkbox" id="terms1" name="requiredTerms" value="service" required>
+							<input type="checkbox" id="terms1" name="memberConsent" value="service" required>
 							<label for="terms1" class="agreement-text">
 								<span class="required">[필수]</span> 서비스 이용약관 동의
 							</label>
@@ -92,27 +92,7 @@
 			<div class="divider"></div>
 
 			<!-- 선택 약관들 -->
-			<div class="terms-section">
-				<h2 class="section-title">선택 약관</h2>
-
-				<div class="agreement-item">
-					<div class="agreement-header" onclick="toggleContent('terms3')">
-						<div class="agreement-checkbox">
-							<input type="checkbox" id="terms3" name="emailConsent" value="marketing">
-							<label for="terms3" class="agreement-text">
-								<span class="optional">[선택]</span> 이메일 수신 동의
-							</label>
-						</div>
-						<a href="#" class="view-detail" onclick="event.stopPropagation();">보기</a>
-					</div>
-					<div class="agreement-content" id="content-terms3">
-						<div class="content-box">
-							이메일 수신 동의에 관한 내용용
-						</div>
-					</div>
-				</div>
-
-			</div>
+			
 
 			<div class="submit-section">
 				<button type="submit" class="submit-button" id="submitBtn" disabled>
@@ -131,8 +111,8 @@
 
 		// 전체 동의 체크박스
 		const agreeAllCheckbox = document.getElementById('agreeAll');
-		const requiredCheckboxes = document.querySelectorAll('input[name="requiredTerms"]');
-		const optionalCheckboxes = document.querySelectorAll('input[name="optionalTerms"]');
+		const requiredCheckboxes = document.querySelectorAll('input[name="memberConsent"]');
+		const optionalCheckboxes = document.querySelectorAll('input[name="emailConsent"]');
 		const allCheckboxes = document.querySelectorAll('input[type="checkbox"]:not(#agreeAll)');
 		const submitBtn = document.getElementById('submitBtn');
 

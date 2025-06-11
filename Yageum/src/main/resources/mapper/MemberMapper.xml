@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- https://mybatis.org/mybatis-3/getting-started.html src/main/resources/mapper폴더/MemberMapper.xml파일 -->
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- https://mybatis.org/mybatis-3/getting-started.html
+src/main/resources/mapper폴더/MemberMapper.xml파일 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.itwillbs.mapper.MemberMapper">
+<mapper namespace="com.yageum.mapper.MemberMapper">
 
-<!--	<select>-->
-	
-<!--	</select>-->
+	<insert id="joinMember" parameterType="com.yageum.domain.MemberDTO">
+		insert into member(member_id, member_passwd, member_name, member_email,
+		member_gender, member_phone, member_address, create_date,
+		member_consent, email_consent, member_state, member_isFirst, member_birth)
+		values(#{memberId},#{memberPasswd},#{memberName},#{memberEmail},
+		#{memberGender},#{memberPhone},#{memberAddress},#{createDate},
+		#{memberConsent},#{emailConsent},#{memberState},#{memberIsFirst}, #{memberBirth}
+		)
+	</insert>
 
 
 </mapper>
