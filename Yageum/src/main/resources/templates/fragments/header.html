@@ -5,12 +5,11 @@
 				<a href="/" class="logo"><img style="width:125px; height:125px;" src="../img/a.png"></a>
 
 				<div class="user-info">
-<<<<<<< HEAD
-					<span class="welcome-msg" sec:authentication="name">안녕하세요</span>
-=======
-					<span class="welcome-msg">안녕하세요, <a href="/mypage/mlist" th:text="${user?.name ?: '사용자'}">사용자</a>님!</span>
->>>>>>> branch 'TeamTest' of https://github.com/beatnam/Yageum.git
-					<button class="btn-logout" onclick="logout()">로그아웃</button>
+
+					<span class="welcome-msg" sec:authorize="isAuthenticated()">
+						<span th:text="${#authentication.name} + '님 안녕하세요'"></span>
+						<button class="btn-logout" onclick="logout()">로그아웃</button>
+					</span>
 				</div>
 			</div>
 			<nav>
