@@ -49,6 +49,9 @@ implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 
 // https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter-test
 testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+
+// https://mvnrepository.com/artifact/org.json/json
+implementation 'org.json:json:20250107'
 }
 
 tasks.named('test') {

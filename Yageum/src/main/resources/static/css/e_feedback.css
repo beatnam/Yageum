@@ -92,23 +92,40 @@
             font-size: 1rem;
         }
 
-        .feedback-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .feedback-card {
-            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
-            border: 2px solid #ffd700;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+		.feedback-grid {
+		    display: grid;
+		    /* 기존: grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); */
+		    /* 수정: 명시적으로 2개의 동일 너비 열을 생성 */
+		    grid-template-columns: repeat(2, 1fr); 
+		    gap: 25px; /* 기존 간격 유지 */
+		    margin-bottom: 30px;
+		}
+		
+		.feedback-card {
+		    background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+		    border-radius: 20px;
+		    padding: 25px;
+		    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+		    border: 2px solid #ffd700;
+		    transition: all 0.3s ease; 
+		    position: relative;
+		    overflow: hidden;
+		    
+		    /* 여기서 너비와 높이 제한을 다시 설정합니다. */
+		    min-height: 200px; 
+		    min-width: 300px;  
+		    max-width: 300px;  /* 이제 이 max-width가 더 잘 적용될 것입니다. */
+		    max-height: 200px; 
+		    
+		    box-sizing: border-box; /* padding과 border가 width/height에 포함되도록 */
+		    
+		    /* 카드 내용을 가운데 정렬하고 싶다면 */
+		    display: flex;
+		    flex-direction: column;
+		    justify-content: center;
+		    align-items: center;
+		    text-align: center;
+		}
 
         .feedback-card:hover {
             transform: translateY(-5px);
@@ -142,6 +159,7 @@
             color: #555;
             line-height: 1.6;
             margin-bottom: 15px;
+            max-width: 600px;
         }
 
         .feedback-status {
@@ -357,9 +375,14 @@
 
         @media (max-width: 768px) {
             .feedback-grid {
-                grid-template-columns: 1fr;
-            }
-            
+		        /* 작은 화면에서는 다시 1열로 변경하여 반응형 대응 */
+		        grid-template-columns: 1fr;
+		    }
+            .feedback-card {
+		        /* 작은 화면에서는 너비를 100%로 유연하게 만듭니다. */
+		        min-width: unset; /* 최소 너비 제한 해제 */
+		        max-width: 100%; /* 화면에 꽉 차도록 */
+		    }
             .header h1 {
                 font-size: 2rem;
             }

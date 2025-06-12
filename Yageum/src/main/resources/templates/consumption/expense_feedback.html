@@ -24,356 +24,280 @@
         <div class="analysis-score">
             <div class="score-circle">
                 <div class="score-inner">
-                    <div class="score-number" id="overallScore">85</div>
+                    <div class="score-number" id="overallScore" th:text="${efeedbackData.overallScore}">0</div>
                     <div class="score-label">점</div>
                 </div>
             </div>
-            <div class="score-description">양호한 소비 패턴</div>
-            <div class="score-subtitle">평균보다 15% 더 효율적인 소비를 하고 계십니다!</div>
+            <div class="score-description" th:text="${efeedbackData.feedbackText}">소비 패턴</div>
+            <div class="score-subtitle" th:text="${efeedbackData.efficiencyMessage}">효율성 메시지</div>
         </div>
 
         <div class="feedback-grid">
-            <div class="feedback-card">
-                <span class="feedback-icon">💰</span>
-                <div class="feedback-title">예산 관리</div>
-                <div class="feedback-status status-good">우수</div>
-                <div class="feedback-content">
-                    이번 달 예산 대비 78% 사용으로 적절한 수준입니다. 예산 계획을 잘 지키고 있어 금융 목표 달성 가능성이 높습니다.
-                </div>
-            </div>
-
-            <div class="feedback-card">
-                <span class="feedback-icon">🍽️</span>
-                <div class="feedback-title">식비 지출</div>
-                <div class="feedback-status status-warning">주의</div>
-                <div class="feedback-content">
-                    식비가 전체 지출의 35%를 차지하고 있습니다. 일반적인 권장 비율인 25-30%보다 높은 수준이니 외식 빈도를 조절해보세요.
-                </div>
-            </div>
-
-            <div class="feedback-card">
-                <span class="feedback-icon">🚗</span>
-                <div class="feedback-title">교통비</div>
-                <div class="feedback-status status-good">절약</div>
-                <div class="feedback-content">
-                    대중교통 이용으로 교통비를 효율적으로 관리하고 있습니다. 지난달 대비 20% 절약하며 환경에도 도움이 되고 있어요.
-                </div>
-            </div>
-
-            <div class="feedback-card">
-                <span class="feedback-icon">🛍️</span>
-                <div class="feedback-title">쇼핑 패턴</div>
-                <div class="feedback-status status-danger">개선 필요</div>
-                <div class="feedback-content">
-                    충동구매가 증가하는 추세입니다. 쇼핑 전 구매 목록을 작성하고, 24시간 후 재고하는 습관을 기르시길 권합니다.
-                </div>
+            <div class="feedback-card" th:each="feedback : ${efeedbackData.feedbackDetails}">
+                <span class="feedback-icon" th:text="${feedback.icon}">💡</span>
+                <div class="feedback-title" th:text="${feedback.title}">제목</div>
+                <div class="feedback-status" th:classappend="' status-' + ${feedback.statusClass}"
+                     th:text="${feedback.status}">상태</div>
+                <div class="feedback-content" th:text="${feedback.description}">설명</div>
             </div>
         </div>
 
+        <div class="goal-card">
+            <div class="goal-header">
+                <div class="goal-title">AI 맞춤형 소비 피드백</div>
+                <div class="goal-status status-warning">💡 AI 분석 중</div>
+            </div>
+            <div class="feedback-content" id="chatGptFeedbackContent">
+                <p>AI가 현재 소비 패턴을 분석하여 개인 맞춤 피드백을 생성 중입니다... <span class="loading-spinner"></span></p>
+            </div>
+        </div>
         <div class="recommendations">
-            <h3>💡 맞춤형 개선 제안</h3>
-            
-            <div class="recommendation-item">
-                <span class="recommendation-icon">🎯</span>
-                <div class="recommendation-text">
-                    <div class="recommendation-title">식비 예산 재조정</div>
-                    <div class="recommendation-desc">월 식비를 현재 45만원에서 35만원으로 줄이면 연간 120만원을 절약할 수 있습니다.</div>
-                </div>
-            </div>
-
-            <div class="recommendation-item">
-                <span class="recommendation-icon">📱</span>
-                <div class="recommendation-text">
-                    <div class="recommendation-title">가계부 앱 활용</div>
-                    <div class="recommendation-desc">실시간 지출 기록으로 소비 인식을 높이고, 자동 분류 기능으로 관리 효율성을 증대시키세요.</div>
-                </div>
-            </div>
-
-            <div class="recommendation-item">
-                <span class="recommendation-icon">💳</span>
-                <div class="recommendation-text">
-                    <div class="recommendation-title">할인 혜택 극대화</div>
-                    <div class="recommendation-desc">주로 이용하는 카테고리에 특화된 카드로 변경하면 월평균 3-5% 추가 절약이 가능합니다.</div>
-                </div>
-            </div>
-
-            <div class="recommendation-item">
-                <span class="recommendation-icon">⏰</span>
-                <div class="recommendation-text">
-                    <div class="recommendation-title">정기 지출 검토</div>
-                    <div class="recommendation-desc">구독 서비스와 멤버십을 분기별로 검토하여 사용하지 않는 서비스를 정리하세요.</div>
+            <h2>맞춤형 개선 제안</h2>
+            <div class="recommendation-list">
+                <div class="recommendation-item" th:each="rec : ${efeedbackData.recommendations}">
+                    <div class="recommendation-title" th:text="${rec.title}"></div>
+                    <div class="recommendation-desc" th:text="${rec.description}"></div>
                 </div>
             </div>
         </div>
 
         <div class="progress-section">
-            <h3>📈 목표 달성 현황</h3>
-            
-            <div class="progress-item">
-                <div class="progress-label">
-                    <span>월 절약 목표</span>
-                    <span>78% (234,000원/300,000원)</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 78%"></div>
-                </div>
-            </div>
-
-            <div class="progress-item">
-                <div class="progress-label">
-                    <span>식비 절약</span>
-                    <span>45% (67,500원/150,000원)</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 45%"></div>
+            <h2>목표 진행률</h2>
+            <div class="progress-grid">
+                <div class="progress-item" th:each="prog : ${efeedbackData.progress}">
+                    <div class="progress-label">
+                        <span>목표</span>
+                        <span th:text="${prog.progressText}"></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" th:style="'width: ' + ${prog.progressPercentage} + '%'"></div>
+                    </div>
                 </div>
             </div>
-
-            <div class="progress-item">
-                <div class="progress-label">
-                    <span>비상금 적립</span>
-                    <span>92% (1,840,000원/2,000,000원)</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 92%"></div>
-                </div>
-            </div>
-
             <div class="chart-container">
                 <canvas id="progressChart"></canvas>
             </div>
-        </div>
-
-        <div class="goals-section">
-            <h3>🏆 이번 달 도전 과제</h3>
-            
-            <div class="goal-card">
-                <div class="goal-header">
-                    <div class="goal-title">외식비 20% 줄이기</div>
-                    <div class="goal-status status-warning">진행중</div>
-                </div>
-                <div class="feedback-content">
-                    현재 12% 감소 달성. 주 2회 집밥 도전으로 목표 달성 가능!
-                </div>
-            </div>
-
-            <div class="goal-card">
-                <div class="goal-header">
-                    <div class="goal-title">용돈 기입장 매일 작성</div>
-                    <div class="goal-status status-good">달성</div>
-                </div>
-                <div class="feedback-content">
-                    26일 연속 기록 달성! 소비 인식 개선에 큰 도움이 되고 있습니다.
-                </div>
-            </div>
-
-            <div class="goal-card">
-                <div class="goal-header">
-                    <div class="goal-title">구독 서비스 정리</div>
-                    <div class="goal-status status-danger">미완료</div>
-                </div>
-                <div class="feedback-content">
-                    사용하지 않는 3개 서비스 발견. 해지 시 월 27,000원 절약 가능.
-                </div>
-            </div>
-
             <button class="btn" onclick="generateNewGoals()">새로운 목표 생성하기</button>
         </div>
     </div>
 </div>
 	<div th:replace="fragments/footer :: footer"></div>
 
-    <script>
-        // 페이지 로드 시 애니메이션
-        document.addEventListener('DOMContentLoaded', function() {
-            // 점수 애니메이션
-            animateScore();
-            
-            // 프로그레스 바 애니메이션
-            animateProgressBars();
-            
-            // 차트 생성
-            createProgressChart();
-            
-            // 카드 순차 애니메이션
-            animateCards();
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener("DOMContentLoaded", function () {
+        animateScore();
+        animateProgressBars();
+        createProgressChart();
+        animateCards();
+        
+        // ⭐ 페이지 로드 시 ChatGPT 피드백 요청 ⭐
+        fetchChatGptFeedback();
+    });
+
+    function animateScore() {
+        const scoreElement = document.getElementById('overallScore');
+        const targetScore = parseInt(scoreElement.innerText, 10);
+        if (isNaN(targetScore)) {
+            console.warn("overallScore가 유효한 숫자가 아닙니다. 애니메이션을 건너뜀.");
+            scoreElement.textContent = "0";
+            return;
+        }
+
+        let currentScore = 0;
+        const increment = targetScore / 50;
+
+        const timer = setInterval(() => {
+            currentScore += increment;
+            if (currentScore >= targetScore) {
+                currentScore = targetScore;
+                clearInterval(timer);
+            }
+            scoreElement.textContent = Math.round(currentScore);
+        }, 50);
+    }
+
+    function animateProgressBars() {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach((bar, index) => {
+            const initialWidth = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.transition = 'width 2s ease-in-out';
+                bar.style.width = initialWidth;
+            }, 100 + (index * 200));
         });
+    }
 
-        function animateScore() {
-            const scoreElement = document.getElementById('overallScore');
-            const targetScore = 85;
-            let currentScore = 0;
-            const increment = targetScore / 50;
-            
-            const timer = setInterval(() => {
-                currentScore += increment;
-                if (currentScore >= targetScore) {
-                    currentScore = targetScore;
-                    clearInterval(timer);
-                }
-                scoreElement.textContent = Math.round(currentScore);
-            }, 50);
-        }
+    function animateCards() {
+        const cards = document.querySelectorAll('.feedback-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
 
-        function animateProgressBars() {
-            const progressBars = document.querySelectorAll('.progress-fill');
-            progressBars.forEach((bar, index) => {
-                setTimeout(() => {
-                    const width = bar.style.width;
-                    bar.style.width = '0%';
-                    setTimeout(() => {
-                        bar.style.width = width;
-                    }, 100);
-                }, index * 200);
-            });
-        }
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
+    }
 
-        function animateCards() {
-            const cards = document.querySelectorAll('.feedback-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                
-                setTimeout(() => {
-                    card.style.transition = 'all 0.6s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 150);
-            });
-        }
+    function createProgressChart() {
+        const ctx = document.getElementById('progressChart').getContext('2d');
 
-        function createProgressChart() {
-            const ctx = document.getElementById('progressChart').getContext('2d');
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['1주차', '2주차', '3주차', '4주차'],
-                    datasets: [{
-                        label: '목표 달성률',
-                        data: [65, 72, 78, 85],
-                        borderColor: '#FFD700',
-                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#FFB347',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1주차', '2주차', '3주차', '4주차'],
+                datasets: [{
+                    label: '목표 달성률',
+                    data: [65, 72, 78, 85],
+                    borderColor: '#FFD700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#FFB347',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
                             }
                         }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return '달성률: ' + context.parsed.y + '%';
-                                }
-                            }
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
                     }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '달성률: ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
                 }
-            });
-        }
+            }
+        });
+    }
 
-        function generateNewGoals() {
-            const btn = event.target;
-            btn.textContent = '목표 생성 중...';
-            btn.disabled = true;
-            
-            // API 호출 시뮬레이션
-            setTimeout(() => {
-                alert('새로운 개인 맞춤형 목표가 생성되었습니다!\n\n1. 카페 이용 월 15회로 제한\n2. 온라인 쇼핑 위시리스트 활용\n3. 고정비 5% 절약 도전');
-                btn.textContent = '새로운 목표 생성하기';
-                btn.disabled = false;
-                
-                window.location.href = '/consumption/eanalysis';
-            }, 2000);
-        }
+    function generateNewGoals() {
+        const btn = event.target;
+        btn.textContent = '목표 생성 중...';
+        btn.disabled = true;
 
-        // Spring Boot API 연동 함수들
-        async function fetchFeedbackData() {
-            try {
-                // const response = await fetch('/api/feedback');
-                // const data = await response.json();
-                // 피드백 데이터 업데이트
-                console.log('API 호출: 피드백 데이터 가져오기');
-            } catch (error) {
-                console.error('피드백 데이터 로드 실패:', error);
+        setTimeout(() => {
+            alert('새로운 개인 맞춤형 목표가 생성되었습니다!\n\n1. 카페 이용 월 15회로 제한\n2. 온라인 쇼핑 위시리스트 활용\n3. 고정비 5% 절약 도전');
+            btn.textContent = '새로운 목표 생성하기';
+            btn.disabled = false;
+
+            window.location.href = '/consumption/eanalysis';
+        }, 2000);
+    }
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            color: #8b4513;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            z-index: 1000;
+            font-weight: bold;
+            animation: slideIn 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    setInterval(() => {
+        const insights = [
+            "💡 팁: 이번 주 식비가 예산을 초과했어요!",
+            "🎯 목표까지 67,000원 더 절약하면 달성!",
+            "📊 지난 달 대비 교통비 15% 절약 중!"
+        ];
+        const randomInsight = insights[Math.floor(Math.random() * insights.length)];
+        showNotification(randomInsight);
+    }, 30000); // 30초마다
+
+    // ⭐ ChatGPT 피드백을 가져오는 AJAX 함수 (expense_feedback용) ⭐
+    async function fetchChatGptFeedback() {
+        const feedbackContentDiv = document.getElementById('chatGptFeedbackContent');
+        // 로딩 스피너 표시
+        feedbackContentDiv.innerHTML = '<p>AI가 현재 소비 패턴을 분석하여 개인 맞춤 피드백을 생성 중입니다... <span class="loading-spinner"></span></p>';
+
+        try {
+            // 새로 만든 API 엔드포인트 호출
+            const response = await fetch('/consumption/getChatGptFeedbackForEfeedback');
+            const data = await response.json(); // JSON 응답 파싱
+
+            if (data.feedback) {
+                // 받은 응답을 div에 삽입
+                feedbackContentDiv.innerHTML = '<p>' + data.feedback + '</p>';
+                // 상태 텍스트 변경
+                const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
+                if (goalStatusDiv) {
+                     goalStatusDiv.textContent = '✔️ 분석 완료';
+                     goalStatusDiv.classList.remove('status-warning');
+                     goalStatusDiv.classList.add('status-success');
+                }
+            } else if (data.error) {
+                feedbackContentDiv.innerHTML = '<p style="color: red;">오류: ' + data.error + '</p>';
+                const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
+                if (goalStatusDiv) {
+                     goalStatusDiv.textContent = '❌ 오류 발생';
+                     goalStatusDiv.classList.remove('status-warning');
+                     goalStatusDiv.classList.add('status-danger'); // 새 클래스 추가 필요 시
+                }
+            } else {
+                feedbackContentDiv.innerHTML = '<p>피드백을 가져오는 데 실패했습니다.</p>';
+                 const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
+                if (goalStatusDiv) {
+                     goalStatusDiv.textContent = '⚠️ 실패';
+                     goalStatusDiv.classList.remove('status-warning');
+                     goalStatusDiv.classList.add('status-warning');
+                }
+            }
+        } catch (error) {
+            console.error('ChatGPT 피드백을 가져오는 중 오류 발생:', error);
+            feedbackContentDiv.innerHTML = '<p style="color: red;">피드백 요청 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>';
+            const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
+            if (goalStatusDiv) {
+                goalStatusDiv.textContent = '❌ 네트워크 오류';
+                goalStatusDiv.classList.remove('status-warning');
+                goalStatusDiv.classList.add('status-danger'); // 새 클래스 추가 필요 시
             }
         }
-
-        async function updateGoals(goalData) {
-            try {
-                // const response = await fetch('/api/goals', {
-                //     method: 'POST',
-                //     headers: {'Content-Type': 'application/json'},
-                //     body: JSON.stringify(goalData)
-                // });
-                console.log('API 호출: 목표 업데이트');
-            } catch (error) {
-                console.error('목표 업데이트 실패:', error);
-            }
-        }
-
-        // 실시간 알림 기능
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #ffd700, #ffb347);
-                color: #8b4513;
-                padding: 15px 20px;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-                z-index: 1000;
-                font-weight: bold;
-                animation: slideIn 0.3s ease;
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
-        // 주기적으로 새로운 인사이트 표시
-        setInterval(() => {
-            const insights = [
-                "💡 팁: 이번 주 식비가 예산을 초과했어요!",
-                "🎯 목표까지 67,000원 더 절약하면 달성!",
-                "📊 지난 달 대비 교통비 15% 절약 중!"
-            ];
-            const randomInsight = insights[Math.floor(Math.random() * insights.length)];
-            showNotification(randomInsight);
-        }, 30000); // 30초마다
-    </script>
+    }
+    /*]]>*/
+</script>
 </body>
 </html>
