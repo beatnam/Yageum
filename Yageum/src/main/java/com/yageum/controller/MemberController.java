@@ -49,16 +49,14 @@ public class MemberController {
 		boolean match = passwordEncoder.matches(memberDTO.getMemberPasswd(), memberDTO2.getMemberPasswd());
 		System.out.println(match);
 		if (match == true) {
-			// 세션에 로그인 성공 정보 저장 (필요시)
-			session.setAttribute("memberDTO", memberDTO2);
 
 			return "redirect:/cashbook/main";
-			
+
 		} else {
-			
+
 			return "redirect:/member/login";
 		}
-		
+
 	}
 
 	@GetMapping("/terms_join")

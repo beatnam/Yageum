@@ -42,8 +42,8 @@ public class SecurityConfig {
 						.requestMatchers("/list/**").hasRole("ADMIN").anyRequest()
 						.authenticated())
 				.formLogin(
-						form -> form.loginPage("/login").loginProcessingUrl("/loginPro").usernameParameter("memberId")
-								.passwordParameter("pass").defaultSuccessUrl("/cashbook/main").failureUrl("/login"))
+						form -> form.loginPage("/member/login").loginProcessingUrl("/member/loginPro").usernameParameter("memberId")
+								.passwordParameter("memberPasswd").defaultSuccessUrl("/cashbook/main").failureUrl("/member/login"))
 				.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 						.logoutSuccessUrl("/"))
 				.userDetailsService(myUserDetailsService).build();
