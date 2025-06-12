@@ -36,14 +36,14 @@ public class MemberService {
 
 	}
 
-
-
 	public MemberDTO loginMember(String memberId) {
 
 		return memberMapper.loginMember(memberId);
 	}
 
-
-
+	public MemberDTO infoMember(String id) {
+		
+		return memberMapper.infoMember(id);
+	}
 
 }
