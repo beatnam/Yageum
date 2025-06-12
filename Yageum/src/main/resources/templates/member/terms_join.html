@@ -2,158 +2,179 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- Google Fonts -->
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
-		rel="stylesheet">
-	<title>약관 동의</title>
-	<link rel="stylesheet" href="../css/terms.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
+        rel="stylesheet">
+    <title>야금야금 | 약관 동의</title>
+    <link rel="stylesheet" href="../css/terms.css">
+    <style>
+        /* 약관 내용 기본적으로 숨김 */
+        .agreement-content {
+            display: none;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
 
+        .agreement-content.active {
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
-	<div class="container">
-		<div class="header">
-			<h1 class="title">약관 동의</h1>
-			<p class="subtitle">서비스 이용을 위해 약관에 동의해 주세요</p>
-		</div>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">약관 동의</h1>
+            <p class="subtitle">서비스 이용을 위해 약관에 동의해 주세요</p>
+        </div>
 
-		<form th:action="@{/member/termsAgree}" method="post" id="termsForm">
-			<!-- 전체 동의 -->
-			<div class="agreement-item all-agree">
-				<div class="agreement-header">
-					<div class="agreement-checkbox">
-						<input type="checkbox" id="agreeAll" name="agreeAll">
-						<label for="agreeAll" class="agreement-text">전체 동의</label>
-					</div>
-				</div>
-			</div>
+        <form th:action="@{/member/termsAgree}" method="post" id="termsForm">
+            <!-- 전체 동의 -->
+            <div class="agreement-item all-agree">
+                <div class="agreement-header">
+                    <div class="agreement-checkbox">
+                        <input type="checkbox" id="agreeAll" name="agreeAll">
+                        <label for="agreeAll" class="agreement-text">전체 동의</label>
+                    </div>
+                </div>
+            </div>
 
-			<div class="divider"></div>
+            <div class="divider"></div>
 
-			<!-- 필수 약관들 -->
-			<div class="terms-section">
-				<h2 class="section-title">필수 약관</h2>
+            <!-- 필수 약관들 -->
+            <div class="terms-section">
+                <h2 class="section-title">필수 약관</h2>
 
-				<div class="agreement-item">
-					<div class="agreement-header" onclick="toggleContent('terms1')">
-						<div class="agreement-checkbox">
-							<input type="checkbox" id="terms1" name="memberConsent" value="service" required>
-							<label for="terms1" class="agreement-text">
-								<span class="required">[필수]</span> 서비스 이용약관 동의
-							</label>
-						</div>
-						<a href="#" class="view-detail" onclick="event.stopPropagation();">보기</a>
-					</div>
-					<div class="agreement-content" id="content-terms1">
-						<div class="content-box">
-							<h4>서비스 이용약관</h4>
-							<p>제1장 총칙<br>
-								제1조 (목적) 이 약관은 회사가 제공하는 서비스의 이용과 관련하여 회사와 이용자 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.<br><br>
-								제2조 (정의) 이 약관에서 사용하는 용어의 정의는 다음과 같습니다.<br>
-								1. "서비스"라 함은 회사가 제공하는 모든 서비스를 의미합니다.<br>
-								2. "이용자"라 함은 회사의 서비스에 접속하여 이 약관에 따라 회사가 제공하는 서비스를 받는 회원 및 비회원을 말합니다.<br><br>
-								제3조 (약관의 효력 및 변경) 이 약관은 서비스를 이용하려는 모든 이용자에게 그 효력을 발생합니다.</p>
-						</div>
-					</div>
-				</div>
+                <div class="agreement-item">
+                    <div class="agreement-header">
+                        <div class="agreement-checkbox">
+                            <input type="checkbox" id="terms1" name="memberConsent" value="service" required>
+                            <label for="terms1" class="agreement-text">
+                                <span class="required">[필수]</span> 서비스 이용약관 동의
+                            </label>
+                        </div>
+                    </div>
+                    <div class="agreement-content" id="content-terms1">
+                        <div class="content-box">
+                            <h4>서비스 이용약관</h4>
+                            <p>
+                                제1장 총칙<br>
+                                제1조 (목적) 이 약관은 회사가 제공하는 서비스의 이용과 관련하여 회사와 이용자 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.<br><br>
+                                제2조 (정의) 이 약관에서 사용하는 용어의 정의는 다음과 같습니다.<br>
+                                1. "서비스"라 함은 회사가 제공하는 모든 서비스를 의미합니다.<br>
+                                2. "이용자"라 함은 회사의 서비스에 접속하여 이 약관에 따라 회사가 제공하는 서비스를 받는 회원 및 비회원을 말합니다.<br><br>
+                                제3조 (약관의 효력 및 변경) 이 약관은 서비스를 이용하려는 모든 이용자에게 그 효력을 발생합니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-				<div class="agreement-item">
-					<div class="agreement-header" onclick="toggleContent('terms2')">
-						<div class="agreement-checkbox">
-							<input type="checkbox" id="terms2" name="memberConsent" value="privacy" required>
-							<label for="terms2" class="agreement-text">
-								<span class="required">[필수]</span> 개인정보 처리방침 동의
-							</label>
-						</div>
-						<a href="#" class="view-detail" onclick="event.stopPropagation();">보기</a>
-					</div>
-					<div class="agreement-content" id="content-terms2">
-						<div class="content-box">
-							<h4>개인정보 처리방침</h4>
-							<p>개인정보보호법에 따라 이용자의 개인정보 보호 및 권익을 보호하고자 다음과 같은 처리방침을 두고 있습니다.<br><br>
-								1. 개인정보의 처리목적<br>
-								- 회원 가입 및 관리<br>
-								- 서비스 제공<br>
-								- 고객 상담<br><br>
-								2. 개인정보의 처리 및 보유기간<br>
-								이용자의 개인정보는 원칙적으로 개인정보의 처리목적이 달성되면 지체없이 파기합니다.<br><br>
-								3. 개인정보의 제3자 제공<br>
-								회사는 이용자의 개인정보를 원칙적으로 외부에 제공하지 않습니다.</p>
-						</div>
-					</div>
-				</div>
-			</div>
+                <div class="agreement-item">
+                    <div class="agreement-header">
+                        <div class="agreement-checkbox">
+                            <input type="checkbox" id="terms2" name="memberConsent" value="privacy" required>
+                            <label for="terms2" class="agreement-text">
+                                <span class="required">[필수]</span> 개인정보 처리방침 동의
+                            </label>
+                        </div>
+                    </div>
+                    <div class="agreement-content" id="content-terms2">
+                        <div class="content-box">
+                            <h4>개인정보 처리방침</h4>
+                            <p>
+                                개인정보보호법에 따라 이용자의 개인정보 보호 및 권익을 보호하고자 다음과 같은 처리방침을 두고 있습니다.<br><br>
+                                1. 개인정보의 처리목적<br>
+                                - 회원 가입 및 관리<br>
+                                - 서비스 제공<br>
+                                - 고객 상담<br><br>
+                                2. 개인정보의 처리 및 보유기간<br>
+                                이용자의 개인정보는 원칙적으로 개인정보의 처리목적이 달성되면 지체없이 파기합니다.<br><br>
+                                3. 개인정보의 제3자 제공<br>
+                                회사는 이용자의 개인정보를 원칙적으로 외부에 제공하지 않습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-			<div class="divider"></div>
+            <div class="divider"></div>
 
-			<!-- 선택 약관들 -->
-			
+            <div class="submit-section">
+                <button type="submit" class="submit-button" id="submitBtn" disabled>동의하고 가입하기</button>
+            </div>
+        </form>
+    </div>
 
-			<div class="submit-section">
-				<button type="submit" class="submit-button" id="submitBtn" disabled>
-					동의하고 가입하기
-				</button>
-			</div>
-		</form>
-	</div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const agreeAll = document.getElementById("agreeAll");
+            const requiredCheckboxes = document.querySelectorAll('input[name="memberConsent"]');
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"]:not(#agreeAll)');
+            const submitBtn = document.getElementById("submitBtn");
+            const form = document.getElementById("termsForm");
 
-	<script>
-		// 약관 내용 토글
-		function toggleContent(termId) {
-			const content = document.getElementById('content-' + termId);
-			content.classList.toggle('active');
-		}
+            // 각 체크박스와 약관 내용을 연결
+            const checkboxContentMap = {
+                terms1: document.getElementById("content-terms1"),
+                terms2: document.getElementById("content-terms2")
+            };
 
-		// 전체 동의 체크박스
-		const agreeAllCheckbox = document.getElementById('agreeAll');
-		const requiredCheckboxes = document.querySelectorAll('input[name="memberConsent"]');
-		const optionalCheckboxes = document.querySelectorAll('input[name="emailConsent"]');
-		const allCheckboxes = document.querySelectorAll('input[type="checkbox"]:not(#agreeAll)');
-		const submitBtn = document.getElementById('submitBtn');
+            // 전체 동의 클릭
+            agreeAll.addEventListener("change", function () {
+                allCheckboxes.forEach(cb => {
+                    cb.checked = agreeAll.checked;
+                    toggleContent(cb);
+                });
+                updateSubmitButton();
+            });
 
-		// 전체 동의 클릭 시
-		agreeAllCheckbox.addEventListener('change', function () {
-			const isChecked = this.checked;
-			allCheckboxes.forEach(checkbox => {
-				checkbox.checked = isChecked;
-			});
-			updateSubmitButton();
-		});
+            // 개별 체크박스 변경 시
+            allCheckboxes.forEach(cb => {
+                cb.addEventListener("change", function () {
+                    agreeAll.checked = [...allCheckboxes].every(cb => cb.checked);
+                    toggleContent(cb);
+                    updateSubmitButton();
+                });
+            });
 
-		// 개별 체크박스 변경 시
-		allCheckboxes.forEach(checkbox => {
-			checkbox.addEventListener('change', function () {
-				// 전체 동의 상태 업데이트
-				const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
-				agreeAllCheckbox.checked = allChecked;
+            // 체크 여부에 따라 약관 내용 표시
+            function toggleContent(checkbox) {
+                const content = checkboxContentMap[checkbox.id];
+                if (content) {
+                    if (checkbox.checked) {
+                        content.classList.add("active");
+                    } else {
+                        content.classList.remove("active");
+                    }
+                }
+            }
 
-				updateSubmitButton();
-			});
-		});
+            // 제출 버튼 활성화/비활성화
+            function updateSubmitButton() {
+                const allRequiredChecked = [...requiredCheckboxes].every(cb => cb.checked);
+                submitBtn.disabled = !allRequiredChecked;
+            }
 
-		// 제출 버튼 활성화/비활성화
-		function updateSubmitButton() {
-			const requiredAllChecked = Array.from(requiredCheckboxes).every(cb => cb.checked);
-			submitBtn.disabled = !requiredAllChecked;
-		}
+            // 폼 제출 시 검증
+            form.addEventListener("submit", function (e) {
+                const allRequiredChecked = [...requiredCheckboxes].every(cb => cb.checked);
+                if (!allRequiredChecked) {
+                    e.preventDefault();
+                    alert("필수 약관에 모두 동의해 주세요.");
+                }
+            });
 
-		// 초기 버튼 상태 설정
-		updateSubmitButton();
-
-		// 폼 제출 처리
-		document.getElementById('termsForm').addEventListener('submit', function (e) {
-			const requiredAllChecked = Array.from(requiredCheckboxes).every(cb => cb.checked);
-			if (!requiredAllChecked) {
-				e.preventDefault();
-				alert('필수 약관에 모두 동의해주세요.');
-			}
-		});
-	</script>
+            updateSubmitButton();
+        });
+    </script>
 </body>
 
 </html>

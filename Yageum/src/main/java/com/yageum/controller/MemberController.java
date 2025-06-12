@@ -59,7 +59,7 @@ public class MemberController {
 
 	}
 
-	@GetMapping("/terms_join")
+	@GetMapping("/terms")
 	public String termsJoin() {
 		log.info("MemberController termsJoin()");
 		return "/member/terms_join";
