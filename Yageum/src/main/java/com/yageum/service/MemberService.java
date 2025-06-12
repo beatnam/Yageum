@@ -2,11 +2,14 @@ package com.yageum.service;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.yageum.repository.MemberRepository;
 import com.yageum.domain.MemberDTO;
+import com.yageum.entity.Member;
 import com.yageum.mapper.MemberMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ public class MemberService {
 
 	private final MemberMapper memberMapper;
 	private final PasswordEncoder passwordEncoder;
+	private final MemberRepository memberRepository;
 
 	public void joinMember(MemberDTO memberDTO) {
 		log.info("MemberService joinMember()");
@@ -42,6 +46,16 @@ public class MemberService {
 
 		return memberMapper.loginMember(memberId);
 	}
+
+
+
+	public Optional<Member> findByMemberId(String memberId) {
+		
+		return Optional.ofNullable(memberRepository.findByMemberId(memberId));
+	}
+
+
+
 
 
 
