@@ -1,11 +1,14 @@
 package com.yageum.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import com.yageum.mapper.ExpenseMapper; 
+import com.yageum.mapper.ExpenseMapper;
+import com.yageum.mapper.SavingsPlanMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
@@ -15,6 +18,7 @@ import lombok.extern.java.Log;
 public class ConsumptionService {
     
     private final ExpenseMapper expenseMapper;
+    private final SavingsPlanMapper savingsPlanMapper;
 
     // 추가된 메서드: member_id(String)를 사용하여 member_in(int) 조회
     public Integer getMemberInByMemberId(String memberId) {
@@ -90,5 +94,58 @@ public class ConsumptionService {
     public List<Map<String, Object>> getCategoryExpenseByMonth(int memberIn, int month, int year) { // 파라미터 int memberIn으로 변경
         log.info("ConsumptionService getCategoryExpenseByMonth() 호출: memberIn=" + memberIn + ", month=" + month + ", year=" + year);
         return expenseMapper.getCategoryExpenseByMonth(memberIn, month, year); // memberIn 전달
+    }
+    
+    // 기존 getCategoryExpenseByMemberId (efeedback에서 사용)
+    public List<Map<String, Object>> getCategoryExpenseByMemberId(Integer memberIn) {
+        return expenseMapper.getCategoryExpenseByMemberId(memberIn);
+    }
+
+    // 지난 달 지출 분석 (lastMonthAnalysis에서 사용)
+    public Map<String, Object> getLastMonthExpenseAnalysis(Integer memberIn) {
+        return expenseMapper.getLastMonthExpenseAnalysis(memberIn);
+    }
+
+    // 특정 월의 카테고리별 지출 (canalysis에서 사용)
+    public List<Map<String, Object>> getCategoryExpenseByMonth(Integer memberIn, int month, int year) {
+        return expenseMapper.getCategoryExpenseByMonth(memberIn, month, year);
+    }
+
+    // ⭐ SavingsPlan 테이블 관련 메서드 (수정됨) ⭐
+    public Map<String, Object> getLatestSavingsPlanByMemberIn(Integer memberIn) {
+        return savingsPlanMapper.getLatestSavingsPlanByMemberIn(memberIn);
+    }
+
+    public List<Map<String, Object>> getAllSavingsPlans(Integer memberIn) {
+        return savingsPlanMapper.getAllSavingsPlansByMemberIn(memberIn);
+    }
+
+    // 이번 달 총 지출 (expense_analysis에서 사용될 수 있음)
+    public int getTotalExpenseForCurrentMonth(Integer memberIn) {
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+        return expenseMapper.getTotalExpenseForMonth(memberIn, month, year);
+    }
+
+    // 특정 기간 동안의 지출 합계 (그래프용)
+    public List<Map<String, Object>> getMonthlyExpensesForPastMonths(Integer memberIn, int numberOfMonths) {
+        List<Map<String, Object>> monthlyExpenses = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+
+        for (int i = numberOfMonths - 1; i >= 0; i--) {
+            LocalDate date = now.minusMonths(i);
+            int year = date.getYear();
+            int month = date.getMonthValue();
+
+            int totalMonthlyExpense = expenseMapper.getTotalExpenseForMonth(memberIn, month, year);
+
+            Map<String, Object> monthData = new HashMap<>();
+            monthData.put("month", month);
+            monthData.put("year", year);
+            monthData.put("totalExpense", totalMonthlyExpense);
+            monthlyExpenses.add(monthData);
+        }
+        return monthlyExpenses;
     }
 }

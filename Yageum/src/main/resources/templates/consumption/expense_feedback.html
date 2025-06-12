@@ -62,11 +62,11 @@
         </div>
 
         <div class="progress-section">
-            <h2>목표 진행률</h2>
+            <h2>힘내!</h2>
             <div class="progress-grid">
                 <div class="progress-item" th:each="prog : ${efeedbackData.progress}">
                     <div class="progress-label">
-                        <span>목표</span>
+                        <span>절약률</span>
                         <span th:text="${prog.progressText}"></span>
                     </div>
                     <div class="progress-bar">
@@ -74,10 +74,7 @@
                     </div>
                 </div>
             </div>
-            <div class="chart-container">
-                <canvas id="progressChart"></canvas>
-            </div>
-            <button class="btn" onclick="generateNewGoals()">새로운 목표 생성하기</button>
+            <button class="btn" onclick="generateNewGoals()">전반적으로 분석하기</button>
         </div>
     </div>
 </div>
@@ -143,70 +140,14 @@
         });
     }
 
-    function createProgressChart() {
-        const ctx = document.getElementById('progressChart').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['1주차', '2주차', '3주차', '4주차'],
-                datasets: [{
-                    label: '목표 달성률',
-                    data: [65, 72, 78, 85],
-                    borderColor: '#FFD700',
-                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#FFB347',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return '달성률: ' + context.parsed.y + '%';
-                            }
-                        }
-                    }
-                },
-                animation: {
-                    duration: 2000,
-                    easing: 'easeInOutQuart'
-                }
-            }
-        });
-    }
-
     function generateNewGoals() {
         const btn = event.target;
-        btn.textContent = '목표 생성 중...';
+        btn.textContent = '전반적인 분석 중...';
         btn.disabled = true;
 
         setTimeout(() => {
             alert('새로운 개인 맞춤형 목표가 생성되었습니다!\n\n1. 카페 이용 월 15회로 제한\n2. 온라인 쇼핑 위시리스트 활용\n3. 고정비 5% 절약 도전');
-            btn.textContent = '새로운 목표 생성하기';
+            btn.textContent = '전반적으로 분석하기';
             btn.disabled = false;
 
             window.location.href = '/consumption/eanalysis';

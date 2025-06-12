@@ -1,6 +1,26 @@
 package com.yageum.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.yageum.service.ConsumptionService;
+import com.yageum.service.ChatGPTClient;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,9 +211,73 @@ public class ConsumptionController {
     }
 
     @GetMapping("/eanalysis")
-    public String eanalysis() {
+    public String eanalysis(Model model) {
         log.info("ConsumptionController eanalysis() 호출");
-        return "/consumption/expense_analysis";
+        String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (memberId == null || memberId.isEmpty()) {
+            log.warning("로그인되지 않은 사용자 또는 memberId가 비어있습니다. 로그인 페이지로 리다이렉트합니다.");
+            return "redirect:/login";
+        }
+
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+
+        if (memberIn == null) {
+            log.warning("member_id '" + memberId + "'에 해당하는 member_in을 찾을 수 없습니다. 빈 데이터를 반환합니다.");
+            model.addAttribute("totalExpense", 0);
+            model.addAttribute("averageDailyExpense", 0);
+            model.addAttribute("remainingBudget", 0);
+            model.addAttribute("daysLeft", 0);
+            model.addAttribute("savingsPlan", null); // savingsGoal -> savingsPlan으로 변경
+            model.addAttribute("monthlyExpensesLabels", new ArrayList<>());
+            model.addAttribute("monthlyExpensesValues", new ArrayList<>());
+            return "consumption/expense_analysis";
+        }
+
+        // 1. 이번 달 총 지출
+        int totalExpense = consumptionService.getTotalExpenseForCurrentMonth(memberIn);
+        model.addAttribute("totalExpense", totalExpense);
+
+        // 2. 일 평균 지출 (오늘 날짜 기준)
+        LocalDate today = LocalDate.now();
+        int dayOfMonth = today.getDayOfMonth();
+        double averageDailyExpense = (double) totalExpense / dayOfMonth;
+        model.addAttribute("averageDailyExpense", String.format(Locale.US, "%.0f", averageDailyExpense));
+
+        // 3. 남은 예산 (예시: 월 100만원 예산, 실제로는 memberIn별 예산 설정 기능 필요)
+        int monthlyBudget = 1000000; // ⭐ 임시 예산 값, 실제로는 DB에서 가져오거나 설정 필요 ⭐
+        int remainingBudget = monthlyBudget - totalExpense;
+        model.addAttribute("remainingBudget", remainingBudget);
+
+        // 4. 남은 일 수
+        int daysInMonth = today.lengthOfMonth();
+        int daysLeft = daysInMonth - dayOfMonth;
+        model.addAttribute("daysLeft", daysLeft);
+
+        // 5. 절약 목표 (savings_plan 테이블 데이터)
+        Map<String, Object> latestSavingsPlan = consumptionService.getLatestSavingsPlanByMemberIn(memberIn); // 메서드 호출 변경
+        model.addAttribute("savingsPlan", latestSavingsPlan); // savingsGoal -> savingsPlan으로 변경
+
+        // 6. 월별 지출 추이 (그래프 데이터) - 지난 6개월 데이터
+        List<Map<String, Object>> monthlyExpensesData = consumptionService.getMonthlyExpensesForPastMonths(memberIn, 6);
+        List<String> monthlyExpensesLabels = new ArrayList<>();
+        List<Integer> monthlyExpensesValues = new ArrayList<>();
+
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("M월", Locale.KOREA); // 로케일 지정
+
+        for (Map<String, Object> data : monthlyExpensesData) {
+            int month = (int) data.get("month");
+            int year = (int) data.get("year");
+            int expense = (int) data.get("totalExpense");
+
+            monthlyExpensesLabels.add(LocalDate.of(year, month, 1).format(monthFormatter));
+            monthlyExpensesValues.add(expense);
+        }
+
+        model.addAttribute("monthlyExpensesLabels", monthlyExpensesLabels);
+        model.addAttribute("monthlyExpensesValues", monthlyExpensesValues);
+
+        return "consumption/expense_analysis";
     }
 
     @GetMapping("/bplanner")
