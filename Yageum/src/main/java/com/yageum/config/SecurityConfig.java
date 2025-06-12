@@ -38,6 +38,7 @@ public class SecurityConfig {
 						.requestMatchers("/member/**").permitAll()
 						.requestMatchers("/cashbook/**").permitAll()
 						.requestMatchers("/").permitAll()
+						.requestMatchers("/consumption/**", "/eanalysis/**", "/efeedback/**", "/canalysis/**", "/bplanner/**").hasAnyRole("USER", "ADMIN")
 						.requestMatchers("/list/**").hasRole("ADMIN").anyRequest()
 						.authenticated())
 				.formLogin(
