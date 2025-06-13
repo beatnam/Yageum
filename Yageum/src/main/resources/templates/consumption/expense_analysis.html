@@ -15,361 +15,247 @@
 <div th:replace="fragments/header :: header"></div>
 <div class="app-container">
 	
-	<!--사이드 메뉴 바-->
-<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
-
+	<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
+<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
 
     <div class="container">
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">💳</div>
-                <div class="stat-value" id="totalExpense">₩1,234,567</div>
                 <div class="stat-label">이번 달 총 지출</div>
+                <div class="stat-value" id="totalExpense" th:text="${'₩' + #numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT')}">₩0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📊</div>
-                <div class="stat-value" id="avgDaily">₩41,152</div>
-                <div class="stat-label">일평균 지출</div>
+                <div class="stat-label">하루 평균 지출</div>
+                <div class="stat-value" id="averageDailyExpense" th:text="${'₩' + #numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT')}">₩0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🎯</div>
-                <div class="stat-value" id="budgetStatus">78%</div>
-                <div class="stat-label">예산 사용률</div>
+                <div class="stat-icon">⏳</div>
+                <div class="stat-label">남은 일수</div>
+                <div class="stat-value" id="daysLeft" th:text="${daysLeft + '일'}">0일</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🏆</div>
-                <div class="stat-value" id="topCategory">식비</div>
-                <div class="stat-label">최대 지출 카테고리</div>
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">남은 예산</div>
+                <div class="stat-value" id="remainingBudget" th:text="${'₩' + #numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT')}">₩0</div>
             </div>
         </div>
 
-        <div class="chart-container">
-            <div class="chart-card">
-                <h3 class="chart-title">카테고리별 지출 분포</h3>
-                <canvas id="categoryChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h3 class="chart-title">월별 지출 추이</h3>
-                <canvas id="monthlyChart"></canvas>
+        <div class="chart-section">
+            <h2>월별 지출 추이</h2>
+            <div class="chart-container">
+                <canvas id="monthlyExpenseChart"></canvas>
             </div>
         </div>
 
-        <div class="expense-table">
-            <h3 class="table-title">최근 지출 내역</h3>
-            
-            <div class="filters">
-                <div class="filter-group">
-                    <label>기간</label>
-                    <select id="periodFilter">
-                        <option value="7">최근 7일</option>
-                        <option value="30" selected>최근 30일</option>
-                        <option value="90">최근 3개월</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>카테고리</label>
-                    <select id="categoryFilter">
-                        <option value="">전체</option>
-                        <option value="식비">식비</option>
-                        <option value="교통비">교통비</option>
-                        <option value="쇼핑">쇼핑</option>
-                        <option value="의료비">의료비</option>
-                        <option value="기타">기타</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>최소 금액</label>
-                    <input type="number" id="minAmount" placeholder="0">
-                </div>
-                <div class="filter-group">
-                    <label></label>
-                    <button class="btn" onclick="applyFilters()">필터 적용</button>
-                </div>
-            </div>
-
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>데이터를 불러오는 중...</p>
-            </div>
-
-            <table id="expenseTable">
-                <thead>
-                    <tr>
-                        <th>날짜</th>
-                        <th>카테고리</th>
-                        <th>내용</th>
-                        <th>금액</th>
-                        <th>결제수단</th>
-                    </tr>
-                </thead>
-                <tbody id="expenseTableBody">
-                    <!-- 데이터가 여기에 동적으로 삽입됩니다 -->
-                </tbody>
-            </table>
-            <button class="btn" onclick="move()">예산 설정</button>
+        <div class="feedback-section">
+            <h2>ChatGPT의 소비 피드백</h2>
+            <div id="chatGptFeedbackArea">
+                <p>피드백을 로드 중입니다...</p> </div>
         </div>
-    </div>
+        <div class="savings-goal-section">
+            <h2>📊 지난달 절약 목표</h2>
+            <div th:if="${savingsPlan != null and not #maps.isEmpty(savingsPlan)}" class="goal-details-card">
+                <div class="goal-item">
+                    <span class="goal-label">목표:</span>
+                    <span class="goal-value" th:text="${savingsPlan.save_name != null ? savingsPlan.save_name : '설정되지 않음'}">목표명</span>
+                </div>
+                <div class="goal-item">
+                    <span class="goal-label">목표 금액:</span>
+                    <span class="goal-value" th:text="${savingsPlan.save_amount != null ? '₩' + #numbers.formatInteger(savingsPlan.save_amount, 0, 'COMMA') : '₩0'}">₩0</span>
+                </div>
+                <div class="goal-item">
+                    <span class="goal-label">시작일:</span>
+                    <span class="goal-value" th:text="${savingsPlan.save_created_date != null ? #temporals.format(savingsPlan.save_created_date, 'yyyy-MM-dd') : '미정'}">YYYY-MM-DD</span>
+                </div>
+                <div class="goal-item">
+                    <span class="goal-label">목표 달성일:</span>
+                    <span class="goal-value" th:text="${savingsPlan.save_target_date != null ? #temporals.format(savingsPlan.save_target_date, 'yyyy-MM-dd') : '미정'}">YYYY-MM-DD</span>
+                </div>
+                <div class="goal-item">
+                    <span class="goal-label">현재 저축액:</span>
+                    <span class="goal-value" th:text="${savingsPlan.containsKey('currentSavings') and savingsPlan.get('currentSavings') != null ? '₩' + #numbers.formatInteger(T(java.lang.Integer).valueOf(savingsPlan.get('currentSavings')), 0, 'COMMA') : '₩0'}">₩0</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">진행률:</div>
+                    <div class="progress-bar-bg">
+						<div class="progress-bar-fill"
+						     th:style="'width:' + ${#numbers.formatDecimal(progress, 0, 0)} + '%'">
+						    <span th:text="${#numbers.formatDecimal(progress, 0, 0)} + '%'">0%</span>
+						</div>
+                    </div>
+                </div>
+            </div>
+        
+        <div class="savings-plan-section" th:if="${savingsPlan == null or #maps.isEmpty(savingsPlan)}">
+            <p>설정된 절약 목표가 없습니다. 새로운 예산을 설정해 보세요!</p>
+            <button class="new-budget-btn" onclick="move()">새로운 예산 생성하기</button>
+        </div>
+                <div class="savings-plan-section" th:if="${savingsPlan != null}">
+            <p>설정된 절약 목표가 있습니다. 종합분석으로 확실하게!</p>
+            <button class="new-budget-btn" onclick="move1()">종합분석 화면으로 가기</button>
+        </div>
+
+	</div>
 </div>
+</div>
+	<div th:replace="fragments/footer :: footer"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener("DOMContentLoaded", function () {
+        // Thymeleaf에서 JSON 문자열로 전달된 데이터를 JavaScript 객체로 파싱
+        const monthlyExpensesLabels = JSON.parse(/*[[${monthlyExpensesLabels}]]*/ '[]');
+        const monthlyExpensesValues = JSON.parse(/*[[${monthlyExpensesValues}]]*/ '[]');
 
-<div th:replace="fragments/footer :: footer"></div>
-
-    <script>
-        // 샘플 데이터 (실제로는 Spring Boot API에서 가져올 데이터)
-        let expenseData = [
-            {date: '2024-06-05', category: '식비', description: '점심 식사', amount: 12000, method: '카드'},
-            {date: '2024-06-05', category: '교통비', description: '지하철', amount: 1500, method: '교통카드'},
-            {date: '2024-06-04', category: '쇼핑', description: '의류 구매', amount: 89000, method: '카드'},
-            {date: '2024-06-04', category: '식비', description: '저녁 식사', amount: 25000, method: '현금'},
-            {date: '2024-06-03', category: '의료비', description: '병원 진료', amount: 15000, method: '카드'},
-            {date: '2024-06-03', category: '식비', description: '카페', amount: 6500, method: '카드'},
-            {date: '2024-06-02', category: '교통비', description: '택시', amount: 8500, method: '카드'},
-            {date: '2024-06-02', category: '쇼핑', description: '생필품', amount: 34000, method: '카드'},
-            {date: '2024-06-01', category: '식비', description: '마트 장보기', amount: 67000, method: '카드'},
-            {date: '2024-06-01', category: '기타', description: '영화 관람', amount: 14000, method: '카드'}
-        ];
-
-        // 카테고리별 차트 생성
-        function createCategoryChart() {
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            
-            // 카테고리별 합계 계산
-            const categoryTotals = {};
-            expenseData.forEach(item => {
-                categoryTotals[item.category] = (categoryTotals[item.category] || 0) + item.amount;
-            });
-
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(categoryTotals),
-                    datasets: [{
-                        data: Object.values(categoryTotals),
-                        backgroundColor: [
-                            '#FFD700',
-                            '#FFB347',
-                            '#FFA500',
-                            '#FF8C00',
-                            '#FF7F50',
-                            '#FF6347'
-                        ],
-                        borderColor: '#fff',
-                        borderWidth: 3,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true,
-                                font: {
-                                    size: 12
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ₩' + context.parsed.toLocaleString();
-                                }
-                            }
-                        }
-                    },
-                    animation: {
-                        animateRotate: true,
-                        animateScale: true
-                    }
-                }
-            });
-        }
-
-        // 월별 차트 생성
-        function createMonthlyChart() {
-            const ctx = document.getElementById('monthlyChart').getContext('2d');
-            
-            // 샘플 월별 데이터
-            const monthlyData = {
-                labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+        // 월별 지출 추이 그래프
+        const ctx = document.getElementById('monthlyExpenseChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: monthlyExpensesLabels, // 이제 실제 JavaScript 배열입니다.
                 datasets: [{
-                    label: '월별 지출',
-                    data: [1200000, 1350000, 1180000, 1420000, 1150000, 1234567],
+                    label: '월별 총 지출 (원)',
+                    data: monthlyExpensesValues, // 이제 실제 JavaScript 배열입니다.
+                    backgroundColor: 'rgba(255, 215, 0, 0.2)',
                     borderColor: '#FFD700',
-                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                    borderWidth: 3,
+                    borderWidth: 2,
                     fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#FFB347',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
+                    tension: 0.4
                 }]
-            };
-
-            new Chart(ctx, {
-                type: 'line',
-                data: monthlyData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return '₩' + value.toLocaleString();
-                                }
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₩' + value.toLocaleString();
                             }
                         }
                     },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return '지출: ₩' + context.parsed.y.toLocaleString();
-                                }
+                    x: { // x축도 명시적으로 설정하여 날짜/월별 레이블이 올바르게 표시되도록 합니다.
+                        // type: 'category' 또는 기본 설정 (auto)을 사용합니다.
+                        // 필요에 따라 'time' 타입을 사용하려면 Chart.js adapter가 필요합니다.
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ₩' + context.parsed.y.toLocaleString();
                             }
                         }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
                     }
                 }
+            }
+        });
+
+        // 카드 hover 효과 (기존 코드 유지)
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
             });
-        }
-
-        // 테이블 데이터 로드
-        function loadTableData(filteredData = expenseData) {
-            const tbody = document.getElementById('expenseTableBody');
-            tbody.innerHTML = '';
-            
-            filteredData.forEach(item => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${item.date}</td>
-                    <td><span style="color: #FF8C00; font-weight: bold;">${item.category}</span></td>
-                    <td>${item.description}</td>
-                    <td style="font-weight: bold; color: #B8860B;">₩${item.amount.toLocaleString()}</td>
-                    <td>${item.method}</td>
-                `;
-            });
-        }
-
-        // 필터 적용
-        function applyFilters() {
-            const loading = document.getElementById('loading');
-            const table = document.getElementById('expenseTable');
-            
-            // 로딩 표시
-            loading.style.display = 'block';
-            table.style.opacity = '0.5';
-            
-            setTimeout(() => {
-                const period = document.getElementById('periodFilter').value;
-                const category = document.getElementById('categoryFilter').value;
-                const minAmount = document.getElementById('minAmount').value;
-                
-                let filteredData = expenseData;
-                
-                // 기간 필터
-                const today = new Date();
-                const periodDate = new Date(today.getTime() - (period * 24 * 60 * 60 * 1000));
-                filteredData = filteredData.filter(item => new Date(item.date) >= periodDate);
-                
-                // 카테고리 필터
-                if (category) {
-                    filteredData = filteredData.filter(item => item.category === category);
-                }
-                
-                // 최소 금액 필터
-                if (minAmount) {
-                    filteredData = filteredData.filter(item => item.amount >= parseInt(minAmount));
-                }
-                
-                loadTableData(filteredData);
-                
-                // 로딩 숨기기
-                loading.style.display = 'none';
-                table.style.opacity = '1';
-            }, 800);
-        }
-
-        // 통계 업데이트 (실제로는 API에서 가져올 데이터)
-        function updateStats() {
-            // 애니메이션 효과와 함께 숫자 업데이트
-            const statValues = document.querySelectorAll('.stat-value');
-            statValues.forEach(stat => {
-                stat.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    stat.style.transform = 'scale(1)';
-                }, 200);
-            });
-        }
-
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', function() {
-            createCategoryChart();
-            createMonthlyChart();
-            loadTableData();
-            updateStats();
-            
-            // 통계 카드 호버 효과
-            const statCards = document.querySelectorAll('.stat-card');
-            statCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-10px) scale(1.02)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
             });
         });
 
-        // Spring Boot와의 연동을 위한 API 호출 함수들 (예시)
-        async function fetchExpenseData() {
-            try {
-                // const response = await fetch('/api/expenses');
-                // const data = await response.json();
-                // expenseData = data;
-                console.log('API 호출: 지출 데이터 가져오기');
-            } catch (error) {
-                console.error('데이터 로드 실패:', error);
-            }
+        // --- ChatGPT 피드백 로드 로직 (자동 실행) ---
+        const feedbackArea = document.getElementById('chatGptFeedbackArea');
+        const csrfToken = document.querySelector('input[name="_csrf"]')?.value; // CSRF 토큰 가져오기 (POST 요청 시 필요)
+
+        if (!csrfToken) {
+            feedbackArea.innerHTML = '<p style="color: red;">오류: CSRF 토큰을 찾을 수 없습니다.</p>';
+            console.error("CSRF token not found.");
+            return;
         }
 
-        async function fetchStats() {
-            try {
-                // const response = await fetch('/api/stats');
-                // const stats = await response.json();
-                // 통계 데이터 업데이트
-                console.log('API 호출: 통계 데이터 가져오기');
-            } catch (error) {
-                console.error('통계 로드 실패:', error);
-            }
+        // 페이지 로드 시 자동으로 피드백을 가져오는 함수
+        function loadFeedbackAutomatically() {
+            feedbackArea.innerHTML = '<p>피드백을 로드 중입니다...</p>'; // 로딩 메시지
+
+            // 모든 지표를 기본적으로 선택된 것으로 간주하고 프롬프트에 포함
+            // 백엔드의 `getChatGptFeedbackForEfeedback` 메서드가 이 리스트를 받을 것입니다.
+            const selectedMetrics = [
+                "totalExpense",
+                "averageDailyExpense",
+                "daysLeft",
+                "remainingBudget"
+            ];
+            // 만약 카테고리별 지출 피드백도 항상 포함하고 싶다면, 백엔드 로직에서 항상 포함하도록 하거나,
+            // 여기에 'categoryExpenses' 같은 값도 추가하고 백엔드에서 처리하도록 구현할 수 있습니다.
+
+            fetch('/consumption/getChatGptFeedbackForEanalysis', { // 요청 주소를 명확히 지정
+                method: 'POST', // POST 요청
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken // CSRF 토큰 헤더에 포함
+                },
+                // 선택된 지표 목록을 JSON 배열로 전송
+                body: JSON.stringify({ selectedMetrics: selectedMetrics })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // 응답이 성공(200번대)이 아니면 오류 처리
+                    throw new Error('네트워크 응답이 올바르지 않습니다: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.feedback) {
+                    // 줄바꿈 문자를 <br> 태그로 변환하여 HTML에 올바르게 표시
+                    feedbackArea.innerHTML = '<p>' + data.feedback.replace(/\n/g, '<br>') + '</p>';
+                } else if (data && data.error) { // 백엔드에서 에러 메시지를 보낼 경우
+                    feedbackArea.innerHTML = '<p style="color: red;">오류: ' + data.error + '</p>';
+                } else {
+                    feedbackArea.innerHTML = '<p>피드백을 가져오지 못했습니다.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('ChatGPT 피드백을 가져오는 중 오류 발생:', error);
+                feedbackArea.innerHTML = '<p style="color: red;">피드백 로드 중 오류가 발생했습니다: ' + error.message + '</p>';
+            });
         }
-        
+
+        // 페이지 로드 완료 시 피드백 자동 호출
+        loadFeedbackAutomatically();
+
+        // 기존의 move 함수들 (예산 설정, 종합 분석 화면 이동)은 그대로 유지
         function move() {
             const btn = event.target;
             btn.textContent = '예산 설정으로 가는 중...';
             btn.disabled = true;
-            
-            // API 호출 시뮬레이션
+
             setTimeout(() => {
                 btn.textContent = '새로운 예산 생성하기';
                 btn.disabled = false;
-                
+
                 window.location.href = '/consumption/bplanner';
             }, 2000);
         }
-    </script>
+        
+        function move1() {
+            const btn = event.target;
+            btn.textContent = '종합 분석하는 중...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.textContent = '종합분석 화면으로 가기';
+                btn.disabled = false;
+
+                window.location.href = '/consumption/canalysis';
+            }, 2000);
+        }
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

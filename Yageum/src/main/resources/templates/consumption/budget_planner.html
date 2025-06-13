@@ -14,7 +14,7 @@
 	
 	<!--  사이드 바 메뉴 -->
 <div th:replace="fragments/c_sidebar :: c_sidebar"></div>
-
+<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
 
 
     <div class="container">
