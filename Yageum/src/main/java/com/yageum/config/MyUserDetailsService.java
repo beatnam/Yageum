@@ -25,7 +25,7 @@ public class MyUserDetailsService implements UserDetailsService {
 			throw new UsernameNotFoundException("없는 회원");
 		}
 
-		return User.builder().username(memberDTO.getMemberName()).password(memberDTO.getMemberPasswd())
+		return User.builder().username(memberDTO.getMemberId()).password(memberDTO.getMemberPasswd())
 				.roles(memberDTO.getMemberRole()).build();
 	}
 

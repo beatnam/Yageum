@@ -3,14 +3,18 @@ package com.yageum.controller;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import com.yageum.config.MyUserDetailsService;
 import com.yageum.domain.MemberDTO;
 import com.yageum.service.MemberService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -33,6 +39,8 @@ import lombok.extern.java.Log;
 public class MemberController {
 
 	private final MemberService memberService;
+
+	private final MyUserDetailsService myUserDetailsService;
 
 	private final PasswordEncoder passwordEncoder;
 
@@ -56,14 +64,13 @@ public class MemberController {
 
 	@GetMapping("/login/callback")
 	public String naverCallback(@RequestParam("code") String code, @RequestParam("state") String state,
-			HttpSession session, Model model) {
+			HttpSession session, Model model, HttpServletRequest request) {
 
 		String accessToken = getAccessToken(code, state);
 
 		// 사용자 정보 요청
 		Map<String, Object> userInfo = getUserInfo(accessToken);
 
-		// 여기서 사용자 로그인 처리 (DB저장, 세션 저장 등)
 		System.out.println(userInfo);
 
 		String id = userInfo.get("id").toString();
@@ -86,11 +93,24 @@ public class MemberController {
 			return "/member/naver_join";
 
 		} else {
-			
-			
+
+			UserDetails userDetails = myUserDetailsService.loadUserByUsername(id);
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+					null, userDetails.getAuthorities());
+
+			// SecurityContextHolder 설정
+			SecurityContext context = SecurityContextHolder.createEmptyContext();
+			context.setAuthentication(authentication);
+			SecurityContextHolder.setContext(context);
+
+			// ★ 세션에 SecurityContext 저장
+			HttpSession httpSession = request.getSession(true);
+			httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+
+			session.setAttribute("memberName", memberDTO.getMemberName());
+
 			return "redirect:/cashbook/main";
 		}
-
 	}
 
 	@GetMapping("/naver_join")
@@ -148,6 +168,8 @@ public class MemberController {
 		System.out.println(match);
 		if (match == true) {
 
+			String memberName = memberDTO2.getMemberName();
+			session.setAttribute("memberName", memberName);
 			return "redirect:/cashbook/main";
 
 		} else {
@@ -156,8 +178,6 @@ public class MemberController {
 		}
 
 	}
-	
-	
 
 	@GetMapping("/terms")
 	public String termsJoin() {

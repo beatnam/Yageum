@@ -42,7 +42,7 @@ public class SecurityConfig {
 						.requestMatchers("/list/**").hasRole("ADMIN").anyRequest()
 						.authenticated())
 				.formLogin(
-						form -> form.loginPage("/member/login").loginProcessingUrl("/member/loginPro").usernameParameter("memberName")
+						form -> form.loginPage("/member/login").loginProcessingUrl("/member/loginPro").usernameParameter("memberId")
 								.passwordParameter("memberPasswd").defaultSuccessUrl("/cashbook/main").failureUrl("/member/login"))
 				.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 						.logoutSuccessUrl("/"))
