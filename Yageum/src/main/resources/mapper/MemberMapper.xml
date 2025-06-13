@@ -28,7 +28,7 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	</select>
 	
 	<select id="loginMember" parameterType="String" resultType="com.yageum.domain.MemberDTO">
-		select member_id, member_passwd
+		select member_id, member_passwd, member_role, member_name
 		from member
 		where member_id = #{memberId}
 
