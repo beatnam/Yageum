@@ -1,0 +1,24 @@
+<div th:fragment="header">
+	<header class="header">
+		<div class="header-container">
+			<div class="header-top">
+				<!-- 왼쪽 상단: 로고 -->
+				<a href="/" class="logo">
+					<img style="width:125px; height:125px;" src="../img/a.png" alt="야금야금">
+				</a>
+
+				<!-- 오른쪽 상단: 사용자 정보 및 버튼들 -->
+				<div class="user-info" sec:authorize="isAuthenticated()">
+					<div class="user-section">
+						<span class="welcome-msg">
+							<a href="/mypage/mlist" th:text="${session.memberName}"></a>님 안녕하세요
+						</span>
+						<div class="button-group">
+							<button class="btn-logout" onclick="logout()">로그아웃</button>
+							<button class="btn-user-page" onclick="location.href='/'">사용자 페이지</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>

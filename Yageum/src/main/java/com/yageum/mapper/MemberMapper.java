@@ -15,4 +15,5 @@ public interface MemberMapper {
 
 	public MemberDTO loginMember(String memberId);
 
+
 }

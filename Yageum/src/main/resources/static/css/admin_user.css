@@ -97,14 +97,14 @@
             padding: 20px;
         }
 
-        .header {
+        .main_header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
 
-        .header h1 {
+        .main_header h1 {
             font-size: 24px;
             color: #333;
         }

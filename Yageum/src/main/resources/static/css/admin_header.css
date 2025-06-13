@@ -1,0 +1,100 @@
+.header {
+			background-color: white;
+			border-bottom: 3px solid #ff5252;
+			padding: 15px 0;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+		}
+
+		.header-container {
+			max-width: 1350px;
+			margin: 0 auto;
+			padding: 0 20px;
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+			width: 100%;
+		}
+
+		.header-top {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+		}
+
+		.logo {
+			font-size: 32px;
+			font-weight: bold;
+			color: #FFD44D;
+			font-family: "Black Han Sans", sans-serif;
+			text-decoration: none;
+			flex-shrink: 0;
+		}
+
+		.logo img {
+			display: block;
+		}
+
+		.user-info {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+			flex-shrink: 0;
+		}
+
+		.user-section {
+			text-align: right;
+		}
+
+		.welcome-msg {
+			display: block;
+			color: #333;
+			font-weight: 500;
+			margin-bottom: 8px;
+		}
+
+		.welcome-msg a {
+			color: #ff6b4a;
+			text-decoration: none;
+		}
+
+		.welcome-msg a:hover {
+			text-decoration: underline;
+		}
+
+		.button-group {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			align-items: flex-end;
+		}
+
+		.btn-logout {
+			background-color: #FF8A80;
+			color: #FFF9E5;
+			border: none;
+			padding: 8px 16px;
+			border-radius: 20px;
+			cursor: pointer;
+			font-size: 14px;
+		}
+
+		.btn-logout:hover {
+			background-color: #ff5252;
+		}
+
+		.btn-user-page {
+			background-color: #FFD44D;
+			color: #333;
+			border: none;
+			padding: 8px 16px;
+			border-radius: 20px;
+			cursor: pointer;
+			font-size: 14px;
+			transition: 0.3s;
+		}
+
+		.btn-user-page:hover {
+			background-color: #FFC107;
+			color: white;
+		}

@@ -1,16 +1,16 @@
 package com.yageum.service;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.yageum.repository.MemberRepository;
 import com.yageum.domain.MemberDTO;
 import com.yageum.entity.Member;
 import com.yageum.mapper.MemberMapper;
+import com.yageum.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -40,24 +40,45 @@ public class MemberService {
 
 	}
 
-
-
 	public MemberDTO loginMember(String memberId) {
 
 		return memberMapper.loginMember(memberId);
 	}
 
+	public MemberDTO infoMember(String id) {
 
+		return memberMapper.infoMember(id);
+	}
 
-	public Optional<Member> findByMemberId(String memberId) {
-		
-		return Optional.ofNullable(memberRepository.findByMemberId(memberId));
+	public void naverJoinMember(MemberDTO memberDTO) {
+		memberDTO.setMemberConsent(true);
+		memberDTO.setCreateDate(LocalDate.now());
+
+		memberDTO.setMemberRole("USER");
+		memberDTO.setMemberState("정상");
+		memberDTO.setMemberIsFirst(true);
+		memberMapper.joinMember(memberDTO);
 	}
 
 
+	public Optional<Member> findByMemberId(String memberId) {
+
+		return Optional.ofNullable(memberRepository.findByMemberId(memberId));
+
+	}
+
+	
+	
+	//관리자 - 유저 페이지 회원 정보 출력 시작
+
+	public List<Member> adminInfo() {
+		
+		
+		return memberRepository.findAll();
+	}
+	//관리자 - 유저 페이지 회원 정보 출력 끝
 
 
-
-
-
+	
+	
 }
