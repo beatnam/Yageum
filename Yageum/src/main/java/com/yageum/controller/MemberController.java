@@ -39,207 +39,207 @@ import lombok.extern.java.Log;
 @RequestMapping("/member/*")
 public class MemberController {
 
-	private final MemberService memberService;
+   private final MemberService memberService;
 
-	private final MyUserDetailsService myUserDetailsService;
+   private final MyUserDetailsService myUserDetailsService;
 
-	private final PasswordEncoder passwordEncoder;
+   private final PasswordEncoder passwordEncoder;
 
-	@Value("${naver.client-id}")
-	private String NclientId;
+   @Value("${naver.client-id}")
+   private String NclientId;
 
-	@Value("${naver.client-secret}")
-	private String NclientSecret;
+   @Value("${naver.client-secret}")
+   private String NclientSecret;
 
-	// 네이버 로그인 URL을 만들면서
-	@GetMapping("/login")
-	public String login(Model model, HttpSession session) {
-		log.info("MemberController login()");
+   // 네이버 로그인 URL을 만들면서
+   @GetMapping("/login")
+   public String login(Model model, HttpSession session) {
+      log.info("MemberController login()");
 
-		String clientId = NclientId;
+      String clientId = NclientId;
 
-		String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
-		String state = UUID.randomUUID().toString();
+      String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
+      String state = UUID.randomUUID().toString();
 
-		session.setAttribute("state", state);
+      session.setAttribute("state", state);
 
-		String naverUrl = "https://nid.naver.com/oauth2.0/authorize?response_type=code" + "&client_id=" + clientId
-				+ "&redirect_uri=" + redirectUri + "&state=" + state;
+      String naverUrl = "https://nid.naver.com/oauth2.0/authorize?response_type=code" + "&client_id=" + clientId
+            + "&redirect_uri=" + redirectUri + "&state=" + state;
 
-		model.addAttribute("naverUrl", naverUrl);
+      model.addAttribute("naverUrl", naverUrl);
 
-		return "/member/login";
-	}
+      return "/member/login";
+   }
 
-	@GetMapping("/login/callback")
-	public String naverCallback(@RequestParam("code") String code, @RequestParam("state") String state,
-			HttpSession session, Model model, HttpServletRequest request) {
+   @GetMapping("/login/callback")
+   public String naverCallback(@RequestParam("code") String code, @RequestParam("state") String state,
+         HttpSession session, Model model, HttpServletRequest request) {
 
-		String accessToken = getAccessToken(code, state);
+      String accessToken = getAccessToken(code, state);
 
-		// 사용자 정보 요청
-		Map<String, Object> userInfo = getUserInfo(accessToken);
+      // 사용자 정보 요청
+      Map<String, Object> userInfo = getUserInfo(accessToken);
 
-		System.out.println(userInfo);
+      System.out.println(userInfo);
 
-		String id = userInfo.get("id").toString();
-		String name = userInfo.get("name").toString();
-		String email = userInfo.get("email").toString();
-		String gender = userInfo.get("gender").toString();
-		String phone = userInfo.get("mobile").toString();
-		String birth = userInfo.get("birthday").toString();
+      String id = userInfo.get("id").toString();
+      String name = userInfo.get("name").toString();
+      String email = userInfo.get("email").toString();
+      String gender = userInfo.get("gender").toString();
+      String phone = userInfo.get("mobile").toString();
+      String birth = userInfo.get("birthday").toString();
 
-		MemberDTO memberDTO = memberService.infoMember(id);
+      MemberDTO memberDTO = memberService.infoMember(id);
 
-		if (memberDTO == null) {
-			model.addAttribute("id", id);
-			model.addAttribute("name", name);
-			model.addAttribute("email", email);
-			model.addAttribute("gender", gender);
-			model.addAttribute("phone", phone);
-			model.addAttribute("birth", birth);
+      if (memberDTO == null) {
+         model.addAttribute("id", id);
+         model.addAttribute("name", name);
+         model.addAttribute("email", email);
+         model.addAttribute("gender", gender);
+         model.addAttribute("phone", phone);
+         model.addAttribute("birth", birth);
 
-			return "/member/naver_join";
+         return "/member/naver_join";
 
-		} else {
+      } else {
 
-			UserDetails userDetails = myUserDetailsService.loadUserByUsername(id);
-			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
-					null, userDetails.getAuthorities());
+         UserDetails userDetails = myUserDetailsService.loadUserByUsername(id);
+         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+               null, userDetails.getAuthorities());
 
-			// SecurityContextHolder 설정
-			SecurityContext context = SecurityContextHolder.createEmptyContext();
-			context.setAuthentication(authentication);
-			SecurityContextHolder.setContext(context);
+         // SecurityContextHolder 설정
+         SecurityContext context = SecurityContextHolder.createEmptyContext();
+         context.setAuthentication(authentication);
+         SecurityContextHolder.setContext(context);
 
-			// ★ 세션에 SecurityContext 저장
-			HttpSession httpSession = request.getSession(true);
-			httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+         // ★ 세션에 SecurityContext 저장
+         HttpSession httpSession = request.getSession(true);
+         httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
-			session.setAttribute("memberName", memberDTO.getMemberName());
+         session.setAttribute("memberName", memberDTO.getMemberName());
 
-			return "redirect:/cashbook/main";
-		}
-	}
+         return "redirect:/cashbook/main";
+      }
+   }
 
-	@GetMapping("/naver_join")
-	public String naverLogin() {
+   @GetMapping("/naver_join")
+   public String naverLogin() {
 
-		return "/member/naver_join";
-	}
+      return "/member/naver_join";
+   }
 
-	public String getAccessToken(String code, String state) {
+   public String getAccessToken(String code, String state) {
 
-		String clientId = NclientId;
-		String clientSecret = NclientSecret;
+      String clientId = NclientId;
+      String clientSecret = NclientSecret;
 
-		String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
+      String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
 
-		String apiURL = "https://nid.naver.com/oauth2.0/token?grant_type=authorization_code" + "&client_id=" + clientId
-				+ "&client_secret=" + clientSecret + "&redirect_uri=" + redirectUri + "&code=" + code + "&state="
-				+ state;
+      String apiURL = "https://nid.naver.com/oauth2.0/token?grant_type=authorization_code" + "&client_id=" + clientId
+            + "&client_secret=" + clientSecret + "&redirect_uri=" + redirectUri + "&code=" + code + "&state="
+            + state;
 
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<Map> response = restTemplate.getForEntity(apiURL, Map.class);
+      RestTemplate restTemplate = new RestTemplate();
+      ResponseEntity<Map> response = restTemplate.getForEntity(apiURL, Map.class);
 
-		Map body = response.getBody();
-		return (String) body.get("access_token");
-	}
+      Map body = response.getBody();
+      return (String) body.get("access_token");
+   }
 
-	public Map<String, Object> getUserInfo(String accessToken) {
-		String apiURL = "https://openapi.naver.com/v1/nid/me";
+   public Map<String, Object> getUserInfo(String accessToken) {
+      String apiURL = "https://openapi.naver.com/v1/nid/me";
 
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Bearer " + accessToken);
-		HttpEntity<String> entity = new HttpEntity<>("", headers);
+      RestTemplate restTemplate = new RestTemplate();
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Authorization", "Bearer " + accessToken);
+      HttpEntity<String> entity = new HttpEntity<>("", headers);
 
-		ResponseEntity<Map> response = restTemplate.exchange(apiURL, HttpMethod.GET, entity, Map.class);
-		Map<String, Object> responseBody = response.getBody();
+      ResponseEntity<Map> response = restTemplate.exchange(apiURL, HttpMethod.GET, entity, Map.class);
+      Map<String, Object> responseBody = response.getBody();
 
-		return (Map<String, Object>) responseBody.get("response");
-	}
+      return (Map<String, Object>) responseBody.get("response");
+   }
 
-	@PostMapping("/loginPro")
-	public String loginPro(MemberDTO memberDTO, HttpSession session, HttpServletRequest request) {
-		log.info("MemberController loginPro()");
-		log.info(memberDTO.toString());
+   @PostMapping("/loginPro")
+   public String loginPro(MemberDTO memberDTO, HttpSession session, HttpServletRequest request) {
+      log.info("MemberController loginPro()");
+      log.info(memberDTO.toString());
 
-		MemberDTO memberDTO2 = memberService.loginMember(memberDTO.getMemberId());
+      MemberDTO memberDTO2 = memberService.loginMember(memberDTO.getMemberId());
 
-//		System.out.println("memberDTO2 : "+memberDTO2.toString());
+//      System.out.println("memberDTO2 : "+memberDTO2.toString());
 
-		if (memberDTO2 == null) {
-			log.info("존재하지 않는 회원 ID");
-			return "redirect:/member/login";
-		}
+      if (memberDTO2 == null) {
+         log.info("존재하지 않는 회원 ID");
+         return "redirect:/member/login";
+      }
 
-		boolean match = passwordEncoder.matches(memberDTO.getMemberPasswd(), memberDTO2.getMemberPasswd());
+      boolean match = passwordEncoder.matches(memberDTO.getMemberPasswd(), memberDTO2.getMemberPasswd());
 
-		if (match) {
+      if (match) {
 
-			// SecurityContext 설정 추가
-			UserDetails userDetails = myUserDetailsService.loadUserByUsername(memberDTO.getMemberId());
-			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
-					null, userDetails.getAuthorities());
-			SecurityContext context = SecurityContextHolder.createEmptyContext();
-			context.setAuthentication(authentication);
-			SecurityContextHolder.setContext(context);
+         // SecurityContext 설정 추가
+         UserDetails userDetails = myUserDetailsService.loadUserByUsername(memberDTO.getMemberId());
+         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+               null, userDetails.getAuthorities());
+         SecurityContext context = SecurityContextHolder.createEmptyContext();
+         context.setAuthentication(authentication);
+         SecurityContextHolder.setContext(context);
 
-			HttpSession httpSession = request.getSession(true);
-			httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+         HttpSession httpSession = request.getSession(true);
+         httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
-			// 기존 session 처리 유지
-			if (memberDTO2.getMemberRole().equals("ADMIN")) {
+         // 기존 session 처리 유지
+         if (memberDTO2.getMemberRole().equals("ADMIN")) {
 
-				session.setAttribute("memberName", memberDTO2.getMemberRole());
-				return "redirect:/admin/user";
-			} else {
-				System.out.println(memberDTO2.toString());
-				session.setAttribute("memberName", memberDTO2.getMemberName());
-				return "redirect:/cashbook/main";
-			}
+            session.setAttribute("memberName", memberDTO2.getMemberRole());
+            return "redirect:/admin/user";
+         } else {
+            System.out.println(memberDTO2.toString());
+            session.setAttribute("memberName", memberDTO2.getMemberName());
+            return "redirect:/cashbook/main";
+         }
 
-		} else {
-			return "redirect:/member/login";
-		}
-	}
+      } else {
+         return "redirect:/member/login";
+      }
+   }
 
-	@GetMapping("/terms")
-	public String termsJoin() {
-		log.info("MemberController termsJoin()");
-		return "/member/terms_join";
-	}
+   @GetMapping("/terms")
+   public String termsJoin() {
+      log.info("MemberController termsJoin()");
+      return "/member/terms_join";
+   }
 
-	@PostMapping("/termsAgree")
-	public String termsAgree() {
-		log.info("MemberController termsAgree()");
+   @PostMapping("/termsAgree")
+   public String termsAgree() {
+      log.info("MemberController termsAgree()");
 
-		return "redirect:/member/join";
-	}
+      return "redirect:/member/join";
+   }
 
-	@GetMapping("/join")
-	public String join() {
-		log.info("MemberController join");
-		return "/member/join";
-	}
+   @GetMapping("/join")
+   public String join() {
+      log.info("MemberController join");
+      return "/member/join";
+   }
 
-	@PostMapping("/joinPro")
-	public String joinPro(MemberDTO memberDTO, HttpSession Session) {
-		log.info("MemberController joinPro()");
+   @PostMapping("/joinPro")
+   public String joinPro(MemberDTO memberDTO, HttpSession Session) {
+      log.info("MemberController joinPro()");
 
-		memberService.joinMember(memberDTO);
+      memberService.joinMember(memberDTO);
 
-		return "redirect:/member/login";
-	}
+      return "redirect:/member/login";
+   }
 
-	@PostMapping("/naverJoinPro")
-	public String naverJoinPro(MemberDTO memberDTO, HttpSession Session) {
-		log.info("MemberController joinPro()");
+   @PostMapping("/naverJoinPro")
+   public String naverJoinPro(MemberDTO memberDTO, HttpSession Session) {
+      log.info("MemberController joinPro()");
 
-		System.out.println(memberDTO);
-		memberService.naverJoinMember(memberDTO);
+      System.out.println(memberDTO);
+      memberService.naverJoinMember(memberDTO);
 
-		return "redirect:/member/login";
-	}
+      return "redirect:/member/login";
+   }
 }
