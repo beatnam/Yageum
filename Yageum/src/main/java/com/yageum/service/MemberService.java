@@ -42,7 +42,7 @@ public class MemberService {
 	}
 
 	public MemberDTO infoMember(String id) {
-		
+
 		return memberMapper.infoMember(id);
 	}
 
@@ -55,7 +55,6 @@ public class MemberService {
 		memberDTO.setMemberIsFirst(true);
 		memberMapper.joinMember(memberDTO);
 
-		
 	}
 
 }
