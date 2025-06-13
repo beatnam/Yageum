@@ -224,7 +224,6 @@ public class ConsumptionController {
         model.addAttribute("daysLeft", daysLeft);
 
         // 남은 예산 (기존 코드 유지)
-        
         int budget = 2000000; // 이 값은 실제 예산 설정 로직에 따라 변경될 수 있습니다.
         int remainingBudget = budget - totalExpense;
         model.addAttribute("remainingBudget", remainingBudget);
