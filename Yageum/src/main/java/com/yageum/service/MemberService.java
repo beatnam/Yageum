@@ -36,14 +36,26 @@ public class MemberService {
 
 	}
 
-
-
 	public MemberDTO loginMember(String memberId) {
 
 		return memberMapper.loginMember(memberId);
 	}
 
+	public MemberDTO infoMember(String id) {
+		
+		return memberMapper.infoMember(id);
+	}
 
+	public void naverJoinMember(MemberDTO memberDTO) {
+		memberDTO.setMemberConsent(true);
+		memberDTO.setCreateDate(LocalDate.now());
+		// 이렇게 해줘도 되는지?
+		memberDTO.setMemberRole("USER");
+		memberDTO.setMemberState("정상");
+		memberDTO.setMemberIsFirst(true);
+		memberMapper.joinMember(memberDTO);
 
+		
+	}
 
 }
