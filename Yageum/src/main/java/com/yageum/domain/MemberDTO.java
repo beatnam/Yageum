@@ -30,4 +30,5 @@ public class MemberDTO {
 	private int memberReward;
 	private boolean memberIsFirst;
 
+
 }
