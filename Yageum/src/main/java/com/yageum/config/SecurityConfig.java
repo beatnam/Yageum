@@ -36,12 +36,13 @@ public class SecurityConfig {
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/css/**","/js/**","/img/**").permitAll()
 						.requestMatchers("/member/**").permitAll()
+						.requestMatchers("/member/login/**").permitAll()
 						.requestMatchers("/cashbook/**").permitAll()
 						.requestMatchers("/").permitAll()
 						.requestMatchers("/list/**").hasRole("ADMIN").anyRequest()
 						.authenticated())
 				.formLogin(
-						form -> form.loginPage("/member/login").loginProcessingUrl("/member/loginPro").usernameParameter("memberId")
+						form -> form.loginPage("/member/login").loginProcessingUrl("/member/loginPro").usernameParameter("memberName")
 								.passwordParameter("memberPasswd").defaultSuccessUrl("/cashbook/main").failureUrl("/member/login"))
 				.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 						.logoutSuccessUrl("/"))

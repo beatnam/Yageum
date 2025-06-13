@@ -10,7 +10,7 @@
 		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
 		rel="stylesheet">
 	<title>야금야금 | 회원가입</title>
-	<link rel="stylesheet" href="../css/join.css">
+	<link rel="stylesheet" href="/css/join.css">
 	<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 </head>
@@ -25,7 +25,7 @@
 		<form id="signupForm" action="/member/naverJoinPro" method="post">
 			<div class="form-row">
 				<div class="form-group">
-					<label for="memberId">아이디 <span class="required">*</span></label>
+					<label for="memberId"> <span class="required">아이디는 자동 입력됩니다.</span></label>
 					<input type="hidden" id="memberId" th:value="${id}" name="memberId" class="form-control" readonly>
 					<div class="error-message" id="memberIdError"></div>
 				</div>
@@ -58,7 +58,7 @@
 			<div class="form-row">
 				<div class="form-group">
 					<label for="memberBirth">생년월일</label>
-					<input type="date" id="memberBirth" name="memberBirth" th:value="${birth}" class="form-control">
+					<input type="date" id="memberBirth" name="memberBirth" class="form-control">
 					<div class="error-message" id="memberBirthError"></div>
 				</div>
 
@@ -135,11 +135,11 @@
 	</div>
 	</div>
 
-	<script src="../js/join.js">
+	<script src="/js/naver_join.js">
 
 	</script>
 
-	<script src="../js/address-api.js">
+	<script src="/js/address-api.js">
 
 	</script>
 </body>

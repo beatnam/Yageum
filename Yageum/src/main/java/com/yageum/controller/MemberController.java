@@ -86,7 +86,8 @@ public class MemberController {
 			return "/member/naver_join";
 
 		} else {
-
+			
+			
 			return "redirect:/cashbook/main";
 		}
 
@@ -155,6 +156,8 @@ public class MemberController {
 		}
 
 	}
+	
+	
 
 	@GetMapping("/terms")
 	public String termsJoin() {
@@ -184,4 +187,13 @@ public class MemberController {
 		return "redirect:/member/login";
 	}
 
+	@PostMapping("/naverJoinPro")
+	public String naverJoinPro(MemberDTO memberDTO, HttpSession Session) {
+		log.info("MemberController joinPro()");
+
+		System.out.println(memberDTO);
+		memberService.naverJoinMember(memberDTO);
+
+		return "redirect:/member/login";
+	}
 }
