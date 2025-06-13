@@ -18,16 +18,7 @@
 	<div th:replace="fragments/header :: header"></div>
 
 	<div class="accountbook-container">
-		<nav class="accountbook-sidebar">
-			<h2>메뉴</h2>
-			<ul class="accountbook-sidebar-menu">
-				<li><a href="#overview" class="active">🏠 자산 현황</a></li>
-				<li><a href="#transactions">📝 거래 내역</a></li>
-				<li><a href="#statistics">📊 통계 및 분석</a></li>
-				<li><a href="#">⚙️ 설정</a></li>
-				<li><a href="#">❓ 도움말</a></li>
-			</ul>
-		</nav>
+		<div th:replace="fragments/m_sidebar :: m_sidebar"></div>
 
 		<main class="accountbook-main-content">
 			<h1>결제 수단 관리</h1>
@@ -39,7 +30,8 @@
 					<div class="section-controls">
 						<button class="btn btn-edit">편집</button>
 						<button class="btn btn-add">추가</button>
-						<button class="btn btn-delete">삭제</button>
+						<button class="btn btn-use" style="display: none;">사용</button>
+						<button class="btn btn-delete" style="display: none;">삭제</button>
 						<button class="btn btn-cancel" style="display: none;">취소</button>
 					</div>
 				</div>
@@ -104,7 +96,8 @@
 					<div class="section-controls">
 						<button class="btn btn-edit">편집</button>
 						<button class="btn btn-add">추가</button>
-						<button class="btn btn-delete">삭제</button>
+						<button class="btn btn-use" style="display: none;">사용</button>
+						<button class="btn btn-delete" style="display: none;">삭제</button>
 						<button class="btn btn-cancel" style="display: none;">취소</button>
 					</div>
 				</div>
@@ -139,7 +132,8 @@
 					<div class="section-controls">
 						<button class="btn btn-edit">편집</button>
 						<button class="btn btn-add">추가</button>
-						<button class="btn btn-delete">삭제</button>
+						<button class="btn btn-use" style="display: none;">사용</button>
+						<button class="btn btn-delete" style="display: none;">삭제</button>
 						<button class="btn btn-cancel" style="display: none;">취소</button>
 					</div>
 				</div>
@@ -171,13 +165,17 @@
 				const editBtn = section.querySelector('.btn-edit');
 				const deleteBtn = section.querySelector('.btn-delete');
 				const addBtn = section.querySelector('.btn-add');
+				const useBtn = section.querySelector('.btn-use');
 				const cancelBtn = section.querySelector('.btn-cancel');
 				const checkboxes = section.querySelectorAll('.select-checkbox');
-				
+
 				// 편집 버튼 클릭 시 - 편집 모드 활성화
-				editBtn.addEventListener('click', function() {
+				editBtn.addEventListener('click', function () {
 					section.classList.add('edit-mode');
 					editBtn.style.display = 'none';
+					addBtn.style.display = 'none';
+					useBtn.style.display = 'inline-block';
+					deleteBtn.style.display = 'inline-block';
 					cancelBtn.style.display = 'inline-block';
 					
 					// 모든 체크박스 해제
@@ -190,6 +188,9 @@
 				cancelBtn.addEventListener('click', function() {
 					section.classList.remove('edit-mode');
 					editBtn.style.display = 'inline-block';
+					addBtn.style.display = 'inline-block';
+					useBtn.style.display = 'none';
+					deleteBtn.style.display = 'none';
 					cancelBtn.style.display = 'none';
 					
 					// 모든 체크박스 해제
@@ -200,7 +201,7 @@
 				
 				// 추가 버튼 클릭 시
 				addBtn.addEventListener('click', function() {
-					alert('새 결제 수단을 추가할 수 있습니다.');
+					window.location.href = '/mypage/minsert';
 				});
 				
 				// 삭제 버튼 클릭 시 - 편집 모드에서만 작동
@@ -220,8 +221,26 @@
 						alert('선택한 결제 수단이 삭제되었습니다.');
 					}
 				});
+			useBtn.addEventListener('click', function () {
+				const checked = section.querySelectorAll('.select-checkbox:checked');
+				if (checked.length === 0) {
+					alert('변경할 항목을 선택해주세요.');
+					return;
+				}
+				checked.forEach(cb => {
+					const status = cb.closest('.payment-item').querySelector('.payment-status');
+					if (status.classList.contains('status-active')) {
+						status.textContent = '미사용';
+						status.classList.replace('status-active', 'status-inactive');
+					} else {
+						status.textContent = '사용중';
+						status.classList.replace('status-inactive', 'status-active');
+					}
+				});
+				alert('선택한 항목의 상태가 변경되었습니다.');
 			});
 		});
+	});
 	</script>
 </body>
 

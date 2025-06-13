@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>야금야금 - 오픈뱅킹 가계부</title>
+    <title>일별 내역</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google Fonts -->
@@ -31,7 +31,7 @@
                 <div class="date-navigation">
                     <button class="date-nav-btn" onclick="previousDay()">◀</button>
                     <div class="current-date">
-                        <span class="date-text" id="currentDate">2024년 6월 15일</span>
+                        <span class="date-text" id="currentDate"><!--여기에 화면에서 누른 날짜 출력됨--></span>
                     </div>
                     <button class="date-nav-btn" onclick="nextDay()">▶</button>
                 </div>
@@ -84,6 +84,9 @@
                         <span class="total">잔액: <span class="balance">+ 2,535,000원</span></span>
                     </div>
                 </div>
+				
+				<div class="floating-label">가계부 추가</div>
+				<a href="/cashbook/insert" class="floating-btn">+</a>
             </div>
         </main>
     </div>
@@ -92,8 +95,39 @@
 		<div th:replace="fragments/footer :: footer"></div>
 
     <script>
-     
   
+		//url에서 쿼리 파라미터 값 들고옴
+		function getDateFromURL() {
+	        const params = new URLSearchParams(window.location.search);
+	        return params.get("date");
+	    }
+
+		//YYYY-MM-DD → "2025년 6월 15일"로 변환
+	    function formatDateToKorean(dateStr) {
+	        const [year, month, day] = dateStr.split("-");
+	        return `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
+	    }
+
+		//날짜 영역에 url에서 가지고 온 값을 날짜 형식으로 변환한대로 출력
+	    document.addEventListener("DOMContentLoaded", function () {
+	        const dateStr = getDateFromURL();
+	        if (dateStr) {
+	            const formatted = formatDateToKorean(dateStr);
+	            document.getElementById("currentDate").textContent = formatted;
+	        }
+			
+			document.querySelectorAll('.transaction-item').forEach(item => {
+			    item.addEventListener('click', () => {
+			        const dateStr = getDateFromURL();  // 현재 날짜 쿼리
+			        // const transactionId = item.dataset.id;
+			        // 예시: 날짜만 넘기기
+			        window.location.href = `/cashbook/detail?date=${dateStr}`;
+			    });
+			});
+			
+	    });   
+  
+		
         function logout() {
             if(confirm('로그아웃 하시겠습니까?')) {
                 window.location.href = '/logout';

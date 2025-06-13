@@ -18,16 +18,7 @@
 	<div th:replace="fragments/header :: header"></div>
 
 	<div class="accountbook-container">
-		<nav class="accountbook-sidebar">
-			<h2>메뉴</h2>
-			<ul class="accountbook-sidebar-menu">
-				<li><a href="#overview" class="active">🏠 자산 현황</a></li>
-				<li><a href="#transactions">📝 거래 내역</a></li>
-				<li><a href="#statistics">📊 통계 및 분석</a></li>
-				<li><a href="#">⚙️ 설정</a></li>
-				<li><a href="#">❓ 도움말</a></li>
-			</ul>
-		</nav>
+		<div th:replace="fragments/m_sidebar :: m_sidebar"></div>
 
 		<main class="accountbook-main-content">
 			<div class="withdraw-container">

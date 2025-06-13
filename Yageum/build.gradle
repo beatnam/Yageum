@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.itwillbs'
+group = 'com.yageum'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -35,14 +35,14 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
-// //https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
-//implementation 'org.springframework.boot:spring-boot-starter-security'
+ //https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+implementation 'org.springframework.boot:spring-boot-starter-security'
 
  // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
 testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-// // https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-springsecurity5
-//implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+ // https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-springsecurity5
+implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
 // https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter
 implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
