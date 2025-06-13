@@ -1,8 +1,8 @@
-@charset "UTF-8";
-
+        @charset "UTF-8";
 
         .container {
             max-width: 800px;
+            min-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -89,11 +89,14 @@
 
         .chart-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr; /* chart-container는 1fr로 변경하여 단일 그래프를 중앙에 배치 */
             gap: 30px;
             margin-bottom: 30px;
+            /* 기존 chart-container에 chart-card가 있었는데, HTML에서 chart-card div가 사라짐에 따라 조정 */
         }
-
+        
+        /* chart-card 스타일은 HTML에 해당 클래스가 없어 사용되지 않음 */
+        /*
         .chart-card {
             background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
             border-radius: 20px;
@@ -118,11 +121,18 @@
             border-bottom: 2px solid #ffd700;
             padding-bottom: 10px;
         }
+        */
 
         canvas {
             max-height: 300px !important;
+            background: linear-gradient(135deg, #fff 0%, #fffef7 100%); /* 캔버스 배경 추가 */
+            border-radius: 20px; /* 캔버스 테두리 둥글게 */
+            padding: 25px; /* 캔버스 패딩 추가 */
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15); /* 캔버스 그림자 추가 */
+            border: 2px solid #ffd700; /* 캔버스 테두리 추가 */
         }
-
+        /* 테이블 관련 스타일은 현재 HTML에 테이블이 없으므로 주석 처리하거나 무시됩니다. */
+        /*
         .expense-table {
             background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
             border-radius: 20px;
@@ -202,7 +212,7 @@
             border-color: #ffb347;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
-
+		*/
         .btn {
             background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
             color: #8b4513;
@@ -220,6 +230,7 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
         }
+        
 
         @media (max-width: 768px) {
             .chart-container {
@@ -261,130 +272,131 @@
         }
         
         /* Savings Goal Section Styles */
-.savings-goal-section {
-    background-color: var(--card-bg-color); /* 기존 카드 배경색 활용 */
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-    margin-top: 30px; /* 위쪽 여백 */
-    margin-bottom: 30px; /* 아래쪽 여백 */
-    transition: all 0.3s ease;
-}
+        /* --var() 변수는 common.css에 정의되어 있다고 가정합니다. */
+        .savings-goal-section {
+            background-color: var(--card-bg-color); /* 기존 카드 배경색 활용 */
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            margin-top: 30px; /* 위쪽 여백 */
+            margin-bottom: 30px; /* 아래쪽 여백 */
+            transition: all 0.3s ease;
+        }
 
-.savings-goal-section:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-}
+        .savings-goal-section:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
 
-.savings-goal-section h2 {
-    color: var(--primary-color); /* 메인 색상 활용 */
-    margin-bottom: 25px;
-    font-size: 1.8em;
-    font-weight: 700;
-    text-align: center;
-}
+        .savings-goal-section h2 {
+            color: var(--primary-color); /* 메인 색상 활용 */
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 700;
+            text-align: center;
+        }
 
-.goal-details-card {
-    background-color: var(--light-bg-color); /* 더 밝은 배경색 */
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05); /* 내부 그림자 */
-}
+        .goal-details-card {
+            background-color: var(--light-bg-color); /* 더 밝은 배경색 */
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05); /* 내부 그림자 */
+        }
 
-.goal-item {
-    display: flex;
-    justify-content: space-between; /* 양쪽 정렬 */
-    padding: 10px 0;
-    border-bottom: 1px dashed var(--border-color); /* 점선 구분선 */
-}
+        .goal-item {
+            display: flex;
+            justify-content: space-between; /* 양쪽 정렬 */
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border-color); /* 점선 구분선 */
+        }
 
-.goal-item:last-child {
-    border-bottom: none; /* 마지막 항목은 구분선 없음 */
-}
+        .goal-item:last-child {
+            border-bottom: none; /* 마지막 항목은 구분선 없음 */
+        }
 
-.goal-label {
-    font-weight: 600;
-    color: var(--text-color-dark); /* 어두운 텍스트 색상 */
-    font-size: 1.1em;
-}
+        .goal-label {
+            font-weight: 600;
+            color: var(--text-color-dark); /* 어두운 텍스트 색상 */
+            font-size: 1.1em;
+        }
 
-.goal-value {
-    color: var(--accent-color); /* 강조 색상 활용 */
-    font-weight: 700;
-    font-size: 1.1em;
-    text-align: right;
-}
+        .goal-value {
+            color: var(--accent-color); /* 강조 색상 활용 */
+            font-weight: 700;
+            font-size: 1.1em;
+            text-align: right;
+        }
 
-/* 진행률 막대 스타일 */
-.progress-bar-container {
-    margin-top: 20px;
-    text-align: center;
-}
+        /* 진행률 막대 스타일 */
+        .progress-bar-container {
+            margin-top: 20px;
+            text-align: center;
+        }
 
-.progress-bar-label {
-    font-weight: 600;
-    color: var(--text-color-dark);
-    margin-bottom: 10px;
-}
+        .progress-bar-label {
+            font-weight: 600;
+            color: var(--text-color-dark);
+            margin-bottom: 10px;
+        }
 
-.progress-bar-bg {
-    width: 100%;
-    background-color: var(--border-color); /* 회색 배경 */
-    border-radius: 8px;
-    overflow: hidden; /* 자식 요소가 밖으로 나가지 않도록 */
-    height: 25px;
-    position: relative; /* 퍼센트 텍스트 위치 지정을 위함 */
-}
+        .progress-bar-bg {
+            width: 100%;
+            background-color: var(--border-color); /* 회색 배경 */
+            border-radius: 8px;
+            overflow: hidden; /* 자식 요소가 밖으로 나가지 않도록 */
+            height: 25px;
+            position: relative; /* 퍼센트 텍스트 위치 지정을 위함 */
+        }
 
-.progress-bar-fill {
-    height: 100%;
-    background-color: var(--primary-color); /* 채워지는 색상 (예: 노란색 계열) */
-    width: 0%; /* 기본 너비 (Thymeleaf에서 동적으로 변경) */
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-color-light); /* 채워지는 부분의 텍스트 색상 (흰색) */
-    font-weight: bold;
-    transition: width 0.5s ease-in-out; /* 부드러운 애니메이션 */
-}
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color); /* 채워지는 색상 (예: 노란색 계열) */
+            width: 0%; /* 기본 너비 (Thymeleaf에서 동적으로 변경) */
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color-light); /* 채워지는 부분의 텍스트 색상 (흰색) */
+            font-weight: bold;
+            transition: width 0.5s ease-in-out; /* 부드러운 애니메이션 */
+        }
 
-/* 버튼 스타일 */
-.action-buttons {
-    display: flex;
-    justify-content: center; /* 버튼 중앙 정렬 */
-    gap: 15px; /* 버튼 사이 간격 */
-    margin-top: 25px;
-}
+        /* 버튼 스타일 */
+        .action-buttons {
+            display: flex;
+            justify-content: center; /* 버튼 중앙 정렬 */
+            gap: 15px; /* 버튼 사이 간격 */
+            margin-top: 25px;
+        }
 
-.action-buttons button {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
+        .action-buttons button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
 
-.action-buttons button:first-child { /* '새로운 예산 생성하기' 버튼 */
-    background-color: var(--accent-color); /* 강조색 (예: 주황색 계열) */
-    color: white;
-}
+        .action-buttons button:first-child { /* '새로운 예산 생성하기' 버튼 */
+            background-color: var(--accent-color); /* 강조색 (예: 주황색 계열) */
+            color: white;
+        }
 
-.action-buttons button:first-child:hover {
-    background-color: #e0ac0a; /* 좀 더 어두운 강조색 */
-    transform: translateY(-2px);
-}
+        .action-buttons button:first-child:hover {
+            background-color: #e0ac0a; /* 좀 더 어두운 강조색 */
+            transform: translateY(-2px);
+        }
 
-.action-buttons button:last-child { /* '절약 목표 설정/수정' 버튼 */
-    background-color: var(--secondary-button-color); /* 보조 버튼 색상 (예: 밝은 회색) */
-    color: var(--text-color-dark);
-    border: 1px solid var(--border-color);
-}
+        .action-buttons button:last-child { /* '절약 목표 설정/수정' 버튼 */
+            background-color: var(--secondary-button-color); /* 보조 버튼 색상 (예: 밝은 회색) */
+            color: var(--text-color-dark);
+            border: 1px solid var(--border-color);
+        }
 
-.action-buttons button:last-child:hover {
-    background-color: #e6e6e6; /* 좀 더 어두운 보조 버튼 색상 */
-    transform: translateY(-2px);
-}
+        .action-buttons button:last-child:hover {
+            background-color: #e6e6e6; /* 좀 더 어두운 보조 버튼 색상 */
+            transform: translateY(-2px);
+        }

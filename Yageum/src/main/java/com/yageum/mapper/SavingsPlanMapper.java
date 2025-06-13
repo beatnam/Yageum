@@ -15,4 +15,6 @@ public interface SavingsPlanMapper {
     List<Map<String, Object>> getAllSavingsPlansByMemberIn(@Param("memberIn") Integer memberIn);
     // 추가적인 저축 목표 관련 쿼리 (예: 목표 달성률 계산 등)
     Integer calculateTotalCurrentSavings(@Param("memberIn") Integer memberIn);
+
+	int budgetLastMons(Integer memberIn);
 }

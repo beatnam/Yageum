@@ -179,4 +179,9 @@ public class ConsumptionService {
         }
         return monthlyExpenses;
     }
+
+	public int budgetLastMons(Integer memberIn) {
+		// TODO Auto-generated method stub
+		return savingsPlanMapper.budgetLastMons(memberIn);
+	}
 }

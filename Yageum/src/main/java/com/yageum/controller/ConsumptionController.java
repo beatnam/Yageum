@@ -224,7 +224,8 @@ public class ConsumptionController {
         model.addAttribute("daysLeft", daysLeft);
 
         // 남은 예산 (기존 코드 유지)
-        int budget = 2000000; // 이 값은 실제 예산 설정 로직에 따라 변경될 수 있습니다.
+        
+        int budget = consumptionService.budgetLastMons(memberIn); // 이 값은 실제 예산 설정 로직에 따라 변경될 수 있습니다.
         int remainingBudget = budget - totalExpense;
         model.addAttribute("remainingBudget", remainingBudget);
 
@@ -294,8 +295,8 @@ public class ConsumptionController {
 
         model.addAttribute("savingsPlan", savingsPlan); // 수정된 savingsPlan을 모델에 추가
 
-        // ==== 새로 추가할 progress 계산 로직 시작 (이 부분이 올바르게 있는지 확인) ====
-        double progress = 0.0;
+     // ==== 기존 절약 목표 progress 계산 로직 (변수명 변경: progress -> savingsProgress) ====
+        double savingsProgress = 0.0;
         if (savingsPlan != null &&
             savingsPlan.containsKey("currentSavings") && savingsPlan.get("currentSavings") instanceof Number &&
             savingsPlan.containsKey("save_amount") && savingsPlan.get("save_amount") instanceof Number) {
@@ -304,11 +305,20 @@ public class ConsumptionController {
             double saveAmount = ((Number) savingsPlan.get("save_amount")).doubleValue();
 
             if (saveAmount != 0.0) {
-                progress = (currentSavings * 100.0) / saveAmount;
+                savingsProgress = (currentSavings * 100.0) / saveAmount;
             }
         }
-        model.addAttribute("progress", progress); // 계산된 progress 값을 모델에 추가
-        // ==== 새로 추가할 progress 계산 로직 끝 ====
+        model.addAttribute("savingsProgress", savingsProgress); // 계산된 savingsProgress 값을 모델에 추가
+
+        // ==== 예산 사용률 progress 계산 로직 추가 ====
+        double budgetUsageProgress = 0.0;
+        // budget이 0이 아닐 경우에만 계산 (0으로 나누는 오류 방지)
+        if (budget != 0) {
+            budgetUsageProgress = (totalExpense * 100.0) / budget;
+            // 예산 사용률이 100%를 초과할 경우에도 그대로 표시되도록 함 (원하시면 100%로 제한 가능)
+        }
+        model.addAttribute("budgetUsageProgress", budgetUsageProgress); // 계산된 예산 사용률 progress 값을 모델에 추가
+        // ==== 예산 사용률 progress 계산 로직 끝 ====
         
         return "/consumption/expense_analysis";
     }
@@ -323,7 +333,7 @@ public class ConsumptionController {
     @GetMapping("/canalysis")
     public String canalysis() {
         log.info("ConsumptionController canalysis() 호출");
-        return "/consumption/category_analysis";
+        return "/consumption/consumption_analysis";
     }
 
  // ⭐ 새로 추가되는 ChatGPT API 엔드포인트 ⭐
