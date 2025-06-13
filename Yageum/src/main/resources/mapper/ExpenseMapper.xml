@@ -11,41 +11,66 @@
 
     <select id="getCategoryExpenseByMemberId" resultType="map">
 	    SELECT
-	        c.cm_name AS category_name,
-	        SUM(e.expense_sum) AS total_expense FROM expense e
-	    JOIN category_main c ON e.cs_in = c.cm_in
+	        c.cs_name AS category_name,
+	        SUM(e.expense_sum) AS total_expense
+	    FROM expense e
+	    JOIN category_sub c ON e.cs_in = c.cs_in
 	    WHERE e.expense_date &gt;= CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE)
 	      AND e.expense_date &lt; DATE_ADD(CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE), INTERVAL 1 MONTH)
+	      AND e.expense_type = 2
 	      AND e.member_in = #{memberIn}
-	    GROUP BY c.cm_name ORDER BY total_expense DESC </select>
-
+	    GROUP BY c.cs_name
+	    ORDER BY total_expense DESC
+    </select>
 
     <select id="getExpenseByLastMonth" resultType="map">
 	    SELECT
-	        c.cm_name AS category_name,
+	        c.cs_name AS category_name,
 	        SUM(e.expense_sum) AS total_expense
 	    FROM expense e
-	    JOIN category_main c ON e.cs_in = c.cm_in
+	    JOIN category_sub c ON e.cs_in = c.cs_in
 	    WHERE e.expense_date &gt;= DATE_SUB(CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE), INTERVAL 1 MONTH)
 	      AND e.expense_date &lt; CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE)
+	      AND e.expense_type = 2
 	      AND e.member_in = #{memberIn}
-	    GROUP BY c.cm_name
+	    GROUP BY c.cs_name
 	    ORDER BY total_expense DESC
 	</select>
 
+	<select id="getLastMonthExpenseAnalysis" resultType="map">
+	    SELECT cs_name, SUM(expense_sum) AS total_expense
+	    FROM expense e
+	    JOIN category_sub c ON e.cs_in = c.cs_in
+	    WHERE e.expense_date &gt;= DATE_SUB(CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE), INTERVAL 1 MONTH)
+	      AND e.expense_date &lt; CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE)
+	      AND e.expense_type = 2
+	      AND e.member_in = #{memberIn}
+	    GROUP BY c.cs_name
+	    ORDER BY total_expense DESC
+	</select>
     
 	<select id="getCategoryExpenseByMonth" resultType="map">
 	    SELECT
-	        c.cm_name AS category_name,
+	        c.cs_name AS category_name,
 	        DATE(e.expense_date) AS expense_date,
 	        SUM(e.expense_sum) AS total_expense
 	    FROM expense e
-	    JOIN category_main c ON e.cs_in = c.cm_in
+	    JOIN category_sub c ON e.cs_in = c.cs_in
 	    WHERE e.member_in = #{memberIn}
+	      AND e.expense_type = 2
 	      AND MONTH(e.expense_date) = #{month}
 	      AND YEAR(e.expense_date) = #{year}
-	    GROUP BY c.cm_name, DATE(e.expense_date)
+	    GROUP BY c.cs_name, DATE(e.expense_date)
 	    ORDER BY expense_date DESC, total_expense DESC
+	</select>
+
+	<select id="getTotalExpenseForMonth" resultType="int">
+	    SELECT COALESCE(SUM(expense_sum), 0)
+	    FROM expense
+	    WHERE member_in = #{memberIn}
+	      AND EXTRACT(MONTH FROM expense_date) = #{month}
+	      AND EXTRACT(YEAR FROM expense_date) = #{year}
+	      AND expense_type = 2
 	</select>
 
 </mapper>

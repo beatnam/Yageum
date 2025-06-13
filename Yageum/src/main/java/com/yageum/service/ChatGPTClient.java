@@ -36,11 +36,7 @@ public class ChatGPTClient {
 		
 		Map<String, String> roleSystem = new HashMap<String, String>();
 		roleSystem.put("role", "system");
-		roleSystem.put("content", "너는 카테고리 분석사야. "
-				+ "내용을 분석하고 피드백을 해줘야 돼. "
-				+ "장단점도 말하지만 따뜻하게 말해줘."
-				+ "줄바꿈도 해줘서 가독성 있게 해줘"
-				+ "300글자 내로 답해줘."); // 문법 수정
+		roleSystem.put("content", " 너는 소비분석사야 "); // 문법 수정
 		
 		Map<String, String> roleUser = new HashMap<String, String>();
 		roleUser.put("role", "user");

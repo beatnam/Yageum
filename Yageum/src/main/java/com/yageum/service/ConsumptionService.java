@@ -101,11 +101,6 @@ public class ConsumptionService {
         return expenseMapper.getCategoryExpenseByMemberId(memberIn);
     }
 
-    // 지난 달 지출 분석 (lastMonthAnalysis에서 사용)
-    public Map<String, Object> getLastMonthExpenseAnalysis(Integer memberIn) {
-        return expenseMapper.getLastMonthExpenseAnalysis(memberIn);
-    }
-
     // 특정 월의 카테고리별 지출 (canalysis에서 사용)
     public List<Map<String, Object>> getCategoryExpenseByMonth(Integer memberIn, int month, int year) {
         return expenseMapper.getCategoryExpenseByMonth(memberIn, month, year);
@@ -113,7 +108,46 @@ public class ConsumptionService {
 
     // ⭐ SavingsPlan 테이블 관련 메서드 (수정됨) ⭐
     public Map<String, Object> getLatestSavingsPlanByMemberIn(Integer memberIn) {
-        return savingsPlanMapper.getLatestSavingsPlanByMemberIn(memberIn);
+        // 기존의 절약 목표 정보 (save_name, save_amount 등)를 가져오는 로직
+        Map<String, Object> savingsPlan = savingsPlanMapper.findLatestSavingsPlanByMemberIn(memberIn); 
+        // (여기서 'consumptionMapper.findLatestSavingsPlanByMemberIn'는 예시입니다.
+        //  실제 서비스 로직에 맞게 데이터베이스에서 데이터를 가져오는 코드를 사용하세요.)
+
+        if (savingsPlan != null) {
+            // ====================================================================
+            // *** 여기에 '현재 저축액(currentSavings)'을 가져오는 로직을 추가합니다. ***
+
+            // '현재 저축액'을 가져오는 방법은 데이터베이스 스키마 및 비즈니스 로직에 따라 다릅니다.
+            // 아래는 몇 가지 예시입니다. 실제 상황에 맞는 코드를 사용하세요.
+
+            // 예시 1: 'savings_plan' 테이블에 'current_saved_amount'와 같은 컬럼이 직접 있는 경우
+            // (만약 매퍼에서 이미 이 컬럼을 가져오고 있다면, 키 이름을 "currentSavings"로 통일시키세요.)
+            // Long currentSavedAmountFromDB = (Long) savingsPlan.get("current_saved_amount"); // DB 컬럼 이름
+            // if (currentSavedAmountFromDB == null) {
+            //     currentSavedAmountFromDB = 0L;
+            // }
+            // savingsPlan.put("currentSavings", currentSavedAmountFromDB);
+
+
+            // 예시 2: '현재 저축액'이 다른 테이블(예: 거래 내역)에서 '저축' 유형의 합계로 계산되어야 하는 경우
+            // (이 경우, 'consumptionMapper'에 '현재 저축액'을 조회하는 새로운 메서드가 필요합니다.)
+            // 예: public Integer calculateTotalCurrentSavings(Integer memberIn);
+            Integer currentSavings = savingsPlanMapper.calculateTotalCurrentSavings(memberIn); // 가상의 매퍼 메서드 호출
+            if (currentSavings == null) {
+                currentSavings = 0; // 값이 없으면 0으로 초기화
+            }
+            savingsPlan.put("currentSavings", currentSavings); // "currentSavings" 키로 맵에 추가
+
+            // 예시 3: 당장 실제 데이터가 없다면 임시로 0을 넣어줄 수 있습니다. (하지만 이는 임시 방편입니다.)
+            // savingsPlan.put("currentSavings", 0);
+            
+            // ====================================================================
+        } else {
+            // savingsPlan이 null인 경우에도 빈 맵을 반환하여 NullPointerException 방지
+            savingsPlan = new HashMap<>();
+            savingsPlan.put("currentSavings", 0); // 기본값 0 설정
+        }
+        return savingsPlan;
     }
 
     public List<Map<String, Object>> getAllSavingsPlans(Integer memberIn) {
@@ -128,21 +162,18 @@ public class ConsumptionService {
         return expenseMapper.getTotalExpenseForMonth(memberIn, month, year);
     }
 
-    // 특정 기간 동안의 지출 합계 (그래프용)
-    public List<Map<String, Object>> getMonthlyExpensesForPastMonths(Integer memberIn, int numberOfMonths) {
+    public List<Map<String, Object>> getMonthlyExpensesForCurrentYear(Integer memberIn) {
         List<Map<String, Object>> monthlyExpenses = new ArrayList<>();
-        LocalDate now = LocalDate.now();
+        int currentYear = LocalDate.now().getYear(); // 현재 연도 (예: 2025)
 
-        for (int i = numberOfMonths - 1; i >= 0; i--) {
-            LocalDate date = now.minusMonths(i);
-            int year = date.getYear();
-            int month = date.getMonthValue();
-
-            int totalMonthlyExpense = expenseMapper.getTotalExpenseForMonth(memberIn, month, year);
+        for (int month = 1; month <= 12; month++) { // 1월부터 12월까지 반복
+            // 매퍼를 호출하여 해당 월의 지출 합계 가져오기
+            // member_in과 현재 연도, 그리고 1월부터 12월까지의 월을 전달
+            int totalMonthlyExpense = expenseMapper.getTotalExpenseForMonth(memberIn, month, currentYear);
 
             Map<String, Object> monthData = new HashMap<>();
             monthData.put("month", month);
-            monthData.put("year", year);
+            monthData.put("year", currentYear); // 연도는 현재 연도로 고정
             monthData.put("totalExpense", totalMonthlyExpense);
             monthlyExpenses.add(monthData);
         }
