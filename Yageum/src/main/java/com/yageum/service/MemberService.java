@@ -1,16 +1,15 @@
 package com.yageum.service;
 
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.yageum.repository.MemberRepository;
 import com.yageum.domain.MemberDTO;
 import com.yageum.entity.Member;
 import com.yageum.mapper.MemberMapper;
+import com.yageum.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -40,24 +39,29 @@ public class MemberService {
 
 	}
 
-
-
 	public MemberDTO loginMember(String memberId) {
 
 		return memberMapper.loginMember(memberId);
 	}
 
+	public MemberDTO infoMember(String id) {
 
-
-	public Optional<Member> findByMemberId(String memberId) {
-		
-		return Optional.ofNullable(memberRepository.findByMemberId(memberId));
+		return memberMapper.infoMember(id);
 	}
 
+	public void naverJoinMember(MemberDTO memberDTO) {
+		memberDTO.setMemberConsent(true);
+		memberDTO.setCreateDate(LocalDate.now());
+		// 이렇게 해줘도 되는지?
+		memberDTO.setMemberRole("USER");
+		memberDTO.setMemberState("정상");
+		memberDTO.setMemberIsFirst(true);
+		memberMapper.joinMember(memberDTO);
+	}
 
+	public Optional<Member> findByMemberId(String memberId) {
 
-
-
-
+		return Optional.ofNullable(memberRepository.findByMemberId(memberId));
+	}
 
 }
