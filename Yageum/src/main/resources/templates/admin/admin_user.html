@@ -64,7 +64,29 @@
                         </tr>
                     </thead>
                     <tbody id="userTableBody">
-                        <tr data-name="유저1" data-id="test1">
+                        
+
+						<tr th:each="member,status:${member}">
+							<td><span th:text="${member.memberRole}"></span></td>
+							<td>
+									<span th:if="${member.memberId.length() >= 43 }">
+										<span th:text="${member.memberPasswd}"></span>
+									</span>
+									
+									<span th:if="${member.memberId.length() < 30 }">
+										<span th:text="${member.memberId}"></span>
+									</span>
+									
+							</td>
+							<td><span th:text="${member.memberName}"></span></td>
+							<td><span th:text="${member.memberEmail}"></span></td>
+							<td><span th:text="${member.memberPhone}"></span></td>
+							<td><button class="detail-btn">상세보기</button></td>
+						</tr>
+						
+						
+						<!--
+						<tr data-name="유저1" data-id="test1">
                             <td>관리자</td>
                             <td>admin1</td>
                             <td>관리자</td>
@@ -112,6 +134,8 @@
                             <td>010-6666-6666</td>
                             <td><button class="detail-btn">상세보기</button></td>
                         </tr>
+						
+						-->
                     </tbody>
 
                 </table>
