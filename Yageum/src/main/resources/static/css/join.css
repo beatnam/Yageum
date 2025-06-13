@@ -126,6 +126,27 @@ body {
 	border: 2px solid #ffd44d;
 }
 
+.btn-search {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #ffd44d 0%, #ffcd00 100%);
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0; /* 상단 마진 제거 */
+    border: 2px solid #ffd44d;
+    height: 40px;
+}
+
+.btn-search:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 15px 30px rgba(255, 212, 77, 0.4);
+	background: linear-gradient(135deg, #ffcd00 0%, #ffc107 100%);
+}
+
 .btn-signup:hover {
 	transform: translateY(-3px);
 	box-shadow: 0 15px 30px rgba(255, 212, 77, 0.4);

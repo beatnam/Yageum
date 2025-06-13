@@ -10,7 +10,7 @@
 		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
 		rel="stylesheet">
 	<title>야금야금 | 회원가입</title>
-	<link rel="stylesheet" href="../css/join.css">
+	<link rel="stylesheet" href="/css/join.css">
 	<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 </head>
@@ -18,21 +18,22 @@
 <body>
 	<div class="signup-container">
 		<div class="signup-header">
-			<h1>야금야금 회원가입</h1>
+			<h1>네이버 회원 추가 정보 입력</h1>
 			<p>새로운 계정을 만들고 가계부를 작성해봐요!</p>
 		</div>
 
-		<form id="signupForm" action="/member/joinPro" method="post">
+		<form id="signupForm" action="/member/naverJoinPro" method="post">
 			<div class="form-row">
 				<div class="form-group">
-					<label for="memberId">아이디 <span class="required">*</span></label>
-					<input type="text" id="memberId" name="memberId" class="form-control" placeholder="아이디를 입력하세요">
+					<label for="memberId"> <span class="required">아이디는 자동 입력됩니다.</span></label>
+					<input type="hidden" id="memberId" th:value="${id}" name="memberId" class="form-control" readonly>
 					<div class="error-message" id="memberIdError"></div>
 				</div>
 
 				<div class="form-group">
 					<label for="memberName">이름 <span class="required">*</span></label>
-					<input type="text" id="memberName" name="memberName" class="form-control" placeholder="이름을 입력하세요">
+					<input type="text" id="memberName" th:value="${name}" name="memberName" class="form-control"
+						readonly>
 					<div class="error-message" id="memberNameError"></div>
 				</div>
 			</div>
@@ -41,14 +42,14 @@
 				<div class="form-group">
 					<label for="memberPasswd">비밀번호 <span class="required">*</span></label>
 					<input type="password" id="memberPasswd" name="memberPasswd" class="form-control"
-						placeholder="비밀번호를 입력하세요">
+						th:value="'NAVER USER'" readonly>
 					<div class="error-message" id="memberPasswdError"></div>
 				</div>
 
 				<div class="form-group">
 					<label for="memberPassWd2">비밀번호 확인 <span class="required">*</span></label>
 					<input type="password" id="memberPassWd2" name="memberPassWd2" class="form-control"
-						placeholder="비밀번호를 다시 입력하세요">
+						th:value="'NAVER USER'" readonly>
 					<div class="password-match" id="passwordMatch"></div>
 					<div class="error-message" id="memberPassWd2Error"></div>
 				</div>
@@ -63,16 +64,16 @@
 
 				<div class="form-group">
 					<label for="memberPhone">휴대폰 번호</label>
-					<input type="tel" id="memberPhone" name="memberPhone" class="form-control"
-						placeholder="010-1234-5678">
+					<input type="tel" id="memberPhone" name="memberPhone" class="form-control" th:value="${phone}"
+						readonly>
 					<div class="error-message" id="memberPhoneError"></div>
 				</div>
 			</div>
 
 			<div class="form-group full-width">
 				<label for="memberEmail">이메일 <span class="required">*</span></label>
-				<input type="email" id="memberEmail" name="memberEmail" class="form-control"
-					placeholder="example@email.com">
+				<input type="email" id="memberEmail" name="memberEmail" class="form-control" th:value="${email}"
+					readonly>
 				<div class="error-message" id="memberEmailError"></div>
 			</div>
 
@@ -134,12 +135,12 @@
 	</div>
 	</div>
 
-	<script src="../js/join.js">
-		
+	<script src="/js/naver_join.js">
+
 	</script>
-	
-	<script src="../js/address-api.js">
-	 
+
+	<script src="/js/address-api.js">
+
 	</script>
 </body>
 
