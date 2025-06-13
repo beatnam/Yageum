@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-//github.com/beatnam/Yageum.git
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -162,41 +161,48 @@ public class MemberController {
 	}
 
 	@PostMapping("/loginPro")
-	public String loginPro(MemberDTO memberDTO, HttpSession session) {
+	public String loginPro(MemberDTO memberDTO, HttpSession session, HttpServletRequest request) {
 		log.info("MemberController loginPro()");
 		log.info(memberDTO.toString());
 
 		MemberDTO memberDTO2 = memberService.loginMember(memberDTO.getMemberId());
 
-		System.out.println("memberDTO2 = " + memberDTO2);
+//		System.out.println("memberDTO2 : "+memberDTO2.toString());
 
 		if (memberDTO2 == null) {
 			log.info("존재하지 않는 회원 ID");
 			return "redirect:/member/login";
 		}
-		// 비밀번호 비교
-		System.out.println(memberDTO2);
-		boolean match = passwordEncoder.matches(memberDTO.getMemberPasswd(), memberDTO2.getMemberPasswd());
-		System.out.println(match);
-		
-		if (match == true) {
 
+		boolean match = passwordEncoder.matches(memberDTO.getMemberPasswd(), memberDTO2.getMemberPasswd());
+
+		if (match) {
+
+			// SecurityContext 설정 추가
+			UserDetails userDetails = myUserDetailsService.loadUserByUsername(memberDTO.getMemberId());
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+					null, userDetails.getAuthorities());
+			SecurityContext context = SecurityContextHolder.createEmptyContext();
+			context.setAuthentication(authentication);
+			SecurityContextHolder.setContext(context);
+
+			HttpSession httpSession = request.getSession(true);
+			httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+
+			// 기존 session 처리 유지
 			if (memberDTO2.getMemberRole().equals("ADMIN")) {
-				log.info("관리자 로그인");
-				String memberName = "관리자";
-				session.setAttribute("memberName", memberName);
-				return "/admin/user";
-		
+
+				session.setAttribute("memberName", memberDTO2.getMemberRole());
+				return "redirect:/admin/user";
 			} else {
-				String memberName = memberDTO2.getMemberName();
-				session.setAttribute("memberName", memberName);
+				System.out.println(memberDTO2.toString());
+				session.setAttribute("memberName", memberDTO2.getMemberName());
 				return "redirect:/cashbook/main";
 			}
-		} else {
 
+		} else {
 			return "redirect:/member/login";
 		}
-
 	}
 
 	@GetMapping("/terms")
