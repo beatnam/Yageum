@@ -45,7 +45,7 @@ public class MemberController {
 	private final MyUserDetailsService myUserDetailsService;
 
 	private final PasswordEncoder passwordEncoder;
-	
+
 	@Value("${naver.client-id}")
 	private String NclientId;
 
@@ -178,12 +178,20 @@ public class MemberController {
 		System.out.println(memberDTO2);
 		boolean match = passwordEncoder.matches(memberDTO.getMemberPasswd(), memberDTO2.getMemberPasswd());
 		System.out.println(match);
+		
 		if (match == true) {
 
-			String memberName = memberDTO2.getMemberName();
-			session.setAttribute("memberName", memberName);
-			return "redirect:/cashbook/main";
-
+			if (memberDTO2.getMemberRole().equals("ADMIN")) {
+				log.info("관리자 로그인");
+				String memberName = "관리자";
+				session.setAttribute("memberName", memberName);
+				return "/admin/user";
+		
+			} else {
+				String memberName = memberDTO2.getMemberName();
+				session.setAttribute("memberName", memberName);
+				return "redirect:/cashbook/main";
+			}
 		} else {
 
 			return "redirect:/member/login";

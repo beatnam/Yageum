@@ -1,280 +1,297 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	 <link rel="stylesheet" href="../css/admin_common.css">
-    <title>카테고리 관리</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/admin_common.css">
+	<link rel="stylesheet" href="../css/admin_header.css">
+	<title>카테고리 관리</title>
 </head>
+
 <body>
-    <div class="container">
-        <!-- 사이드바 -->
-        <div class="sidebar">
-            <h2>관리자 페이지</h2>
-            
-            <div class="menu-item">
-                <a href="/admin/user" class="menu-link">사용자 관리</a>
-            </div>
-            
-            <div class="menu-item">
-                <a href="/admin/state" class="menu-link">통계 / 리포트</a>
-            </div>
-            
-            <div class="menu-item">
-                <a href="#" class="menu-link active" onclick="toggleSubmenu(event)">사이트 설정</a>
-                <div class="submenu show" id="siteSettingsSubmenu">
-                    <div class="submenu-item">
-                        <a href="/admin/quest" class="submenu-link">퀘스트 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="/admin/item" class="submenu-link">구매항목 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="/admin/category" class="submenu-link active">카테고리 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="/admin/noticfication" class="submenu-link">공지사항 관리</a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- 메인 콘텐츠 -->
-        <div class="main-content">
-            <div class="header">
-                <h1>카테고리 목록</h1>
-                <button class="add-btn" onclick="addCategory()">추가하기</button>
-            </div>
+	<div th:replace="fragments/admin_header :: header"></div>
 
-            <!-- 필터 -->
-            <div class="filter-container">
-                <h3>카테고리 필터</h3>
-                <div class="filter-group">
-                    <label for="categoryFilter">대분류:</label>
-                    <select id="categoryFilter" class="filter-select" onchange="filterCategories()">
-                        <option value="">전체 카테고리</option>
-                        <option value="식비">식비</option>
-                        <option value="교통비">교통비</option>
-                        <option value="주거/통신">주거/통신</option>
-                        <option value="여가/문화">여가/문화</option>
-                        <option value="의료/건강">의료/건강</option>
-                        <option value="교육">교육</option>
-                        <option value="쇼핑">쇼핑</option>
-                        <option value="기타">기타</option>
-                    </select>
-                    <button class="filter-btn" onclick="resetFilter()">필터 초기화</button>
-                </div>
-            </div>
+	<div class="container">
+		<!-- 사이드바 -->
+		<div class="sidebar">
+			<h2>관리자 페이지</h2>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>번호</th>
-                            <th>카테고리 종류</th>
-                            <th>카테고리 이름</th>
-                            <th>관리</th>
-                        </tr>
-                    </thead>
-                    <tbody id="categoryTableBody">
-                        <!-- 대분류 카테고리들 -->
-                        <tr class="category-row" data-main-category="식비">
-                            <td>1</td>
-                            <td><span class="category-tag main">대분류</span></td>
-                            <td>식비</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(1)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(1)">삭제</button>
-                            </td>
-                        </tr>
-                        <!-- 소분류 카테고리들 -->
-                        <tr class="category-row" data-main-category="식비">
-                            <td>2</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>외식비</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(2)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(2)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="식비">
-                            <td>3</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>식료품</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(3)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(3)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="식비">
-                            <td>4</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>커피/음료</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(4)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(4)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="교통비">
-                            <td>5</td>
-                            <td><span class="category-tag main">대분류</span></td>
-                            <td>교통비</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(5)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(5)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="교통비">
-                            <td>6</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>대중교통</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(6)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(6)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="교통비">
-                            <td>7</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>택시</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(7)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(7)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="교통비">
-                            <td>8</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>주유비</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(8)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(8)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="주거/통신">
-                            <td>9</td>
-                            <td><span class="category-tag main">대분류</span></td>
-                            <td>주거/통신</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(9)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(9)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="주거/통신">
-                            <td>10</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>월세/관리비</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(10)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(10)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="주거/통신">
-                            <td>11</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>통신비</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(11)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(11)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="여가/문화">
-                            <td>12</td>
-                            <td><span class="category-tag main">대분류</span></td>
-                            <td>여가/문화</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(12)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(12)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="여가/문화">
-                            <td>13</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>영화/공연</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(13)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(13)">삭제</button>
-                            </td>
-                        </tr>
-                        <tr class="category-row" data-main-category="여가/문화">
-                            <td>14</td>
-                            <td><span class="category-tag sub">소분류</span></td>
-                            <td>취미/스포츠</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editCategory(14)">변경</button>
-                                <button class="action-btn delete" onclick="deleteCategory(14)">삭제</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+			<div class="menu-item">
+				<a href="/admin/user" class="menu-link">사용자 관리</a>
+			</div>
 
-            <div class="pagination">
-                <span>이전</span>
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <span>다음</span>
-            </div>
-        </div>
-    </div>
+			<div class="menu-item">
+				<a href="/admin/state" class="menu-link">통계 / 리포트</a>
+			</div>
 
-    <script>
-        // 사이트 설정 하위 메뉴 토글
-        function toggleSubmenu(event) {
-            event.preventDefault();
-            const submenu = document.getElementById('siteSettingsSubmenu');
-            submenu.classList.toggle('show');
-        }
+			<div class="menu-item">
+				<a href="#" class="menu-link active" onclick="toggleSubmenu(event)">사이트 설정</a>
+				<div class="submenu show" id="siteSettingsSubmenu">
+					<div class="submenu-item">
+						<a href="/admin/quest" class="submenu-link">퀘스트 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/item" class="submenu-link">구매항목 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/category" class="submenu-link active">카테고리 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/noticfication" class="submenu-link">공지사항 관리</a>
+					</div>
+				</div>
+			</div>
+		</div>
 
-        // 카테고리 필터링 기능
-        function filterCategories() {
-            const filterValue = document.getElementById('categoryFilter').value;
-            const rows = document.querySelectorAll('.category-row');
-            
-            rows.forEach(row => {
-                if (filterValue === '') {
-                    // 전체 카테고리 표시
-                    row.style.display = '';
-                } else {
-                    // 선택한 대분류에 해당하는 카테고리만 표시
-                    const mainCategory = row.dataset.mainCategory;
-                    if (mainCategory === filterValue) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                }
-            });
-        }
+		<!-- 메인 콘텐츠 -->
+		<div class="main-content">
+			<div class="main_header">
+				<h1>카테고리 목록</h1>
+				<button class="add-btn" onclick="addCategory()">추가하기</button>
+			</div>
 
-        // 필터 초기화
-        function resetFilter() {
-            document.getElementById('categoryFilter').value = '';
-            filterCategories();
-        }
+			<!-- 필터 -->
+			<div class="filter-container">
+				<h3>카테고리 필터</h3>
+				<div class="filter-group">
+					<label for="categoryFilter">대분류:</label>
+					<select id="categoryFilter" class="filter-select" onchange="filterCategories()">
+						<option value="">전체 카테고리</option>
+						<option value="식비">식비</option>
+						<option value="교통비">교통비</option>
+						<option value="주거/통신">주거/통신</option>
+						<option value="여가/문화">여가/문화</option>
+						<option value="의료/건강">의료/건강</option>
+						<option value="교육">교육</option>
+						<option value="쇼핑">쇼핑</option>
+						<option value="기타">기타</option>
+					</select>
+					<button class="filter-btn" onclick="resetFilter()">필터 초기화</button>
+				</div>
+			</div>
 
-        // 카테고리 추가 기능
-        function addCategory() {
-            alert('카테고리 추가 페이지로 이동합니다.');
-            // 실제로는 카테고리 추가 페이지로 이동하거나 모달을 띄움
-        }
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>카테고리 종류</th>
+							<th>카테고리 이름</th>
+							<th>관리</th>
+						</tr>
+					</thead>
+					<tbody id="categoryTableBody">
+						<!-- 대분류 카테고리들 -->
+						<tr class="category-row" data-main-category="식비">
+							<td>1</td>
+							<td><span class="category-tag main">대분류</span></td>
+							<td>식비</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(1)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(1)">삭제</button>
+							</td>
+						</tr>
+						<!-- 소분류 카테고리들 -->
+						<tr class="category-row" data-main-category="식비">
+							<td>2</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>외식비</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(2)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(2)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="식비">
+							<td>3</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>식료품</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(3)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(3)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="식비">
+							<td>4</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>커피/음료</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(4)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(4)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="교통비">
+							<td>5</td>
+							<td><span class="category-tag main">대분류</span></td>
+							<td>교통비</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(5)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(5)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="교통비">
+							<td>6</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>대중교통</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(6)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(6)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="교통비">
+							<td>7</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>택시</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(7)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(7)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="교통비">
+							<td>8</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>주유비</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(8)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(8)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="주거/통신">
+							<td>9</td>
+							<td><span class="category-tag main">대분류</span></td>
+							<td>주거/통신</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(9)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(9)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="주거/통신">
+							<td>10</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>월세/관리비</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(10)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(10)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="주거/통신">
+							<td>11</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>통신비</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(11)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(11)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="여가/문화">
+							<td>12</td>
+							<td><span class="category-tag main">대분류</span></td>
+							<td>여가/문화</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(12)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(12)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="여가/문화">
+							<td>13</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>영화/공연</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(13)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(13)">삭제</button>
+							</td>
+						</tr>
+						<tr class="category-row" data-main-category="여가/문화">
+							<td>14</td>
+							<td><span class="category-tag sub">소분류</span></td>
+							<td>취미/스포츠</td>
+							<td>
+								<button class="action-btn edit" onclick="editCategory(14)">변경</button>
+								<button class="action-btn delete" onclick="deleteCategory(14)">삭제</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 
-        // 카테고리 변경 기능
-        function editCategory(id) {
-            alert('카테고리 ID ' + id + ' 변경 페이지로 이동합니다.');
-            // 실제로는 카테고리 변경 페이지로 이동하거나 모달을 띄움
-        }
+			<div class="pagination">
+				<span>이전</span>
+				<a href="#">1</a>
+				<a href="#">2</a>
+				<a href="#">3</a>
+				<a href="#">4</a>
+				<a href="#">5</a>
+				<span>다음</span>
+			</div>
+		</div>
+	</div>
 
-        // 카테고리 삭제 기능
-        function deleteCategory(id) {
-            if (confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {
-                alert('카테고리 ID ' + id + '가 삭제되었습니다.');
-                // 실제로는 서버에 삭제 요청을 보냄
-            }
-        }
-    </script>
+	<script>
+		// 사이트 설정 하위 메뉴 토글
+		function toggleSubmenu(event) {
+			event.preventDefault();
+			const submenu = document.getElementById('siteSettingsSubmenu');
+			submenu.classList.toggle('show');
+		}
+
+		// 카테고리 필터링 기능
+		function filterCategories() {
+			const filterValue = document.getElementById('categoryFilter').value;
+			const rows = document.querySelectorAll('.category-row');
+
+			rows.forEach(row => {
+				if (filterValue === '') {
+					// 전체 카테고리 표시
+					row.style.display = '';
+				} else {
+					// 선택한 대분류에 해당하는 카테고리만 표시
+					const mainCategory = row.dataset.mainCategory;
+					if (mainCategory === filterValue) {
+						row.style.display = '';
+					} else {
+						row.style.display = 'none';
+					}
+				}
+			});
+		}
+
+		// 필터 초기화
+		function resetFilter() {
+			document.getElementById('categoryFilter').value = '';
+			filterCategories();
+		}
+
+		// 카테고리 추가 기능
+		function addCategory() {
+			alert('카테고리 추가 페이지로 이동합니다.');
+			// 실제로는 카테고리 추가 페이지로 이동하거나 모달을 띄움
+		}
+
+		// 카테고리 변경 기능
+		function editCategory(id) {
+			alert('카테고리 ID ' + id + ' 변경 페이지로 이동합니다.');
+			// 실제로는 카테고리 변경 페이지로 이동하거나 모달을 띄움
+		}
+
+		// 카테고리 삭제 기능
+		function deleteCategory(id) {
+			if (confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {
+				alert('카테고리 ID ' + id + '가 삭제되었습니다.');
+				// 실제로는 서버에 삭제 요청을 보냄
+			}
+		}
+
+
+		//로그아웃 기능
+		function logout() {
+			if (confirm('로그아웃 하시겠습니까?')) {
+				window.location.href = '/logout';
+			}
+		}
+
+
+	</script>
 </body>
+
 </html>

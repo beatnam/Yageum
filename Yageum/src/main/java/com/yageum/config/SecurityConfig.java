@@ -39,7 +39,7 @@ public class SecurityConfig {
 						.requestMatchers("/member/login/**").permitAll()
 						.requestMatchers("/cashbook/**").permitAll()
 						.requestMatchers("/").permitAll()
-						.requestMatchers("/list/**").hasRole("ADMIN").anyRequest()
+						.requestMatchers("/admin/**").hasRole("ADMIN").anyRequest()
 						.authenticated())
 				.formLogin(
 						form -> form.loginPage("/member/login").loginProcessingUrl("/member/loginPro").usernameParameter("memberId")

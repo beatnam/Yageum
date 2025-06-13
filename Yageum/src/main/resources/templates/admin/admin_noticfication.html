@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="../css/admin_noticfication.css">
+	<link rel="stylesheet" href="../css/admin_header.css">
     <title>공지사항 관리</title>
 </head>
 <body>
+	<div th:replace="fragments/admin_header :: header"></div>
     <div class="container">
         <!-- 사이드바 -->
         <div class="sidebar">
@@ -41,7 +43,7 @@
 
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
-            <div class="header">
+            <div class="main_header">
                 <h1>이메일 공지사항 관리</h1>
                 <button class="add-btn" onclick="openSendModal()">새 공지사항 발송</button>
             </div>
@@ -302,6 +304,14 @@
                 closeSendModal();
             }
         }
+		
+		// 로그아웃 기능
+		function logout() {
+		           if (confirm('로그아웃 하시겠습니까?')) {
+		              window.location.href = '/logout';
+		           }
+		        }
+
     </script>
 </body>
 </html>
