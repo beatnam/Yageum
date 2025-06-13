@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+//github.com/beatnam/Yageum.git
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -44,19 +45,20 @@ public class MemberController {
 	private final MyUserDetailsService myUserDetailsService;
 
 	private final PasswordEncoder passwordEncoder;
-
 	
 	@Value("${naver.client-id}")
 	private String NclientId;
 
 	@Value("${naver.client-secret}")
 	private String NclientSecret;
-	
+
 	// 네이버 로그인 URL을 만들면서
 	@GetMapping("/login")
 	public String login(Model model, HttpSession session) {
 		log.info("MemberController login()");
+
 		String clientId = NclientId;
+
 		String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
 		String state = UUID.randomUUID().toString();
 
@@ -128,8 +130,10 @@ public class MemberController {
 	}
 
 	public String getAccessToken(String code, String state) {
+
 		String clientId = NclientId;
 		String clientSecret = NclientSecret;
+
 		String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
 
 		String apiURL = "https://nid.naver.com/oauth2.0/token?grant_type=authorization_code" + "&client_id=" + clientId
