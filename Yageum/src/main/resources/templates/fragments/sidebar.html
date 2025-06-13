@@ -8,3 +8,23 @@
         </ul>
     </aside>
 </div>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		       const currentPath = window.location.pathname; // 현재 페이지 주소 가져오기
+		       const menuLinks = document.querySelectorAll('.sidebar-menu a'); // 사이드바 메뉴 링크들 가져오기
+
+		       menuLinks.forEach(link => {
+		           // 링크의 href와 현재 주소를 비교해서 일치하면 active 클래스 추가
+				   
+		           if (link.getAttribute('href') === currentPath) {
+						alert(currentPath);
+		               link.classList.add('active');
+		           }
+		           // 만약 /cashbook/list/123 이런 식으로 뒤에 숫자가 붙을 수도 있다면
+		           // currentPath.startsWith(link.getAttribute('href')) 이렇게 시작하는지로 비교할 수도 있어요!
+		       });
+		   });
+	
+	
+	
+</script>
