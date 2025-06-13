@@ -1,6 +1,7 @@
 package com.yageum.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,4 +65,18 @@ public class MemberService {
 		return Optional.ofNullable(memberRepository.findByMemberId(memberId));
 	}
 
+	
+	
+	//관리자 - 유저 페이지 회원 정보 출력 시작
+
+	public List<Member> adminInfo() {
+		
+		
+		return memberRepository.findAll();
+	}
+	//관리자 - 유저 페이지 회원 정보 출력 끝
+
+
+	
+	
 }
