@@ -25,9 +25,8 @@ public class AdminController {
 	@GetMapping("/user")
 	public String user(Model model) {
 		log.info("AdminController user()");
-		
+
 		List<Member> member = memberService.adminInfo();
-		
 		
 		model.addAttribute("member", member);
 		

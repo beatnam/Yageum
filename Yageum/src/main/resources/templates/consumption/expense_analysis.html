@@ -23,12 +23,12 @@
             <div class="stat-card">
                 <div class="stat-icon">💳</div>
                 <div class="stat-label">이번 달 총 지출</div>
-                <div class="stat-value" id="totalExpense" th:text="${'₩' + #numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT')}">₩0</div>
+                <div class="stat-value" id="totalExpense">&#8361;<span th:text="${#numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT')}">0</span></div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📊</div>
                 <div class="stat-label">하루 평균 지출</div>
-                <div class="stat-value" id="averageDailyExpense" th:text="${'₩' + #numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT')}">₩0</div>
+                <div class="stat-value" id="averageDailyExpense">&#8361;<span th:text="${#numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT')}">0</span></div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">⏳</div>
@@ -38,7 +38,7 @@
             <div class="stat-card">
                 <div class="stat-icon">💰</div>
                 <div class="stat-label">남은 예산</div>
-                <div class="stat-value" id="remainingBudget" th:text="${'₩' + #numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT')}">₩0</div>
+                <div class="stat-value" id="remainingBudget">&#8361;<span th:text="${#numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT')}">0</span></div>
             </div>
         </div>
 
@@ -59,23 +59,23 @@
             <div th:if="${savingsPlan != null and not #maps.isEmpty(savingsPlan)}" class="goal-details-card">
                 <div class="goal-item">
                     <span class="goal-label">목표:</span>
-                    <span class="goal-value" th:text="${savingsPlan.save_name != null ? savingsPlan.save_name : '설정되지 않음'}">목표명</span>
+                    <span class="goal-value" th:text="${savingsPlan['save_name'] ?: '설정되지 않음'}">목표명</span>
                 </div>
                 <div class="goal-item">
                     <span class="goal-label">목표 금액:</span>
-                    <span class="goal-value" th:text="${savingsPlan.save_amount != null ? '₩' + #numbers.formatInteger(savingsPlan.save_amount, 0, 'COMMA') : '₩0'}">₩0</span>
+                    <span class="goal-value" th:text="${'₩' + #numbers.formatInteger(savingsPlan['save_amount'] ?: 0, 0, 'COMMA')}">₩0</span>
                 </div>
                 <div class="goal-item">
                     <span class="goal-label">시작일:</span>
-                    <span class="goal-value" th:text="${savingsPlan.save_created_date != null ? #temporals.format(savingsPlan.save_created_date, 'yyyy-MM-dd') : '미정'}">YYYY-MM-DD</span>
+                    <span class="goal-value" th:text="${savingsPlan['save_created_date'] != null ? #temporals.format(savingsPlan['save_created_date'], 'yyyy-MM-dd') : '미정'}">YYYY-MM-DD</span>
                 </div>
                 <div class="goal-item">
                     <span class="goal-label">목표 달성일:</span>
-                    <span class="goal-value" th:text="${savingsPlan.save_target_date != null ? #temporals.format(savingsPlan.save_target_date, 'yyyy-MM-dd') : '미정'}">YYYY-MM-DD</span>
+                    <span class="goal-value" th:text="${savingsPlan['save_target_date'] != null ? #temporals.format(savingsPlan['save_target_date'], 'yyyy-MM-dd') : '미정'}">YYYY-MM-DD</span>
                 </div>
                 <div class="goal-item">
                     <span class="goal-label">현재 저축액:</span>
-                    <span class="goal-value" th:text="${savingsPlan.containsKey('currentSavings') and savingsPlan.get('currentSavings') != null ? '₩' + #numbers.formatInteger(T(java.lang.Integer).valueOf(savingsPlan.get('currentSavings')), 0, 'COMMA') : '₩0'}">₩0</span>
+                    <span class="goal-value" th:text="${savingsPlan['currentSavings'] != null ? '₩' + #numbers.formatInteger(T(java.lang.Integer).valueOf(savingsPlan['currentSavings']), 0, 'COMMA') : '₩0'}">₩0</span>
                 </div>
                 <div class="progress-bar-container">
                     <div class="progress-bar-label">진행률:</div>
@@ -92,11 +92,10 @@
             <p>설정된 절약 목표가 없습니다. 새로운 예산을 설정해 보세요!</p>
             <button class="new-budget-btn" onclick="move()">새로운 예산 생성하기</button>
         </div>
-                <div class="savings-plan-section" th:if="${savingsPlan != null}">
+        <div class="savings-plan-section" th:if="${savingsPlan != null}">
             <p>설정된 절약 목표가 있습니다. 종합분석으로 확실하게!</p>
             <button class="new-budget-btn" onclick="move1()">종합분석 화면으로 가기</button>
         </div>
-
 	</div>
 </div>
 </div>
