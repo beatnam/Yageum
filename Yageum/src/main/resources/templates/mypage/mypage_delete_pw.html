@@ -4,6 +4,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 	<title>회원 탈퇴 비밀번호 확인</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +33,7 @@
 						<label class="password-label" for="password">비밀번호 입력</label>
 						<input type="password" id="password" class="password-input" required>
 					</div>
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 					<button type="submit" class="confirm-btn">확인</button>
 				</form>
 			</div>
@@ -40,21 +43,8 @@
 	<!-- 푸터 -->
 	<div th:replace="fragments/footer :: footer"></div>
 	
-<script>
-		function handlePasswordConfirm(event) {
-			event.preventDefault();
-			const password = document.getElementById('password').value;
-			
-			// 여기서 실제로는 서버에 비밀번호 확인 요청을 보내야 합니다
-			// 현재는 데모용으로 간단한 확인만 구현
-			if (password) {
-				//alert('비밀번호 확인 완료! 회원탈퇴 페이지로 이동합니다.');
-				// 실제로는 회원탈퇴 페이지로 리다이렉트
-				window.location.href = '/mypage/delete';
-			} else {
-				alert('비밀번호를 입력해주세요.');
-			}
-		}
+	<script src="../js/mypage_delete_pw.js">
+	
 	</script>
 
 </body>
