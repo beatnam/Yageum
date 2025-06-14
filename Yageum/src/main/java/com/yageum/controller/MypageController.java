@@ -97,11 +97,12 @@ public class MypageController {
 	@PostMapping("/checkPassword")
 	@ResponseBody
 	public Map<String, Boolean> checkPassword(@RequestBody Map<String, String> requestBody) {
+		log.info("MypageController checkPassword()");
 	    String inputPassword = requestBody.get("password");
 	    String loginId = SecurityContextHolder.getContext().getAuthentication().getName();
 	    
-	    log.info("🔐 비밀번호 확인 요청 - 입력값: " + inputPassword);
-	    log.info("🧑 로그인된 사용자 ID: " + loginId);
+	    log.info("비밀번호 확인 요청 - 입력값: " + inputPassword);
+	    log.info("로그인된 사용자 ID: " + loginId);
 
 
 	    Optional<Member> optionalMember = memberService.findByMemberId(loginId);
@@ -109,11 +110,11 @@ public class MypageController {
 
 	    if (optionalMember.isPresent()) {
 	        Member member = optionalMember.get();
-	        log.info("🗝️ DB 저장된 비번 (암호화): " + member.getMemberPasswd());
+	        log.info("DB 저장된 비번 (암호화): " + member.getMemberPasswd());
 	        match = passwordEncoder.matches(inputPassword, member.getMemberPasswd());
-	        log.info("🔍 매치 결과: " + match);
+	        log.info("매치 결과: " + match);
 	    } else {
-	        log.warning("❌ 해당 ID의 회원 정보 없음");
+	        log.warning("해당 ID의 회원 정보 없음");
 	    }
 
 	    return Collections.singletonMap("match", match);
@@ -137,6 +138,7 @@ public class MypageController {
 	
 	@PostMapping("/deletePro")
 	public String deletePro(HttpSession session, Principal principal) {
+		log.info("MypageController deletePro()");
 		String id = principal.getName();
 		memberService.deleteByMemberId(id);
 		
