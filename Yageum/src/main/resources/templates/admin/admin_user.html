@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="../css/admin_user.css">
 	<link rel="stylesheet" href="../css/admin_header.css">
+	<script src="../js/jquery-3.7.1.js"></script>
     <title>사용자 관리</title>
 </head>
 <body>
@@ -64,28 +65,29 @@
                         </tr>
                     </thead>
                     <tbody id="userTableBody">
-                        
-
-						<tr th:each="member,status:${member}">
-							<td><span th:text="${member.memberRole}"></span></td>
-							<td>
-									<span th:if="${member.memberId.length() >= 43 }">
-										<span th:text="${member.memberPasswd}"></span>
-									</span>
-									
-									<span th:if="${member.memberId.length() < 30 }">
-										<span th:text="${member.memberId}"></span>
-									</span>
-									
-							</td>
-							<td><span th:text="${member.memberName}"></span></td>
-							<td><span th:text="${member.memberEmail}"></span></td>
-							<td><span th:text="${member.memberPhone}"></span></td>
-							<td><button class="detail-btn">상세보기</button></td>
-						</tr>
-						
-					
-
+                        <!-- Thymeleaf로 회원 정보 반복 출력 -->
+                        <tr th:each="member : ${member}" 
+                            th:data-name="${member.memberName}" 
+                            th:data-id="${#strings.length(member.memberId) >= 43 ? member.memberPasswd : member.memberId}">
+                            
+                            <td th:text="${member.memberRole}"></td>
+                            
+                            <td>
+                                <!-- 네이버 가입자 (ID 길이가 43자 이상) -->
+                                <span th:if="${#strings.length(member.memberId) >= 43}" 
+                                      th:text="${member.memberPasswd}"></span>
+                                
+                                <!-- 일반 가입자 (ID 길이가 30자 미만) -->
+                                <span th:if="${#strings.length(member.memberId) < 30}" 
+                                      th:text="${member.memberId}"></span>
+                            </td>
+                            
+                            <td th:text="${member.memberName}"></td>
+                            <td th:text="${member.memberEmail}"></td>
+                            <td th:text="${member.memberPhone}"></td>
+                            <td><button class="detail-btn">상세보기</button></td>
+                        </tr>
+                    </tbody>
                 </table>
                 <div id="noResults" class="no-results" style="display: none;">
                     검색 결과가 없습니다.
@@ -112,20 +114,44 @@
             submenu.classList.toggle('show');
         }
 
-        // 사용자 검색 기능
+        // 사용자 검색 기능 (null 체크 및 안전성 강화)
         function searchUsers() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const searchInput = document.getElementById('searchInput');
             const tableBody = document.getElementById('userTableBody');
             const noResults = document.getElementById('noResults');
+            
+            // 요소들이 존재하는지 확인
+            if (!searchInput || !tableBody || !noResults) {
+                console.error('필요한 DOM 요소를 찾을 수 없습니다.');
+                return;
+            }
+            
+            const searchTerm = searchInput.value.toLowerCase().trim();
             const rows = tableBody.getElementsByTagName('tr');
+            
+            // 테이블 행이 없으면 검색 불가
+            if (rows.length === 0) {
+                console.log('테이블 데이터가 아직 로드되지 않았습니다.');
+                return;
+            }
             
             let visibleCount = 0;
 
             for (let i = 0; i < rows.length; i++) {
-                const name = rows[i].getAttribute('data-name').toLowerCase();
-                const id = rows[i].getAttribute('data-id').toLowerCase();
+                // null 체크 및 안전한 속성 접근
+                const nameAttr = rows[i].getAttribute('data-name');
+                const idAttr = rows[i].getAttribute('data-id');
                 
-                if (searchTerm === '' || name.includes(searchTerm) || id.includes(searchTerm)) {
+                // 속성이 null이거나 undefined면 빈 문자열로 처리
+                const name = (nameAttr || '').toLowerCase();
+                const id = (idAttr || '').toLowerCase();
+                
+                // 검색 조건 확인
+                const isMatch = searchTerm === '' || 
+                               name.includes(searchTerm) || 
+                               id.includes(searchTerm);
+                
+                if (isMatch) {
                     rows[i].style.display = '';
                     visibleCount++;
                 } else {
@@ -133,38 +159,97 @@
                 }
             }
 
-            // 검색 결과가 없을 때 메시지 표시
+            // 검색 결과 표시/숨김 처리
+            const table = tableBody.closest('table');
             if (visibleCount === 0 && searchTerm !== '') {
                 noResults.style.display = 'block';
-                tableBody.parentElement.querySelector('table').style.display = 'none';
+                if (table) table.style.display = 'none';
             } else {
                 noResults.style.display = 'none';
-                tableBody.parentElement.querySelector('table').style.display = 'table';
+                if (table) table.style.display = 'table';
             }
         }
 
-        // 엔터키로 검색
-        document.getElementById('searchInput').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                searchUsers();
+        // 검색 이벤트 설정 함수
+        function setupSearchEvents() {
+            const searchInput = document.getElementById('searchInput');
+            
+            if (!searchInput) {
+                console.error('검색 입력창을 찾을 수 없습니다.');
+                return;
             }
+            
+            // 이미 이벤트가 등록되었는지 확인 (중복 방지)
+            if (searchInput.hasAttribute('data-events-setup')) {
+                return;
+            }
+            
+            // 엔터키로 검색
+            searchInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    searchUsers();
+                }
+            });
+
+            // 실시간 검색 (입력값이 비어있을 때만)
+            searchInput.addEventListener('input', function() {
+                if (this.value.trim() === '') {
+                    searchUsers();
+                }
+            });
+            
+            // 이벤트 설정 완료 표시
+            searchInput.setAttribute('data-events-setup', 'true');
+            console.log('검색 이벤트가 성공적으로 설정되었습니다.');
+        }
+
+        // Thymeleaf 테이블 로딩 대기 함수
+        function waitForTableLoad(maxAttempts = 50, currentAttempt = 0) {
+            const tableBody = document.getElementById('userTableBody');
+            
+            // 최대 시도 횟수 초과 시 포기
+            if (currentAttempt >= maxAttempts) {
+                console.error('테이블 로딩 대기 시간 초과. 검색 기능을 강제로 설정합니다.');
+                setupSearchEvents();
+                return;
+            }
+            
+            // 테이블 바디가 존재하고 행이 있는지 확인
+            if (tableBody && tableBody.children.length > 0) {
+                // 첫 번째 행에 data 속성이 있는지 확인
+                const firstRow = tableBody.children[0];
+                const hasDataAttrs = firstRow.hasAttribute('data-name') && 
+                                   firstRow.hasAttribute('data-id');
+                
+                if (hasDataAttrs) {
+                    console.log('테이블 로딩 완료. 검색 기능을 설정합니다.');
+                    setupSearchEvents();
+                    return;
+                }
+            }
+            
+            // 100ms 후 다시 확인
+            setTimeout(() => {
+                waitForTableLoad(maxAttempts, currentAttempt + 1);
+            }, 100);
+        }
+
+        // 페이지 로드 완료 후 테이블 로딩 대기 시작
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM 로딩 완료. 테이블 로딩을 기다립니다...');
+            waitForTableLoad();
         });
 
-        // 검색어가 비어있으면 모든 결과 표시
-        document.getElementById('searchInput').addEventListener('input', function() {
-            if (this.value.trim() === '') {
-                searchUsers();
+        // 브라우저 뒤로가기/앞으로가기 시에도 대응
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // 캐시에서 페이지가 복원된 경우
+                setTimeout(() => {
+                    waitForTableLoad();
+                }, 100);
             }
         });
-		
-		
-
-		// 로그아웃 기능
-		function logout() {
-		           if (confirm('로그아웃 하시겠습니까?')) {
-		            	window.location.href = '/logout';
-		           }
-		        }
     </script>
 </body>
 </html>
