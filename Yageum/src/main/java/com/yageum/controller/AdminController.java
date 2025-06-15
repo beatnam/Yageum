@@ -37,6 +37,16 @@ public class AdminController {
 		return "/admin/admin_user";
 	}
 
+//	@GetMapping("/user_update")
+//	public String user_update()
+//	
+//	
+//	// 회원 관리 페이지
+
+	
+	
+	
+	
 	@GetMapping("/state")
 	public String state() {
 		log.info("AdminController state()");
@@ -57,6 +67,8 @@ public class AdminController {
 	// 사이트 설정 - 카테고리 설정 페이지
 	
 	
+	
+	
 
 	// 사이트 설정 - 퀘스트 설정 페이지
 
@@ -68,16 +80,16 @@ public class AdminController {
 	}
 	
 	@GetMapping("/quest_gener")
-	public String gener() {
-		log.info("AdminController gener()");
+	public String questgener() {
+		log.info("AdminController questgener()");
 		
 		
 		return "/admin/quest_gener";
 	}
 	
 	@GetMapping("/quest_update")
-	public String update() {
-		log.info("AdminController update()");
+	public String questupdate() {
+		log.info("AdminController questupdate()");
 		
 		
 		return "/admin/quest_update";

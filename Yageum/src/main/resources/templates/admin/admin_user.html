@@ -88,7 +88,7 @@
                             <td th:text="${member.memberName}"></td>
                             <td th:text="${member.memberEmail}"></td>
                             <td th:text="${member.memberPhone}"></td>
-                            <td><button class="detail-btn">상세보기</button></td>
+                            <td><button href = # class="detail-btn" th:value="${member.memberIn}">상세보기</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -108,9 +108,19 @@
             </div>
         </div>
     </div>
-
+<script src="../js/jquery-3.6.0.js"></script>
     <script>
 		
+		$(document).ready(function(){
+			$('.detail-btn').click(function(){
+				alert("클릭");
+				var memberIn = $(this).val();
+				var url = '/admin/user_update?memberIn=' + memberIn;
+				window.open(url, "popup", "width=670,height=740");
+					
+			});
+			
+		});
 		
         // 사이트 설정 하위 메뉴 토글
         function toggleSubmenu(event) {
