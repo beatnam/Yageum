@@ -1,6 +1,7 @@
 package com.yageum.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,11 +38,21 @@ public class AdminController {
 		return "/admin/admin_user";
 	}
 
-//	@GetMapping("/user_update")
-//	public String user_update()
-//	
-//	
-//	// 회원 관리 페이지
+	@GetMapping("/user_detail")
+	public String user_update(@RequestParam("memberId") String memberId, Model model) {
+		log.info("AdminController user_detail()");
+		Optional<Member> member = memberService.findByMemberId(memberId);
+		
+		model.addAttribute("member", member);
+		// html 페이지로 가서 상세보기 페이지에서 표시해줄 정보 입력해주기
+		
+		
+		
+		return "/admin/user_detail";
+	}
+	
+	
+	// 회원 관리 페이지
 
 	
 	

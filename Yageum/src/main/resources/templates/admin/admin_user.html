@@ -88,7 +88,7 @@
                             <td th:text="${member.memberName}"></td>
                             <td th:text="${member.memberEmail}"></td>
                             <td th:text="${member.memberPhone}"></td>
-                            <td><button href = # class="detail-btn" th:value="${member.memberIn}">상세보기</button></td>
+                            <td><button href = # class="detail-btn" th:value="${member.memberId}">상세보기</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -113,10 +113,9 @@
 		
 		$(document).ready(function(){
 			$('.detail-btn').click(function(){
-				alert("클릭");
-				var memberIn = $(this).val();
-				var url = '/admin/user_update?memberIn=' + memberIn;
-				window.open(url, "popup", "width=670,height=740");
+				var memberId = $(this).val();
+				var url = '/admin/user_detail?memberId=' + memberId;
+				window.open(url, "popup", "width=730,height=940");
 					
 			});
 			
