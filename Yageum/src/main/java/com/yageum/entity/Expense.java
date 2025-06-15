@@ -1,5 +1,6 @@
 package com.yageum.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -43,7 +44,7 @@ public class Expense {
     private String expenseMemo;
     
     @Column(name = "expense_date")
-    private LocalDateTime expenseDate;
+    private LocalDate expenseDate;
     
     @Column(name = "expense_content")
     private String expenseContent;

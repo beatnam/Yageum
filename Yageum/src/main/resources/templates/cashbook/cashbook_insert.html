@@ -143,7 +143,6 @@
 		    removeError('type');
 		}
 
-        // 수단 2단계 선택 업데이트
 		function updateMethod2() {
 		    const method1 = document.getElementById('method1').value;
 		    const method2 = document.getElementById('method2');
@@ -151,16 +150,34 @@
 		    method2.innerHTML = '<option value="">상세 선택</option>';
 		    method2.disabled = true;
 
-		    if (method1 === 'card') {
-		        method2.disabled = false;
-		        // 이 부분을 실제 카드 목록으로 변경해야 함 (ex: DB에서 가져온 카드 ID)
-		        method2.innerHTML += '<option value="1">네이버 카드</option>';
-		        method2.innerHTML += '<option value="2">삼성 카드</option>';
-		    } else if (method1 === 'account') {
-		        method2.disabled = false;
-		        method2.innerHTML += '<option value="10">카카오뱅크</option>';
-		        method2.innerHTML += '<option value="11">국민은행</option>';
+		    if (method1 === "cash" || method1 === "") {
+		        // 현금 선택 시 비활성화
+		        return;
 		    }
+
+		    // 카드 또는 계좌일 경우 → 서버에서 데이터 가져오기
+			fetch(`/cashbook/methods/${method1}`)
+			       .then(res => {
+			           if (!res.ok) throw new Error("서버 응답 실패");
+			           return res.json(); 
+			       })
+			       .then(data => {
+			           console.log("받은 목록:", data);
+
+			           // 받은 목록으로 옵션 추가
+			           data.forEach(item => {
+			               const option = document.createElement("option");
+			               option.value = item.id;
+			               option.textContent = item.name;
+			               method2.appendChild(option);
+			           });
+
+			           // 여기서 활성화!
+			           method2.disabled = false;
+			       })
+			       .catch(err => {
+			           console.error("method2 로딩 오류:", err.message); 
+			       });
 		}
 
         // 카테고리 선택 팝업 (실제로는 팝업창으로 구현)
@@ -179,12 +196,12 @@
       //  }
 
         // 에러 상태 제거
-        //function removeError(fieldName) {
-       //     const formGroup = document.querySelector(`[name="${fieldName}"]`).closest('.form-group');
-       //    if (formGroup) {
-       //         formGroup.classList.remove('error');
-       //     }
-      //  }
+        function removeError(fieldName) {
+            const formGroup = document.querySelector(`[name="${fieldName}"]`).closest('.form-group');
+          if (formGroup) {
+                formGroup.classList.remove('error');
+            }
+        }
 
         // 폼 검증 및 제출
         function handleSubmit(event) {
@@ -217,7 +234,7 @@
             if (isValid) {
                 // 폼 데이터 수집
                 const formData = new FormData(event.target);
-                 formData.set('amount', formData.get('amount').replace(/,/g, '')); //쉼표 제거
+                 formData.set('expenseSum', formData.get('expenseSum').replace(/,/g, '')); //쉼표 제거
                 const data = Object.fromEntries(formData);
                 
                 console.log('제출된 데이터:', data);
@@ -228,12 +245,12 @@
         }
 
         // 금액 입력 시 숫자만 허용하고 포맷팅
-        document.getElementById('amount').addEventListener('input', function(e) {
+        document.getElementById('expenseSum').addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^\d]/g, '');
             if (value) {
                 e.target.value = parseInt(value).toLocaleString();
             }
-            removeError('amount');
+            removeError('expenseSum');
         });
 
         // 다른 필드들도 입력 시 에러 상태 제거
@@ -256,7 +273,7 @@
 		function loadSubCategories(element) {
 			const cmIn = element.getAttribute("data-cmin");
 			
-			console.log("✅ cmIn 확인:", cmIn);
+			console.log("cmIn 확인:", cmIn);
 			fetch(`/cashbook/category/${cmIn}`)
 		    .then(res => res.json())
 		    .then(subs => {
