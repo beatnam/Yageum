@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	 <link rel="stylesheet" href="../css/quest_gener.css">
+    <title>퀘스트 생성</title>
+</head>
+<body>
+    <div class="quest-form-container">
+        <div class="form-header">
+            <h2>퀘스트 생성</h2>
+        </div>
+        
+        <form id="questForm" onsubmit="submitQuest(event)">
+            <div class="form-content">
+                <table class="form-table">
+                    <tr>
+                        <td>퀘스트 이름<span class="required">*</span></td>
+                        <td>
+                            <input type="text" name="questName" id="questName" class="form-input" placeholder="퀘스트 이름을 입력하세요" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>카테고리<span class="required">*</span></td>
+                        <td>
+                            <div class="category-group">
+                                <select name="mainCategory" id="mainCategory" class="form-select" required>
+                                    <option value="">메인 카테고리 선택</option>
+                                    <option value="daily">일일 퀘스트</option>
+                                    <option value="weekly">주간 퀘스트</option>
+                                    <option value="special">특별 퀘스트</option>
+                                    <option value="event">이벤트 퀘스트</option>
+                                </select>
+                                <select name="subCategory" id="subCategory" class="form-select" required>
+                                    <option value="">서브 카테고리 선택</option>
+                                    <option value="combat">전투</option>
+                                    <option value="collection">수집</option>
+                                    <option value="exploration">탐험</option>
+                                    <option value="social">소셜</option>
+                                    <option value="crafting">제작</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>목표치<span class="required">*</span></td>
+                        <td>
+                            <input type="number" name="targetValue" id="targetValue" class="form-input" placeholder="목표치를 입력하세요" min="1" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>보상<span class="required">*</span></td>
+                        <td>
+                            <input type="number" name="reward" id="reward" class="form-input" placeholder="보상을 입력하세요" min="0" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>퀘스트 기간<span class="required">*</span></td>
+                        <td>
+                            <div class="date-group">
+                                <input type="date" name="startDate" id="startDate" class="form-input" required>
+                                <span class="date-separator">~</span>
+                                <input type="date" name="endDate" id="endDate" class="form-input" required>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="cancelQuest()">취소</button>
+                <button type="submit" class="btn btn-primary">퀘스트 생성</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 폼 제출 처리
+        function submitQuest(event) {
+            event.preventDefault(); // 기본 폼 제출 방지
+            
+            const form = document.getElementById('questForm');
+            const formData = new FormData(form);
+            
+            // 날짜 검증 
+            const startDate = formData.get('startDate');
+            const endDate = formData.get('endDate');
+            if (new Date(startDate) >= new Date(endDate)) {
+                alert('종료일은 시작일보다 늦어야 합니다.');
+                return false;
+            }
+            
+            confirm('퀘스트 생성을 하시겠습니까?');
+            alert('퀘스트 데이터를 서버로 전송합니다...');
+			form.submit(); // 서버로 폼 제출 (페이지 이동됨)
+            
+        }
+        
+        // 취소 버튼 눌렀을 때 
+        function cancelQuest() {
+            if (confirm('퀘스트 생성을 취소하시겠습니까?')) {
+                window.close();    // 창 닫기
+            }
+        }
+        
+        // 시작일 종료일 기본 지정되어 있는 디폴트 값 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            
+            // 종료일 기본값을 일주일 후로 설정
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            document.getElementById('endDate').value = nextWeek.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>

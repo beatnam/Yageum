@@ -70,7 +70,10 @@
                             th:data-name="${member.memberName}" 
                             th:data-id="${#strings.length(member.memberId) >= 43 ? member.memberPasswd : member.memberId}">
                             
-                            <td th:text="${member.memberRole}"></td>
+                            <td 
+								th:text="${member.memberRole}"
+								>
+							</td>
                             
                             <td>
                                 <!-- 네이버 가입자 (ID 길이가 43자 이상) -->
@@ -107,6 +110,8 @@
     </div>
 
     <script>
+		
+		
         // 사이트 설정 하위 메뉴 토글
         function toggleSubmenu(event) {
             event.preventDefault();

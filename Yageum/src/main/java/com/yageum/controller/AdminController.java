@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.yageum.entity.Member;
 import com.yageum.service.MemberService;
@@ -54,6 +55,8 @@ public class AdminController {
 	}
 
 	// 사이트 설정 - 카테고리 설정 페이지
+	
+	
 
 	// 사이트 설정 - 퀘스트 설정 페이지
 
@@ -63,9 +66,26 @@ public class AdminController {
 
 		return "/admin/admin_quest";
 	}
-
+	
+	@GetMapping("/quest_gener")
+	public String gener() {
+		log.info("AdminController gener()");
+		
+		
+		return "/admin/quest_gener";
+	}
+	
+	@GetMapping("/quest_update")
+	public String update() {
+		log.info("AdminController update()");
+		
+		
+		return "/admin/quest_update";
+	}
 	// 사이트 설정 - 퀘스트 설정 페이지
 
+	
+	
 	// 사이트 설정 - 공지사항 페이지
 
 	@GetMapping("/noticfication")
