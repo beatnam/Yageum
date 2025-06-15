@@ -12,9 +12,11 @@ import com.yageum.entity.Member;
 import com.yageum.mapper.MemberMapper;
 import com.yageum.repository.MemberRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
+@Transactional
 @Service
 @Log
 @RequiredArgsConstructor
@@ -61,14 +63,6 @@ public class MemberService {
 	}
 
 
-	public Optional<Member> findByMemberId(String memberId) {
-
-		return Optional.ofNullable(memberRepository.findByMemberId(memberId));
-
-	}
-
-	
-	
 	//관리자 - 유저 페이지 회원 정보 출력 시작
 
 	public List<Member> adminInfo() {
@@ -76,9 +70,34 @@ public class MemberService {
 		
 		return memberRepository.findAll();
 	}
+
+
 	//관리자 - 유저 페이지 회원 정보 출력 끝
 
+	
+	//마이페이지 - 회원정보 수정 저장 로직 시작
+	public Optional<Member> findByMemberId(String memberId) {
+		log.info("MemberService findByMemberId()");
+
+		return Optional.ofNullable(memberRepository.findByMemberId(memberId));
+
+	}
 
 	
+	public void save(Member member) {
+		log.info("MemberService save()");
+		
+		memberRepository.save(member); 
+	}
+
+	public void deleteByMemberId(String id) {
+		log.info("MemberService deleteByMemberId()");
+		
+		memberRepository.deleteByMemberId(id); 
+		
+	}
+
+
+	//마이페이지 - 회원정보 수정 저장 로직 끝
 	
 }

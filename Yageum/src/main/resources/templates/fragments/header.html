@@ -8,7 +8,8 @@
 
 					<span class="welcome-msg" sec:authorize="isAuthenticated()">
 
-						<span th:text="${session.memberName} + '님 안녕하세요'"></span>
+						<a href="/mypage/update"><span th:text="${session.memberName}"></span></a>
+							<span>님 안녕하세요!</span>
 
 						<button class="btn-logout" onclick="logout()">로그아웃</button>
 					</span>

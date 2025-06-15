@@ -39,7 +39,7 @@
 					한 번 탈퇴하시면 모든 정보가 삭제되며, 복원할 수 없습니다!
 				</div>
 
-				<form onsubmit="handleWithdraw(event)">
+				<form action="/mypage/deletePro" method="post" onsubmit="return confirmWithdraw()">
 					<div class="agreement-section">
 						<input type="checkbox" id="agreement" class="agreement-checkbox">
 						<label for="agreement" class="agreement-label">동의합니다.</label>
@@ -47,6 +47,7 @@
 
 					<div class="button-group">
 						<button type="button" class="btn-cancel" onclick="goBack()">취소</button>
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 						<button type="submit" class="btn-confirm">확인</button>
 					</div>
 				</form>
@@ -57,31 +58,8 @@
 	<!-- 푸터 -->
 	<div th:replace="fragments/footer :: footer"></div>
 
-<script>
-		function handleWithdraw(event) {
-			event.preventDefault();
-			const agreement = document.getElementById('agreement');
-			
-			if (!agreement.checked) {
-				alert('동의하셔야 탈퇴가 가능합니다.');
-				return false;
-			}
-			
-			// 추가 확인 메시지
-			if (confirm('정말로 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.')) {
-				alert('회원탈퇴가 완료되었습니다.');
-				// 실제로는 서버에 탈퇴 요청을 보내고 메인 페이지로 리다이렉트
-				// window.location.href = '/';
-			}
-		}
+	<script src="../js/mypage_delete.js">
 
-		function goBack() {
-			if (confirm('탈퇴를 취소하고 이전 페이지로 돌아가시겠습니까?')) {
-				// 실제로는 이전 페이지로 이동
-				// window.history.back();
-				alert('이전 페이지로 돌아갑니다.');
-			}
-		}
 	</script>
 </body>
 
