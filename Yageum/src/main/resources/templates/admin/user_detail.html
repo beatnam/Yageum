@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/user_detail.css">
+	<title>사용자 상세보기</title>
+    <style>
+      
+    </style>
+</head>
+<body>
+	<div class="user-detail-container">
+	       <div class="form-header">
+	           <h2>사용자 상세보기</h2>
+	       </div>
+	       
+	       <!-- 기본 정보만 폼태그로 묶음 -->
+	       <form id="userDetailForm" action="/admin/authority" method="POST" onsubmit="submitUserUpdate(event)">
+	           <div class="form-content">
+	               <!-- 기본 정보 섹션 (폼 처리) -->
+	               <div class="info-section">
+	                   <div class="section-title">기본 정보</div>
+	                   <table class="form-table">
+	                       <tr>
+	                           <td>사용자 권한<span class="required">*</span></td>
+	                           <td>
+	                               <select name="userRole" class="form-select" required>
+	                                   <option value="USER" selected>USER</option>
+	                                   <option value="ADMIN">ADMIN</option>
+	                               </select>
+	                           </td>
+	                       </tr>
+	                       <tr>
+	                           <td>회원 ID</td>
+	                           <td>
+	                               <input type="text" name="userId" class="form-input readonly" value="USER001" readonly>
+	                               <input type="hidden" name="userIdHidden" value="USER001">
+	                           </td>
+	                       </tr>
+	                       <tr>
+	                           <td>회원 이름</td>
+	                           <td>
+	                               <input type="text" name="userName" class="form-input readonly" value="김철수" readonly>
+	                           </td>
+	                       </tr>
+	                       <tr>
+	                           <td>성별</td>
+	                           <td>
+	                               <input type="text" name="gender" class="form-input readonly" value="남성" readonly>
+	                           </td>
+	                       </tr>
+	                       <tr>
+	                           <td>주소</td>
+	                           <td>
+	                               <input type="text" name="address" class="form-input readonly" value="서울특별시 강남구 테헤란로 123" readonly>
+	                           </td>
+	                       </tr>
+	                       <tr>
+	                           <td>이메일</td>
+	                           <td>
+	                               <input type="email" name="email" class="form-input readonly" value="kimcs@example.com" readonly>
+	                           </td>
+	                       </tr>
+	                       <tr>
+	                           <td>전화번호</td>
+	                           <td>
+	                               <input type="text" name="phone" class="form-input readonly" value="010-1234-5678" readonly>
+	                           </td>
+	                       </tr>
+	                   </table>
+	               </div>
+	           </div>
+	       </form>
+
+	       <!-- 나머지 정보들은 표시용으로만 (폼 밖에 위치) -->
+	       <div class="form-content">
+	           <!-- 계정 정보 섹션 -->
+	           <div class="info-section">
+	               <div class="section-title">계정 정보</div>
+	               <table class="form-table">
+	                   <tr>
+	                       <td>가입날짜</td>
+	                       <td>
+	                           <input type="text" class="form-input readonly" value="2024-01-15" readonly>
+	                       </td>
+	                   </tr>
+	                   <tr>
+	                       <td>마지막 로그인</td>
+	                       <td>
+	                           <input type="text" class="form-input readonly" value="2025-06-14 14:30:25" readonly>
+	                       </td>
+	                   </tr>
+	                   <tr>
+	                       <td>회원 상태</td>
+	                       <td>
+	                           <span class="status-active">활성</span>
+	                       </td>
+	                   </tr>
+	                   <tr>
+	                       <td>포인트</td>
+	                       <td>
+	                           <input type="text" class="form-input readonly" value="15,500 P" readonly>
+	                       </td>
+	                   </tr>
+	               </table>
+	           </div>
+
+	           <!-- 연결 정보 섹션 -->
+	           <div class="info-section">
+	               <div class="section-title">연결 정보</div>
+	               <table class="form-table">
+	                   <tr>
+	                       <td>연결된 계좌 수</td>
+	                       <td>
+	                           <input type="text" class="form-input readonly" value="3개" readonly>
+	                       </td>
+	                   </tr>
+	                   <tr>
+	                       <td>연결된 카드 수</td>
+	                       <td>
+	                           <input type="text" class="form-input readonly" value="2개" readonly>
+	                       </td>
+	                   </tr>
+	                   <tr>
+	                       <td>달성한 퀘스트 수</td>
+	                       <td>
+	                           <input type="text" class="form-input readonly" value="47개" readonly>
+	                       </td>
+	                   </tr>
+	               </table>
+	           </div>
+
+	           <!-- 동의 정보 섹션 -->
+	           <div class="info-section">
+	               <div class="section-title">동의 정보</div>
+	               <table class="form-table">
+	                   <tr>
+	                       <td>개인정보 동의</td>
+	                       <td>
+	                           <span class="consent-yes">동의</span>
+	                       </td>
+	                   </tr>
+	                   <tr>
+	                       <td>이메일 동의</td>
+	                       <td>
+	                           <span class="consent-no">미동의</span>
+	                       </td>
+	                   </tr>
+	               </table>
+	           </div>
+	       </div>
+	       
+	       <!-- 버튼은 맨 밑에 그대로 -->
+	       <div class="form-actions">
+	           <button type="button" class="btn btn-secondary" onclick="closeDetail()">닫기</button>
+	           <button type="button" class="btn btn-primary" onclick="submitUserUpdate(event)">수정</button>
+	       </div>
+	   </div>
+
+	   <script>
+	       // 폼 제출 처리
+	       function submitUserUpdate(event) {
+	           event.preventDefault();
+	           
+	           // 변경사항 확인
+	           if (confirm('사용자 권한을 변경하시겠습니까?')) {
+	               console.log('사용자 정보 변경 데이터를 서버로 전송합니다...');
+	               // 폼 제출 (기본정보만 전송됨)
+	               document.getElementById('userDetailForm').submit();
+	               // 실제 개발시에는 위 라인의 주석을 해제하고 아래는 제거
+	               alert('사용자 권한이 성공적으로 변경되었습니다.');
+	           }
+	       }
+
+	       // 닫기 처리
+	       function closeDetail() {
+	           if (confirm('사용자 상세보기를 닫으시겠습니까?')) {
+	               window.close();
+	           }
+	       }
+	   </script>
+</body>
+</html>
