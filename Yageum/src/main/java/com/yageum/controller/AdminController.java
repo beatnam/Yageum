@@ -9,11 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sun.source.tree.MemberSelectTree;
-import com.yageum.domain.MemberDTO;
 import com.yageum.entity.Member;
-import com.yageum.repository.MemberRepository;
 import com.yageum.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -62,11 +60,13 @@ public class AdminController {
 	
 	
 	@PostMapping("/authority")
+	@ResponseBody				//페이지 찾는 리턴 필요 없을시 사용하기
 	public void authority(Member member2) {
 		log.info("AdminController authority()");
-//		log.info("변경된 권한" + member2.getMemberRole().toString());
+//		log.info("변경된 권한" + member2.getzMemberRole().toString());
 		Member member = memberService.find(member2.getMemberId());
 		member.setMemberRole(member2.getMemberRole());
+		log.info("member 값 " + member.toString());
 		
 		memberService.save(member);
 		
