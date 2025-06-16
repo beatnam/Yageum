@@ -14,12 +14,27 @@
         LIMIT 1
     </select>
 
-    <select id="calculateTotalCurrentSavings" resultType="java.lang.Integer">
+    <select id="findSavingsPlanByMonthAndYear" resultType="map">
+        SELECT
+            save_name,
+            save_amount,
+            save_created_date,
+            save_target_date
+        FROM savings_plan
+        WHERE member_in = #{memberIn}
+        AND YEAR(save_created_date) = #{year}
+        AND MONTH(save_created_date) = #{month}
+        ORDER BY save_created_date DESC
+        LIMIT 1
+    </select>
+
+    <select id="calculateBalanceUpToMonth" resultType="java.lang.Integer">
         SELECT
             COALESCE(SUM(CASE WHEN expense_type = TRUE THEN expense_sum ELSE 0 END), 0) -
             COALESCE(SUM(CASE WHEN expense_type = FALSE THEN expense_sum ELSE 0 END), 0)
         FROM expense
         WHERE member_in = #{memberIn}
+        AND expense_date &lt;= LAST_DAY(STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d'))
     </select>
     
     <select id="budgetLastMons" resultType="int">
@@ -29,7 +44,32 @@
 	        DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01') 
 	        AND LAST_DAY(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
 	    AND member_in = #{memberIn}
+        ORDER BY save_created_date DESC
+        LIMIT 1
 	</select>
-    
 
-</mapper>
+    <select id="getBudgetForMonth" resultType="int">
+        SELECT save_amount
+        FROM savings_plan
+        WHERE member_in = #{memberIn}
+        AND YEAR(save_created_date) = #{year}
+        AND MONTH(save_created_date) = #{month}
+        ORDER BY save_created_date DESC
+        LIMIT 1
+    </select>
+    
+    <insert id="updateMonthlyIncome">
+    	    INSERT INTO savings_plan (member_in, save_name, save_created_date, save_target_date, save_amount) 
+            VALUES (#{memberId}, #{saveName}, #{saveCreatedDate}, #{saveTargetDate}, #{saveAmount})
+    </insert>
+    
+    <select id="planChack" resultType="Integer">
+		SELECT EXISTS(
+		    SELECT 1
+		    FROM savings_plan
+		    WHERE member_in = #{memberIn}
+		    AND save_created_date BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())
+		) AS is_exists;
+    </select>
+
+    </mapper>

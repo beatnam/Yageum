@@ -85,8 +85,10 @@
         </div>
 
         <div class="total-section">
-            <h2>예산 요약</h2>
+            <h2>예산</h2>
+            <input type="text" id="income-amount" name="save_name" placeholder="목표 이름을 입력해주세요.">
             <div style="display: flex; justify-content: space-around; flex-wrap: wrap; margin: 20px 0;">
+            	
                 <div>
                     <p>총 수입</p>
                     <div class="total-amount" id="total-income">₩0</div>
@@ -223,16 +225,82 @@
                 return;
             }
 
-            const budgetData = {
-                incomes,
-                expenses,
-                savedAt: new Date().toISOString()
+            const totalIncome = incomes.reduce((sum, item) => sum + item.amount, 0); // 총 수입 계산
+
+            // 'name="save_name"'을 가진 input 필드의 값을 가져옵니다.
+            const saveNameInput = document.querySelector('input[name="save_name"]'); 
+            const saveNameValue = saveNameInput ? saveNameInput.value.trim() : '';
+
+            if (saveNameValue === '') {
+                alert('예산 목표 이름을 입력해주세요.');
+                if (saveNameInput) {
+                    saveNameInput.focus();
+                }
+                return;
+            }
+
+            // ⭐★★ CSRF 토큰 가져오는 부분 다시 확인 및 강화 ★★⭐
+            const csrfTokenElement = document.querySelector('input[name="_csrf"]');
+            const csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
+
+            // Spring Security의 기본 CSRF 헤더 이름은 'X-CSRF-TOKEN'입니다.
+            // 만약 Thymeleaf의 meta 태그로 `_csrf_header`를 사용한다면 그 값을 따르고, 없으면 기본값 사용.
+            const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+            const csrfHeaderName = csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN'; // 기본값 'X-CSRF-TOKEN'
+
+            // fetch 요청에 포함될 헤더 객체를 생성합니다.
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             };
 
-            // 실제 구현에서는 서버로 데이터를 전송하거나 localStorage에 저장
-            console.log('Budget saved:', budgetData);
-            alert('예산이 성공적으로 저장되었습니다! 💾');
-            window.location.href = '/consumption/canalysis';
+            // CSRF 토큰이 존재하면 헤더에 추가합니다.
+            if (csrfToken && csrfHeaderName) {
+                headers[csrfHeaderName] = csrfToken; // 동적으로 헤더 이름과 값을 추가합니다.
+            } else {
+                console.warn("CSRF 토큰 또는 헤더 이름을 찾을 수 없습니다. 보안 문제가 발생할 수 있습니다.");
+            }
+
+            // 서버로 전송할 데이터
+            const dataToSend = {
+                totalIncome: totalIncome,
+                save_name: saveNameValue
+            };
+
+            fetch('/consumption/bplannerPro', {
+                method: 'POST',
+                headers: headers, // ⭐★★ 수정된 headers 객체를 사용합니다. ★★⭐
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response => {
+                // 403 Forbidden 에러를 특별히 처리하여 사용자에게 로그인 필요 등의 메시지 전달
+                if (response.status === 403) {
+                    return response.json().then(errorData => {
+                        throw new new Error(errorData.message || '인증 오류: 접근이 거부되었습니다. 다시 로그인해주세요.');
+                    }).catch(() => {
+                        // JSON 파싱 실패 시 (예: HTML 에러 페이지 반환 시) 기본 메시지
+                        throw new Error('인증 오류: 접근이 거부되었습니다. 페이지를 새로고침하거나 다시 로그인해주세요.');
+                    });
+                }
+                if (!response.ok) { // 2xx 외의 다른 상태 코드 처리
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || '예산 저장 중 오류 발생');
+                    });
+                }
+                return response.json(); // 성공적인 2xx 응답인 경우 JSON 파싱
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(data.message + ' 💾');
+                    window.location.href = '/consumption/canalysis';
+                } else {
+                    alert('저장 실패: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('예산 저장 중 네트워크 또는 기타 오류 발생:', error);
+                alert('예산 저장 중 오류가 발생했습니다: ' + error.message);
+            });
         }
 
         function resetBudget() {

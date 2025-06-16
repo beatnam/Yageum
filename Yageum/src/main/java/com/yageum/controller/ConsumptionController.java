@@ -2,6 +2,7 @@ package com.yageum.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yageum.service.ConsumptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yageum.domain.SavingsPlanDTO;
 import com.yageum.service.ChatGPTClient;
 
 import lombok.RequiredArgsConstructor;
@@ -68,10 +72,6 @@ public class ConsumptionController {
             .sum();
 
         // 소비 효율 점수 계산 로직 수정: totalExpense를 덜 민감하게 반응하도록 나눗셈 기준 조정
-        // 예시: 100 - (totalExpense / 5000) -> 10만원 지출 시 80점, 20만원 지출 시 60점, 30만원 지출 시 40점
-        // 적절한 값을 찾아야 합니다. 여기서는 10000을 5000으로 줄여보겠습니다.
-        // 더 완만하게 점수가 떨어지게 하려면, 10000보다 훨씬 큰 값(예: 20000, 30000)을 사용해야 합니다.
-        // 저는 '어느 정도 지출을 해도 보통 이상은 줄 수 있도록' 나눗셈 기준을 15000 정도로 높여보겠습니다.
         int efficiencyScore = Math.max(50, Math.min(95, 100 - (totalExpense / 15000)));
 
         String efficiencyMessage = efficiencyScore > 80 ? "매우 효율적인 소비를 하고 계십니다!"
@@ -105,8 +105,7 @@ public class ConsumptionController {
                 switch (categoryName) {
                     case "식비":
                         icon = "🍽️";
-                        // 식비 기준도 좀 더 유연하게 조정
-                        if (totalExpenseForCategory > 70000) { // 5만원에서 7만원으로 상향
+                        if (totalExpenseForCategory > 70000) {
                             status = "주의";
                             statusClass = "warning";
                             description = "이번 달 식비가 " + totalExpenseForCategory + "원으로 높은 편입니다. 외식을 줄여보세요.";
@@ -124,8 +123,7 @@ public class ConsumptionController {
                         break;
                     case "쇼핑":
                         icon = "🛍️";
-                        // 쇼핑 기준도 좀 더 유연하게 조정
-                        if (totalExpenseForCategory > 150000) { // 10만원에서 15만원으로 상향
+                        if (totalExpenseForCategory > 150000) {
                             status = "개선 필요";
                             statusClass = "danger";
                             description = "이번 달 쇼핑 지출이 " + totalExpenseForCategory + "원으로 많습니다. 충동구매를 주의하세요.";
@@ -198,42 +196,46 @@ public class ConsumptionController {
         return "consumption/last_month_analysis";
     }
 
-    @GetMapping("/eanalysis") // 이 메서드를 수정합니다.
+    @GetMapping("/eanalysis")
     public String getExpenseAnalysis(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         log.info("ConsumptionController getExpenseAnalysis() 호출");
-        String memberId = userDetails.getUsername(); // Spring Security UserDetails에서 username은 memberId와 같음
+        String memberId = userDetails.getUsername();
 
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
         if (memberIn == null) {
             log.warning("Member not found for memberId: " + memberId);
             return "redirect:/error";
         }
+        // 1. 이번 달 기준 데이터 (Current Month Data)
 
-        // 이번 달 총 지출 (기존 코드 유지)
+        // 이번 달 총 지출
         int totalExpense = consumptionService.getTotalExpenseForCurrentMonth(memberIn);
         model.addAttribute("totalExpense", totalExpense);
 
-        // 현재 날짜 정보 (기존 코드 유지)
         LocalDate today = LocalDate.now();
         int totalDaysInMonth = today.lengthOfMonth();
         int currentDayOfMonth = today.getDayOfMonth();
         int daysLeft = totalDaysInMonth - currentDayOfMonth;
 
+        // 하루 평균 지출 (현재까지의 지출 / 지난 일수)
         double averageDailyExpense = (currentDayOfMonth > 0) ? (double) totalExpense / currentDayOfMonth : 0;
         model.addAttribute("averageDailyExpense", (int) Math.round(averageDailyExpense));
         model.addAttribute("daysLeft", daysLeft);
 
-        // 남은 예산 (기존 코드 유지)
-        
-        int budget = consumptionService.budgetLastMons(memberIn); // 이 값은 실제 예산 설정 로직에 따라 변경될 수 있습니다.
-        int remainingBudget = budget - totalExpense;
+        // 이번 달 예산 설정 금액
+        int currentMonthBudget = consumptionService.getBudgetForCurrentMonth(memberIn);
+        int remainingBudget = currentMonthBudget - totalExpense;
         model.addAttribute("remainingBudget", remainingBudget);
 
-        // ====== 변경된 부분 시작 ======
-        // 월별 지출 데이터 로드 (현재 연도 1월부터 12월까지)
-        // consumptionService.getMonthlyExpensesForPastMonths(memberIn, 12); 대신 아래 메서드 호출
-        List<Map<String, Object>> monthlyExpensesData = consumptionService.getMonthlyExpensesForCurrentYear(memberIn);
+        // 예산 사용률 (이번 달 기준)
+        double budgetUsageProgress = 0.0;
+        if (currentMonthBudget != 0) {
+            budgetUsageProgress = (totalExpense * 100.0) / currentMonthBudget;
+        }
+        model.addAttribute("budgetUsageProgress", budgetUsageProgress);
 
+        // 월별 지출 추이 그래프 데이터 (현재 연도 데이터)
+        List<Map<String, Object>> monthlyExpensesData = consumptionService.getMonthlyExpensesForCurrentYear(memberIn);
         if (monthlyExpensesData == null) {
             monthlyExpensesData = new ArrayList<>();
             log.info("monthlyExpensesData was null, initialized to empty list.");
@@ -242,102 +244,44 @@ public class ConsumptionController {
         List<String> monthlyExpensesLabels = new ArrayList<>();
         List<Integer> monthlyExpensesValues = new ArrayList<>();
 
-        // monthlyExpensesLabels 생성 로직 간소화
-        // getMonthlyExpensesForCurrentYear는 month (1~12)와 currentYear를 보장하므로 복잡한 로직이 필요 없음.
         if (!monthlyExpensesData.isEmpty()) {
             monthlyExpensesData.forEach(entry -> {
-                int monthValue = (int) entry.get("month"); // 월 값은 항상 Integer로 넘어옴
-                // 서비스에서 totalExpense 키로 값을 넣으므로 "total_expense" 대신 "totalExpense" 사용
+                int monthValue = (int) entry.get("month");
                 int totalExpenseAmount = ((Number) entry.get("totalExpense")).intValue();
-                
-                // 라벨은 "N월" 형식으로 고정 (예: 1월, 2월, ..., 12월)
+
                 monthlyExpensesLabels.add(monthValue + "월");
                 monthlyExpensesValues.add(totalExpenseAmount);
             });
         }
-        // ====== 변경된 부분 끝 ======
-        
-        log.info("monthlyExpensesLabels (before model add): " + monthlyExpensesLabels);
-        log.info("monthlyExpensesValues (before model add): " + monthlyExpensesValues);
 
-        // ====================================================================
-        // 이 부분이 JSON 변환 로직입니다. (이제 eanalysis 메서드 안에 위치)
-        ObjectMapper objectMapper = new ObjectMapper();
-        String monthlyExpensesLabelsJson = "[]";
-        String monthlyExpensesValuesJson = "[]";
+        model.addAttribute("monthlyExpensesLabels", monthlyExpensesLabels);
+        model.addAttribute("monthlyExpensesValues", monthlyExpensesValues);
 
-        try {
-            monthlyExpensesLabelsJson = objectMapper.writeValueAsString(monthlyExpensesLabels);
-            monthlyExpensesValuesJson = objectMapper.writeValueAsString(monthlyExpensesValues);
-        } catch (Exception e) {
-            log.severe("JSON 변환 중 오류 발생: " + e.getMessage());
-        }
-        log.info("monthlyExpensesLabels (after JSON conversion): " + monthlyExpensesLabelsJson); // JSON 변환 후 로그 추가
-        log.info("monthlyExpensesValues (after JSON conversion): " + monthlyExpensesValuesJson); // JSON 변환 후 로그 추가
-        // Model에 JSON 문자열 추가 (기존 List<String>과 List<Integer> 대신)
-        model.addAttribute("monthlyExpensesLabels", monthlyExpensesLabelsJson);
-        model.addAttribute("monthlyExpensesValues", monthlyExpensesValuesJson);
-        // ====================================================================
+        // 2. 지난 달 기준 데이터 (Previous Month Data)
 
-        // 절약 목표 정보 (기존 코드 유지)
-        Map<String, Object> savingsPlan = consumptionService.getLatestSavingsPlanByMemberIn(memberIn);
+        // 지난달 절약 목표 정보 가져오기
+        Map<String, Object> previousMonthSavingsPlan = consumptionService.getPreviousMonthSavingsPlan(memberIn);
 
-        // *** 여기부터 추가할 코드: java.sql.Date 타입을 java.time.LocalDate로 변환 ***
-        if (savingsPlan != null) {
-            if (savingsPlan.get("save_created_date") instanceof java.sql.Date) {
-                savingsPlan.put("save_created_date", ((java.sql.Date) savingsPlan.get("save_created_date")).toLocalDate());
+        if (previousMonthSavingsPlan != null) {
+            if (previousMonthSavingsPlan.get("save_created_date") instanceof java.sql.Date) {
+                previousMonthSavingsPlan.put("save_created_date", ((java.sql.Date) previousMonthSavingsPlan.get("save_created_date")).toLocalDate());
             }
-            if (savingsPlan.get("save_target_date") instanceof java.sql.Date) {
-                savingsPlan.put("save_target_date", ((java.sql.Date) savingsPlan.get("save_target_date")).toLocalDate());
+            if (previousMonthSavingsPlan.get("save_target_date") instanceof java.sql.Date) {
+                previousMonthSavingsPlan.put("save_target_date", ((java.sql.Date) previousMonthSavingsPlan.get("save_target_date")).toLocalDate());
             }
         }
-        // *** 여기까지 추가할 코드 ***
+        model.addAttribute("savingsPlan", previousMonthSavingsPlan);
 
-        model.addAttribute("savingsPlan", savingsPlan); // 수정된 savingsPlan을 모델에 추가
 
-     // ==== 기존 절약 목표 progress 계산 로직 (변수명 변경: progress -> savingsProgress) ====
-        double savingsProgress = 0.0;
-        if (savingsPlan != null &&
-            savingsPlan.containsKey("currentSavings") && savingsPlan.get("currentSavings") instanceof Number &&
-            savingsPlan.containsKey("save_amount") && savingsPlan.get("save_amount") instanceof Number) {
+        //지난달 저축가능 금액
+        int previousMonthSavableAmount = consumptionService.getPreviousMonthRemainingBudget(memberIn);
+        model.addAttribute("previousMonthSavableAmount", previousMonthSavableAmount);
 
-            double currentSavings = ((Number) savingsPlan.get("currentSavings")).doubleValue();
-            double saveAmount = ((Number) savingsPlan.get("save_amount")).doubleValue();
 
-            if (saveAmount != 0.0) {
-                savingsProgress = (currentSavings * 100.0) / saveAmount;
-            }
-        }
-        model.addAttribute("savingsProgress", savingsProgress); // 계산된 savingsProgress 값을 모델에 추가
-
-        // ==== 예산 사용률 progress 계산 로직 추가 ====
-        double budgetUsageProgress = 0.0;
-        // budget이 0이 아닐 경우에만 계산 (0으로 나누는 오류 방지)
-        if (budget != 0) {
-            budgetUsageProgress = (totalExpense * 100.0) / budget;
-            // 예산 사용률이 100%를 초과할 경우에도 그대로 표시되도록 함 (원하시면 100%로 제한 가능)
-        }
-        model.addAttribute("budgetUsageProgress", budgetUsageProgress); // 계산된 예산 사용률 progress 값을 모델에 추가
-        // ==== 예산 사용률 progress 계산 로직 끝 ====
-        
         return "/consumption/expense_analysis";
     }
 
-
-    @GetMapping("/bplanner")
-    public String bplanner() {
-        log.info("ConsumptionController bplanner() 호출");
-        return "/consumption/budget_planner";
-    }
-
-    @GetMapping("/canalysis")
-    public String canalysis() {
-        log.info("ConsumptionController canalysis() 호출");
-        return "/consumption/consumption_analysis";
-    }
-
- // ⭐ 새로 추가되는 ChatGPT API 엔드포인트 ⭐
-    // 이 메서드는 expense_feedback.html에서 AJAX로 호출됩니다.
+    // ChatGPT API 엔드포인트
     @GetMapping("/getChatGptFeedbackForEfeedback")
     @ResponseBody // JSON/XML 데이터를 반환
     public Map<String, String> getChatGptFeedbackForEfeedback() {
@@ -358,26 +302,23 @@ public class ConsumptionController {
                 return response;
             }
 
-            // 현재 월의 카테고리별 지출 데이터 가져오기 (efeedback 페이지의 주 데이터와 동일한 데이터)
-            // efeedback 페이지는 getCategoryExpenseByMemberId를 사용하므로, 이쪽 데이터를 사용합니다.
             List<Map<String, Object>> currentMonthCategoryExpenses = consumptionService.getCategoryExpenseByMemberId(memberIn);
 
-            // ChatGPT에 보낼 prompt 생성
+            // ⭐ 수정된 부분 시작 ⭐
+            Map<String, Integer> aggregatedCategoryExpenses = currentMonthCategoryExpenses.stream()
+                .filter(e -> e.get("category_name") != null && e.get("total_expense") instanceof Number)
+                .collect(Collectors.toMap(
+                    e -> (String) e.get("category_name"),
+                    e -> ((Number) e.get("total_expense")).intValue(),
+                    Integer::sum // 동일 카테고리 합산
+                ));
+
+            int totalExpense = aggregatedCategoryExpenses.values().stream().mapToInt(Integer::intValue).sum();
+            // ⭐ 수정된 부분 끝 ⭐
+
+
             StringBuilder promptBuilder = new StringBuilder();
             promptBuilder.append("나는 이번달에 지출이 다음과 같아:\n");
-            Map<String, Integer> aggregatedCategoryExpenses = new HashMap<>();
-            int totalExpense = 0;
-
-            for (Map<String, Object> entry : currentMonthCategoryExpenses) { // getCategoryExpenseByMemberId 결과는 이미 카테고리별 총합
-                String category = (String) entry.get("category_name");
-                Object totalExpenseObj = entry.get("total_expense");
-                int amount = 0;
-                if (totalExpenseObj instanceof Number) {
-                    amount = ((Number) totalExpenseObj).intValue();
-                }
-                aggregatedCategoryExpenses.put(category, aggregatedCategoryExpenses.getOrDefault(category, 0) + amount); // 혹시 몰라서 한번 더 집계
-                totalExpense += amount;
-            }
 
             if (aggregatedCategoryExpenses.isEmpty()) {
                 promptBuilder.append("이번 달 지출 내역이 없어.");
@@ -407,9 +348,9 @@ public class ConsumptionController {
     @PostMapping("/getChatGptFeedbackForEanalysis")
     @ResponseBody // JSON/XML 데이터를 반환
     public Map<String, String> getChatGptFeedbackForEanalysis(@RequestBody Map<String, List<String>> requestBody) {
-        log.info("ConsumptionController getChatGptFeedbackForEfeedback() 호출");
+        log.info("ConsumptionController getChatGptFeedbackForEanalysis() 호출");
         Map<String, String> response = new HashMap<>();
-        String chatGptResponse = "분석 결과가 없습니다."; // 기본 메시지
+        String chatGptResponse = "분석 결과가 없습니다.";
 
         try {
             String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -427,13 +368,12 @@ public class ConsumptionController {
             // 프론트엔드에서 전달된 선택 지표 목록
             List<String> selectedMetrics = requestBody.get("selectedMetrics");
             if (selectedMetrics == null || selectedMetrics.isEmpty()) {
-                // 선택된 지표가 없는 경우 (예: 초기 로딩 시), 기본적으로 모든 지표를 포함
                 selectedMetrics = new ArrayList<>();
                 selectedMetrics.add("totalExpense");
                 selectedMetrics.add("averageDailyExpense");
                 selectedMetrics.add("daysLeft");
                 selectedMetrics.add("remainingBudget");
-                selectedMetrics.add("categoryExpenses"); // 카테고리별 지출도 기본 포함
+                selectedMetrics.add("categoryExpenses");
             }
 
             // 필요한 재무 지표 값 계산
@@ -446,8 +386,7 @@ public class ConsumptionController {
 
             double averageDailyExpense = (currentDayOfMonth > 0) ? (double) totalExpense / currentDayOfMonth : 0;
             
-            // 예산 (이 값은 실제 예산 데이터를 가져오도록 변경해야 합니다)
-            int budget = 2000000; // 임시 고정 예산. 실제로는 DB 또는 설정에서 가져오는 것이 좋습니다.
+            int budget = consumptionService.getBudgetForCurrentMonth(memberIn);
             int remainingBudget = budget - totalExpense;
 
 
@@ -469,19 +408,17 @@ public class ConsumptionController {
                 promptBuilder.append("남은 예산: ").append(remainingBudget).append("원\n");
             }
             
-            // 카테고리별 지출 데이터도 프롬프트에 포함 (selectedMetrics에 "categoryExpenses"가 있다면)
+            // 카테고리별 지출 데이터도 프롬프트에 포함
             if (selectedMetrics.contains("categoryExpenses")) {
                 List<Map<String, Object>> currentMonthCategoryExpenses = consumptionService.getCategoryExpenseByMemberId(memberIn);
-                Map<String, Integer> aggregatedCategoryExpenses = new HashMap<>();
-                for (Map<String, Object> entry : currentMonthCategoryExpenses) {
-                    String category = (String) entry.get("category_name");
-                    Object totalExpenseObj = entry.get("total_expense");
-                    int amount = 0;
-                    if (totalExpenseObj instanceof Number) {
-                        amount = ((Number) totalExpenseObj).intValue();
-                    }
-                    aggregatedCategoryExpenses.put(category, aggregatedCategoryExpenses.getOrDefault(category, 0) + amount);
-                }
+                Map<String, Integer> aggregatedCategoryExpenses = currentMonthCategoryExpenses.stream()
+                    .filter(e -> e.get("category_name") != null && e.get("total_expense") instanceof Number)
+                    .collect(Collectors.toMap(
+                        e -> (String) e.get("category_name"),
+                        e -> ((Number) e.get("total_expense")).intValue(),
+                        Integer::sum
+                    ));
+
                 if (!aggregatedCategoryExpenses.isEmpty()) {
                     promptBuilder.append("\n카테고리별 지출 내역:\n");
                     for (Map.Entry<String, Integer> entry : aggregatedCategoryExpenses.entrySet()) {
@@ -506,5 +443,88 @@ public class ConsumptionController {
             response.put("error", "피드백을 생성하는 중 오류가 발생했습니다.");
         }
         return response;
+    }
+    
+    @GetMapping("/bplanner")
+    public String bplanner(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        log.info("ConsumptionController bplanner() 호출");
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        
+        
+        return "/consumption/budget_planner";
+    }
+    
+    @PostMapping("/bplannerPro")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> bplannerPro(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Map<String, Object> payload,
+            SavingsPlanDTO savingsPlanDTO
+    ) {
+        Map<String, Object> response = new HashMap<>();
+        log.info("ConsumptionController bplannerPro() 호출 - 총 수입 저장 요청");
+
+        try {
+            if (userDetails == null) {
+                response.put("success", false);
+                response.put("message", "로그인된 사용자 정보를 찾을 수 없습니다.");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+            String memberIdStr = userDetails.getUsername();
+            Integer memberIn = consumptionService.getMemberInByMemberId(memberIdStr);
+
+            if (memberIn == null) {
+                response.put("success", false);
+                response.put("message", "회원 고유 번호를 찾을 수 없습니다.");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            Integer totalIncome = (Integer) payload.get("totalIncome");
+            String saveName = (String) payload.get("save_name");
+
+            if (totalIncome == null) {
+                response.put("success", false);
+                response.put("message", "총 수입 값이 누락되었습니다.");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+            LocalDate today = LocalDate.now();
+            LocalDate firstDayOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
+            LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+            int chackPlan = consumptionService.planChack(memberIn);
+
+            if (chackPlan == 0) {
+                savingsPlanDTO.setMemberId(memberIn);
+                savingsPlanDTO.setSaveName(saveName);
+                savingsPlanDTO.setSaveAmount(totalIncome);
+                savingsPlanDTO.setSaveCreatedDate(firstDayOfMonth);
+                savingsPlanDTO.setSaveTargetDate(lastDayOfMonth);
+                consumptionService.updateMonthlyIncome(savingsPlanDTO); 
+
+                log.info("회원 ID {}의 총 수입 {} 저장 성공" + memberIn + totalIncome);
+                response.put("success", true);
+                response.put("message", "예산이 성공적으로 저장되었습니다.");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                log.info("회원 ID {}의 이번 달 예산은 이미 저장되어 있습니다." + memberIn);
+                response.put("success", false);
+                response.put("message", "이번 달 예산이 이미 저장되어 있습니다.");
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+
+        } catch (Exception e) {
+            log.info("bplannerPro 예산 저장 중 서버 오류 발생:" + e);
+            response.put("success", false);
+            response.put("message", "예산 저장 중 서버 내부 오류가 발생했습니다: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/canalysis")
+    public String canalysis(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        log.info("ConsumptionController canalysis() 호출");
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        
+        return "/consumption/consumption_analysis";
     }
 }
