@@ -16,7 +16,8 @@
 	       </div>
 	       
 	       <!-- 기본 정보만 폼태그로 묶음 -->
-	       <form id="userDetailForm" action="/admin/authority" method="POST" onsubmit="submitUserUpdate(event)">
+	       <form id="userDetailForm" action="/admin/authority" method="POST">
+			<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
 	           <div class="form-content">
 	               <!-- 기본 정보 섹션 (폼 처리) -->
 	               <div class="info-section">
@@ -26,157 +27,189 @@
 	                           <td>사용자 권한<span class="required">*</span></td>
 	                           <td>
 								
-								
-									<select name="userRole" class="form-select" required>
+									<select name="memberRole" class="form-select" required>
 										<option value="USER" th:selected="${member.memberRole == 'USER'}">USER</option>
 	                                   	<option value="ADMIN" th:selected="${member.memberRole == 'ADMIN'}">ADMIN</option>
 	                               </select>
 	                           </td>
 	                       </tr>
-	                       <tr>
-	                           <td>회원 ID</td>
-	                           <td>
-	                               <input type="text" th:if="${#strings.length(member.memberId) >= 43}" name="memberId" class="form-input readonly"  th:value="${member.memberPasswd}" readonly>
-	                               <input type="text" th:if="${#strings.length(member.memberId) < 43}" name="memberId" class="form-input readonly"  th:value="${member.memberId}" readonly>
-	                           </td>
-	                       </tr>
-	                       <tr>
-	                           <td>회원 이름</td>
-	                           <td>
-	                               <input type="text" name="memberName" class="form-input readonly" th:value="${member.memberName}" readonly>
-	                           </td>
-	                       </tr>
-	                       <tr>
-	                           <td>성별</td>
-	                           <td>
-	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'M'}"value="남자" readonly>
-	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'G'}"value="여자" readonly>
-	                           </td>
-	                       </tr>
-	                       <tr>
-	                           <td>주소</td>
-	                           <td>
-	                               <input type="text" name="memberAddress" class="form-input readonly" th:value="${member.memberAddress}" readonly>
-	                           </td>
-	                       </tr>
-	                       <tr>
-	                           <td>이메일</td>
-	                           <td>
-	                               <input type="text" name="memberEmail" class="form-input readonly" th:value="${member.memberEmail}" readonly>
-	                           </td>
-	                       </tr>
-	                       <tr>
-	                           <td>전화번호</td>
-	                           <td>
-	                               <input type="text" name="memberPhone" class="form-input readonly" th:value="${member.memberPhone}" readonly>
-	                           </td>
-	                       </tr>
-	                   </table>
-	               </div>
-	           </div>
-	       </form>
+						   <input type="hidden" name="memberIn" th:value="${member.memberIn}">
+						   <input type="hidden" name="memberId" th:value="${member.memberId}">
+						   <input type="submit" value="전송하기">
+						   
+						   </form>
+<!--	                       <tr>-->
+<!--	                           <td>회원 ID</td>-->
+<!--	                           <td>-->
+<!--	                               <input type="text" th:if="${#strings.length(member.memberId) >= 43}" name="memberIn" class="form-input readonly"  th:value="${member.memberIn}" readonly>-->
+<!--	                               <input type="text" th:if="${#strings.length(member.memberId) < 43}" name="memberId" class="form-input readonly"  th:value="${member.memberId}" readonly>-->
+<!--	                           </td>-->
+<!--	                       </tr>-->
+<!--	                       <tr>-->
+<!--	                           <td>회원 이름</td>-->
+<!--	                           <td>-->
+<!--	                               <input type="text" name="memberName" class="form-input readonly" th:value="${member.memberName}" readonly>-->
+<!--	                           </td>-->
+<!--	                       </tr>-->
+<!--	                       <tr>-->
+<!--	                           <td>성별</td>-->
+<!--	                           <td>-->
+<!--	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'M'}"value="남자" readonly>-->
+<!--	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'G'}"value="여자" readonly>-->
+<!--	                           </td>-->
+<!--	                       </tr>-->
+<!--	                       <tr>-->
+<!--	                           <td>주소</td>-->
+<!--	                           <td>-->
+<!--	                               <input type="text" name="memberAddress" class="form-input readonly" th:value="${member.memberAddress}" readonly>-->
+<!--	                           </td>-->
+<!--	                       </tr>-->
+<!--	                       <tr>-->
+<!--	                           <td>이메일</td>-->
+<!--	                           <td>-->
+<!--	                               <input type="text" name="memberEmail" class="form-input readonly" th:value="${member.memberEmail}" readonly>-->
+<!--	                           </td>-->
+<!--	                       </tr>-->
+<!--	                       <tr>-->
+<!--	                           <td>전화번호</td>-->
+<!--	                           <td>-->
+<!--	                               <input type="text" name="memberPhone" class="form-input readonly" th:value="${member.memberPhone}" readonly>-->
+<!--	                           </td>-->
+<!--	                       </tr>-->
+<!--	                   </table>-->
+<!--	               </div>-->
+<!--	           </div>-->
+			   
 
-	       <!-- 나머지 정보들은 표시용으로만 (폼 밖에 위치) -->
-	       <div class="form-content">
-	           <!-- 계정 정보 섹션 -->
-	           <div class="info-section">
-	               <div class="section-title">계정 정보</div>
-	               <table class="form-table">
-	                   <tr>
-	                       <td>가입날짜</td>
-	                       <td>
-                               <input type="text" class="form-input readonly" th:value="${member.createDate}" readonly>
-	                       </td>
-	                   </tr>
-	                   <tr>
-	                       <td>마지막 로그인</td>
-	                       <td>
-	                           <input type="text" class="form-input readonly" value="2025-06-14 14:30:25" readonly>
-	                       </td>
-	                   </tr>
-	                   <tr>
-	                       <td>회원 상태</td>
-	                       <td>
-	                           <span class="status-active" th:text="${member.memberState}"></span>
-	                       </td>
-	                   </tr>
-	                   <tr>
-	                       <td>포인트</td>
-	                       <td>
-	                           <input type="text" class="form-input readonly" value="15,500 P" readonly>
-	                       </td>
-	                   </tr>
-	               </table>
-	           </div>
+<!--	        나머지 정보들은 표시용으로만 (폼 밖에 위치) -->
+<!--	       <div class="form-content">-->
+<!--	            계정 정보 섹션 -->
+<!--	           <div class="info-section">-->
+<!--	               <div class="section-title">계정 정보</div>-->
+<!--	               <table class="form-table">-->
+<!--	                   <tr>-->
+<!--	                       <td>가입날짜</td>-->
+<!--	                       <td>-->
+<!--                               <input type="text" class="form-input readonly" th:value="${member.createDate}" readonly>-->
 
-	           <!-- 연결 정보 섹션 -->
-	           <div class="info-section">
-	               <div class="section-title">연결 정보</div>
-	               <table class="form-table">
-	                   <tr>
-	                       <td>연결된 계좌 수</td>
-	                       <td>
-	                           <input type="text" class="form-input readonly" value="3개" readonly>
-	                       </td>
-	                   </tr>
-	                   <tr>
-	                       <td>연결된 카드 수</td>
-	                       <td>
-	                           <input type="text" class="form-input readonly" value="2개" readonly>
-	                       </td>
-	                   </tr>
-	                   <tr>
-	                       <td>달성한 퀘스트 수</td>
-	                       <td>
-	                           <input type="text" class="form-input readonly" value="47개" readonly>
-	                       </td>
-	                   </tr>
-	               </table>
-	           </div>
+<!--	                       </td>-->
+<!--	                   </tr>-->
+<!--	                   <tr>-->
+<!--	                       <td>마지막 로그인</td>-->
+<!--	                       <td>-->
+<!--								<input type="text" class="form-input readonly" th:value="${member.lastLoginDate}" readonly>-->
+<!--	                        	<input type="text" class="form-input readonly" value="2025-06-14 14:30:25" readonly>-->
+<!--	                       </td>-->
+<!--	                   </tr>-->
+<!--	                   <tr>-->
+<!--	                       <td>회원 상태</td>-->
+<!--	                       <td>-->
+<!--	                           <span class="status-active" th:text="${member.memberState}"></span>-->
+<!--	                       </td>-->
+<!--	                   </tr>-->
+<!--	                   <tr>-->
+<!--	                       <td>포인트</td>-->
+<!--	                       <td>-->
+<!--	                           	<input type="text" class="form-input readonly" th:if="${member.memberReward ne null}" th:value="${member.memberReward} + 'P'" readonly>-->
+<!--	                           	<input type="text" class="form-input readonly" th:if="${member.memberReward eq null}" th:value="'0P'" readonly>-->
+<!--	                       </td>-->
+<!--	                   </tr>-->
+<!--	               </table>-->
+<!--	           </div>-->
 
-	           <!-- 동의 정보 섹션 -->
-	           <div class="info-section">
-	               <div class="section-title">동의 정보</div>
-	               <table class="form-table">
-	                   <tr>
-	                       <td>개인정보 동의</td>
-	                       <td>
-	                           <span class="consent-yes" th:if="${member.memberConsent == true}" >동의</span>
-	                           <span class="consent-no" th:if="${member.memberConsent} == false" >비동의</span>
-	                       </td>
-	                   </tr>
-	                   <tr>
-	                       <td>이메일 동의</td>
-	                       <td>
-								<span class="consent-yes" th:if="${member.emailConsent == true}" >동의</span>
-                          		<span class="consent-no" th:if="${member.emailConsent} == false" >비동의</span>
-	                       </td>
-	                   </tr>
+<!--	            연결 정보 섹션 -->
+<!--	           <div class="info-section">-->
+<!--	               <div class="section-title">연결 정보</div>-->
+<!--	               <table class="form-table">-->
+<!--	                   <tr>-->
+<!--	                       <td>연결된 계좌 수</td>-->
+<!--	                       <td>-->
+<!--	                           <input type="text" class="form-input readonly" value="3개" readonly>-->
+<!--	                       </td>-->
+<!--	                   </tr>-->
+<!--	                   <tr>-->
+<!--	                       <td>연결된 카드 수</td>-->
+<!--	                       <td>-->
+<!--	                           <input type="text" class="form-input readonly" value="2개" readonly>-->
+<!--	                       </td>-->
+<!--	                   </tr>-->
+<!--	                   <tr>-->
+<!--	                       <td>달성한 퀘스트 수</td>-->
+<!--	                       <td>-->
+<!--	                           <input type="text" class="form-input readonly" value="47개" readonly>-->
+<!--	                       </td>-->
+<!--	                   </tr>-->
+<!--	               </table>-->
+<!--	           </div>-->
+
+<!--	            동의 정보 섹션 -->
+<!--	           <div class="info-section">-->
+<!--	               <div class="section-title">동의 정보</div>-->
+<!--	               <table class="form-table">-->
+<!--	                   <tr>-->
+<!--	                       <td>개인정보 동의</td>-->
+<!--	                       <td>-->
+<!--	                           <span class="consent-yes" th:if="${member.memberConsent == true}" >동의</span>-->
+<!--	                           <span class="consent-no" th:if="${member.memberConsent} == false" >비동의</span>-->
+<!--	                       </td>-->
+<!--	                   </tr>-->
+<!--	                   <tr>-->
+<!--	                       <td>이메일 동의</td>-->
+<!--	                       <td>-->
+<!--								<span class="consent-yes" th:if="${member.emailConsent == true}" >동의</span>-->
+<!--                          		<span class="consent-no" th:if="${member.emailConsent} == false" >비동의</span>-->
+<!--	                       </td>-->
+<!--	                   </tr>-->
 	               </table>
 	           </div>
 	       </div>
 	       
 	       <!-- 버튼은 맨 밑에 그대로 -->
-	       <div class="form-actions">
-	           <button type="button" class="btn btn-secondary" onclick="closeDetail()">닫기</button>
-	           <button type="button" class="btn btn-primary" onclick="submitUserUpdate(event)">수정</button>
-	       </div>
+<!--	       <div class="form-actions">-->
+<!--	           <button type="button" class="btn btn-secondary" onclick="closeDetail()">닫기</button>-->
+<!--	           <button type="button" class="test btn-primary" >변경하기</button>-->
+<!--	       </div>-->
 	   </div>
-
+	   <script src="../js/jquery-3.6.0.js"></script>
 	   <script>
 	       // 폼 제출 처리
-	       function submitUserUpdate(event) {
-	           event.preventDefault();
+		   
+	   $(document).ready(function(){
+	   			$('.test').click(function(){
+			           
+						 alert("클릭");
+						 document.getElementById('userDetailForm').submit();
+						 
+						
+					
+		   					
+	   			});
+		   			
+		   	});
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+	     //  function submitUserUpdate(event) {
+	      //     event.preventDefault();
 	           
-	           // 변경사항 확인
-	           if (confirm('사용자 권한을 변경하시겠습니까?')) {
-	               console.log('사용자 정보 변경 데이터를 서버로 전송합니다...');
-	               // 폼 제출 (기본정보만 전송됨)
-	               document.getElementById('userDetailForm').submit();
+	       //    // 변경사항 확인
+	        //   if (confirm('사용자 권한을 변경하시겠습니까?')) {
+	         //      console.log('사용자 정보 변경 데이터를 서버로 전송합니다...');
+	         //      // 폼 제출 (기본정보만 전송됨)
+	          //     document.getElementById('userDetailForm').submit();
 	               // 실제 개발시에는 위 라인의 주석을 해제하고 아래는 제거
-	               alert('사용자 권한이 성공적으로 변경되었습니다.');
-	           }
-	       }
+	           //    alert('사용자 권한이 성공적으로 변경되었습니다.');
+				//   window.opener.location.reload();
+				//   window.close();
+	         //  }
+	     //  }
 
 	       // 닫기 처리
 	       function closeDetail() {
