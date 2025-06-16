@@ -30,18 +30,18 @@
             </div>
             <div class="content-body">
               <div class="form-container">
-        <form id="transactionForm" onsubmit="handleSubmit(event)">
+        <form id="transactionForm" action="/cashbook/insertPro" method="post" onsubmit="return handleSubmit(event)">
 			<!-- 날짜 입력 -->
 			<div class="form-group">
 			    <label class="form-label">날짜 <span class="required">*</span></label>
-			    <input type="date" class="form-input" id="date" name="date"
+			    <input type="date" class="form-input" id="expenseDate" name="expenseDate"
 			           th:value="${selectedDate}" required>
 			</div>
 			
             <!-- 금액 입력 -->
             <div class="form-group">
                 <label class="form-label">금액 <span class="required">*</span></label>
-                <input type="text" class="amount-input" id="amount" name="amount" placeholder="금액을 입력하세요" required>
+                <input type="text" class="amount-input" id="expenseSum" name="expenseSum" placeholder="금액을 입력하세요" required>
                 <div class="error-message">금액을 입력해주세요.</div>
             </div>
 
@@ -52,14 +52,14 @@
                     <button type="button" class="type-btn income" onclick="selectType('income')">수입</button>
                     <button type="button" class="type-btn expense" onclick="selectType('expense')">지출</button>
                 </div>
-                <input type="hidden" id="type" name="type" required>
+                <input type="hidden" id="expenseType" name="expenseType" required>
                 <div class="error-message">유형을 선택해주세요.</div>
             </div>
 
             <!-- 내용 입력 -->
             <div class="form-group">
                 <label class="form-label">내용 <span class="required">*</span></label>
-                <input type="text" class="form-input" id="content" name="content" placeholder="내용을 입력하세요" required>
+                <input type="text" class="form-input" id="expenseContent" name="expenseContent" placeholder="내용을 입력하세요" required>
                 <div class="error-message">내용을 입력해주세요.</div>
             </div>
 
@@ -67,12 +67,13 @@
             <div class="form-group">
                 <label class="form-label">수단 <span class="required">*</span></label>
                 <div class="select-group">
-                    <select class="form-select" id="method1" name="method1" onchange="updateMethod2()" required>
-                        <option value="">선택</option>
-                        <option value="card">카드</option>
-                        <option value="cash">현금</option>
-                        <option value="account">계좌이체</option>
-                    </select>
+					<select class="form-select" id="method1" name="method_in" onchange="updateMethod2()" required>
+					    <option value="">선택</option>
+					    <option value="1">신용카드</option>
+					    <option value="2">체크카드</option>
+					    <option value="3">현금</option>
+					    <option value="4">계좌이체</option>
+					</select>
                     <select class="form-select" id="method2" name="method2" disabled required>
                         <option value="">상세 선택</option>
                     </select>
@@ -82,25 +83,41 @@
 
 			<!-- 카테고리 선택 -->
 			<div class="form-group">
-			    <label class="form-label">카테고리 <span class="required">*</span></label>
-			    <div class="category-selector">
-			        <div class="category-display" id="categoryDisplay"
-			             th:text="${transaction?.category != null} ? ${transaction.category} : '카테고리를 선택하세요'"
-			             th:style="${transaction?.category != null} ? 'color: #4E342E' : ''">
-			            카테고리를 선택하세요
-			        </div>
-			        <button type="button" class="category-btn" onclick="openCategoryModal()">선택</button>
-			        <input type="hidden" id="category" name="category" th:value="${transaction?.category}" required>
+			  <label class="form-label">카테고리 <span class="required">*</span></label>
+			  <div class="category-selector">
+			    <div class="category-display" id="categoryDisplay">카테고리를 선택하세요</div>
+			    <button type="button" class="category-btn" onclick="openCategoryModal()">선택</button>
+			    <input type="hidden" id="cs_in" name="cs_in" required>
+			  </div>
+			</div>
+
+			<!-- 카테고리 모달 -->
+			<div id="categoryModal" class="modal-overlay" style="display: none;">
+			  <div class="modal-content">
+			    <h3 class="modal-title">카테고리 선택</h3>
+			    <div class="category-modal-body">
+			      <ul class="category-list" id="mainCategoryList">
+			        <!-- 대분류 리스트 동적 생성 -->
+					<li th:each="main : ${mainList}" th:text="${main.cmName}" th:attr="data-cmin=${main.cmIn}" onclick="loadSubCategories(this)">
+						[[${main.cmName}]]
+					</li>
+			      </ul>
+			      <ul class="subcategory-list" id="subCategoryList">
+			        <!-- 여기에 소분류가 동적으로 뜸 -->
+			      </ul>
 			    </div>
+			    <button onclick="closeCategoryModal()">닫기</button>
+			  </div>
 			</div>
 
             <!-- 메모 입력 -->
             <div class="form-group">
                 <label class="form-label">메모</label>
-                <textarea class="form-textarea" id="memo" name="memo" placeholder="메모를 입력하세요 (선택사항)"></textarea>
+                <textarea class="form-textarea" id="expenseMemo" name="expenseMemo" placeholder="메모를 입력하세요 (선택사항)"></textarea>
             </div>
 
             <!-- 제출 버튼 -->
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button type="submit" class="submit-btn">저장하기</button>
         </form>
     </div>
@@ -112,84 +129,64 @@
 		<div th:replace="fragments/footer :: footer"></div>
 
     <script>
-     
-  
-        function logout() {
-            if(confirm('로그아웃 하시겠습니까?')) {
-                window.location.href = '/logout';
-            }
-        }
-
-
          let selectedType = '';
         let selectedCategory = '';
 
         // 유형 선택 함수
-        function selectType(type) {
-            selectedType = type;
-            document.getElementById('type').value = type;
-            
-            // 모든 버튼에서 active 클래스 제거
-            document.querySelectorAll('.type-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // 선택된 버튼에 active 클래스 추가
-            event.target.classList.add('active');
-            
-            // 에러 상태 제거
-            removeError('type');
-        }
+		function selectType(type) {
+		    selectedType = type;
+		    const typeValue = type === 'income' ? 0 : 1;
+		    document.getElementById('expenseType').value = typeValue;
 
-        // 수단 2단계 선택 업데이트
-        function updateMethod2() {
-            const method1 = document.getElementById('method1').value;
-            const method2 = document.getElementById('method2');
-            
-            // 두 번째 선택 박스 초기화
-            method2.innerHTML = '<option value="">상세 선택</option>';
-            method2.disabled = true;
-            
-            if (method1) {
-                method2.disabled = false;
-                
-                switch(method1) {
-                    case 'card':
-                        method2.innerHTML += '<option value="credit">신용카드</option>';
-                        method2.innerHTML += '<option value="debit">체크카드</option>';
-                        break;
-                    case 'cash':
-                        method2.innerHTML += '<option value="cash_hand">현금</option>';
-                        break;
-                    case 'account':
-                        method2.innerHTML += '<option value="transfer">계좌이체</option>';
-                        method2.innerHTML += '<option value="auto">자동이체</option>';
-                        break;
-                }
-                
-                removeError('method1');
-            }
-        }
+		    // 버튼 스타일 처리
+		    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+		    event.target.classList.add('active');
+		    removeError('type');
+		}
+
+		function updateMethod2() {
+		    const method1 = document.getElementById('method1').value;
+		    const method2 = document.getElementById('method2');
+
+		    method2.innerHTML = '<option value="">상세 선택</option>';
+		    method2.disabled = true;
+
+		    if (method1 === "1" || method1 === "2") {
+		        // 카드 관련 수단만 서버에서 가져옴
+		        fetch(`/cashbook/cards/byMethod/${method1}`)
+		            .then(res => res.json())
+		            .then(data => {
+						console.log("카드 응답 데이터:", data);
+		                data.forEach(card => {
+		                    const option = document.createElement("option");
+		                    option.value = card.card_in;
+		                    option.textContent = card.card_name;
+		                    method2.appendChild(option);
+		                });
+		                method2.disabled = false;
+		            });
+		    }
+		}
 
         // 카테고리 선택 팝업 (실제로는 팝업창으로 구현)
-        function openCategoryPopup() {
+        //function openCategoryPopup() {
             // 임시로 간단한 프롬프트로 구현 (실제로는 팝업창)
-            const categories = ['식비', '교통비', '쇼핑', '의료비', '문화/여가', '기타'];
-            const selected = prompt('카테고리를 입력하세요:\n' + categories.join(', '));
+         //   const categories = ['식비', '교통비', '쇼핑', '의료비', '문화/여가', '기타'];
+        //    const selected = prompt('카테고리를 입력하세요:\n' + categories.join(', '));
             
-            if (selected && categories.includes(selected)) {
-                selectedCategory = selected;
-                document.getElementById('category').value = selected;
-                document.getElementById('categoryDisplay').textContent = selected;
-                document.getElementById('categoryDisplay').style.color = '#333';
-                removeError('category');
-            }
-        }
+        //    if (selected && categories.includes(selected)) {
+        //        selectedCategory = selected;
+        //        document.getElementById('category').value = selected;
+        //        document.getElementById('categoryDisplay').textContent = selected;
+        //        document.getElementById('categoryDisplay').style.color = '#333';
+        //        removeError('category');
+        //    }
+      //  }
 
         // 에러 상태 제거
         function removeError(fieldName) {
             const formGroup = document.querySelector(`[name="${fieldName}"]`).closest('.form-group');
-            if (formGroup) {
+          if (formGroup) {
                 formGroup.classList.remove('error');
             }
         }
@@ -201,7 +198,7 @@
             let isValid = true;
             
             // 필수 필드 검증
-            const requiredFields = ['amount', 'type', 'content', 'method1', 'method2', 'category'];
+            const requiredFields = ['expenseSum', 'expenseType', 'expenseContent', 'method1', 'method2', 'cs_in'];
             
             requiredFields.forEach(fieldName => {
                 const field = document.getElementById(fieldName);
@@ -225,24 +222,23 @@
             if (isValid) {
                 // 폼 데이터 수집
                 const formData = new FormData(event.target);
-                 formData.set('amount', formData.get('amount').replace(/,/g, '')); //쉼표 제거
+                 formData.set('expenseSum', formData.get('expenseSum').replace(/,/g, '')); //쉼표 제거
                 const data = Object.fromEntries(formData);
                 
                 console.log('제출된 데이터:', data);
                 alert('데이터가 성공적으로 저장되었습니다!');
                 
-                // 실제로는 서버로 데이터 전송
-                // fetch('/api/transactions', { method: 'POST', body: formData })
+               event.target.submit();
             }
         }
 
         // 금액 입력 시 숫자만 허용하고 포맷팅
-        document.getElementById('amount').addEventListener('input', function(e) {
+        document.getElementById('expenseSum').addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^\d]/g, '');
             if (value) {
                 e.target.value = parseInt(value).toLocaleString();
             }
-            removeError('amount');
+            removeError('expenseSum');
         });
 
         // 다른 필드들도 입력 시 에러 상태 제거
@@ -252,59 +248,44 @@
             });
         });
 		
-		// 모달 열기/닫기
+		//카테고리 모달
 		function openCategoryModal() {
 		  document.getElementById("categoryModal").style.display = "flex";
 		}
+
 		function closeCategoryModal() {
 		  document.getElementById("categoryModal").style.display = "none";
 		}
 
-		// 대분류 클릭 시 소분류 보여주기
-		const categoryMap = {
-		  "식비": ["외식", "배달", "마트", "간식"],
-		  "교통": ["버스", "지하철", "택시"],
-		  "문화": ["도서", "영화", "여행"]
-		};
-
-		function showSubCategories(mainCategory) {
-		  const subList = categoryMap[mainCategory];
-		  const container = document.getElementById("subCategories");
-		  container.innerHTML = "";
-
-		  subList.forEach(sub => {
-		    const li = document.createElement("li");
-		    li.textContent = sub;
-		    li.onclick = () => selectCategory(mainCategory + " > " + sub);
-		    container.appendChild(li);
-		  });
+		// 대분류 클릭 시 → Ajax로 소분류 로딩
+		function loadSubCategories(element) {
+			const cmIn = element.getAttribute("data-cmin");
+			
+			console.log("cmIn 확인:", cmIn);
+			fetch(`/cashbook/category/${cmIn}`)
+		    .then(res => res.json())
+		    .then(subs => {
+		      const subList = document.getElementById("subCategoryList");
+		      subList.innerHTML = "";
+			  subs.forEach(sub => {
+			    const li = document.createElement("li");
+			    li.textContent = sub.csName;
+			    li.onclick = () => selectCategory(sub.csId, element.textContent, sub.csName);
+			    subList.appendChild(li);
+			  });
+		    });
 		}
 
-		function selectCategory(fullCategory) {
-		  document.getElementById("category").value = fullCategory;
-		  document.getElementById("categoryDisplay").textContent = fullCategory;
+		// 소분류 선택 시 처리
+		function selectCategory(csIn, mainText, subText) {
+		  document.getElementById("cs_in").value = csIn;
+		  document.getElementById("categoryDisplay").textContent = `${mainText} > ${subText}`;
 		  document.getElementById("categoryDisplay").style.color = "#333";
 		  closeCategoryModal();
 		}
     
     </script>
 	
-	<!-- 카테고리 선택 모달 -->
-	<div id="categoryModal" class="modal-overlay" style="display:none;">
-	  <div class="modal-content">
-	    <h3 class="modal-title">카테고리 선택</h3>
-	    <div class="category-modal-body">
-	      <ul class="category-list" id="mainCategories">
-	        <li onclick="showSubCategories('식비')">식비</li>
-	        <li onclick="showSubCategories('교통')">교통</li>
-	        <li onclick="showSubCategories('문화')">문화</li>
-	      </ul>
-	      <ul class="subcategory-list" id="subCategories">
-	        <!-- 여기에 소분류가 동적으로 뜰거야 -->
-	      </ul>
-	    </div>
-	    <button onclick="closeCategoryModal()">닫기</button>
-	  </div>
-	</div>
+
 </body>
 </html>

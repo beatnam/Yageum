@@ -1,6 +1,6 @@
 package com.yageum.domain;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ public class ExpenseDTO {
     private int expenseSum;
     private int csIn;
     private String expenseMemo;
-    private LocalDateTime expenseDate;
+    private LocalDate expenseDate;
     private String expenseContent;
     private boolean expenseType;
     private int methodIn;

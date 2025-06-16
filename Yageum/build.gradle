@@ -59,7 +59,6 @@ implementation 'nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.2.0'
 
 // https://mvnrepository.com/artifact/org.json/json
 implementation 'org.json:json:20250107'
-
 }
 
 tasks.named('test') {

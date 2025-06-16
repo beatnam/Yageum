@@ -80,53 +80,17 @@
 	<div th:replace="fragments/footer :: footer"></div>
 
 <script th:inline="javascript">
-    /*<![CDATA[*/
-    // ⭐ createProgressChart 함수 정의 시작 ⭐
     function createProgressChart() {
-        // 이 함수 내부에 실제 차트 생성 로직이 들어갑니다.
-        // 예를 들어, HTML 내의 <canvas> 요소를 선택하고 Chart.js를 사용하여 차트를 그리는 코드입니다.
-        // 현재 HTML에는 차트를 그릴 <canvas> 요소가 없으므로,
-        // 만약 Chart.js를 사용하여 차트를 시각화하려면
-        // <div class="progress-section"> 내에 <canvas id="myProgressChart"></canvas> 와 같은 요소를 추가해야 합니다.
+        
         console.log("createProgressChart 함수가 호출되었습니다. (이 함수 내부에 차트 로직을 구현해야 합니다.)");
-
-        // 예시: 간단한 로그만 출력 (실제 차트 코드로 대체 필요)
-        // 만약 특정 ID를 가진 canvas가 있다면 아래와 같이 사용할 수 있습니다.
-        // const ctx = document.getElementById('myProgressChart');
-        // if (ctx) {
-        //     new Chart(ctx, {
-        //         type: 'bar', // 또는 'line', 'pie' 등 원하는 차트 타입
-        //         data: {
-        //             labels: ['1월', '2월', '3월'],
-        //             datasets: [{
-        //                 label: '절약률',
-        //                 data: [10, 20, 15], // 예시 데이터
-        //                 backgroundColor: 'rgba(75, 192, 192, 0.6)'
-        //             }]
-        //         },
-        //         options: {
-        //             responsive: true,
-        //             maintainAspectRatio: false,
-        //             scales: {
-        //                 y: {
-        //                     beginAtZero: true
-        //                 }
-        //             }
-        //         }
-        //     });
-        // } else {
-        //     console.warn("차트를 그릴 canvas 요소(myProgressChart)를 찾을 수 없습니다.");
-        // }
     }
-    // ⭐ createProgressChart 함수 정의 끝 ⭐
 
     document.addEventListener("DOMContentLoaded", function () {
         animateScore();
         animateProgressBars();
-        createProgressChart(); // 이제 createProgressChart 함수가 정의되어 있어 ReferenceError가 발생하지 않습니다.
+        createProgressChart();
         animateCards();
         
-        // ⭐ 페이지 로드 시 ChatGPT 피드백 요청 ⭐
         fetchChatGptFeedback();
     });
 
@@ -225,23 +189,18 @@
         ];
         const randomInsight = insights[Math.floor(Math.random() * insights.length)];
         showNotification(randomInsight);
-    }, 30000); // 30초마다
+    }, 30000);
 
-    // ⭐ ChatGPT 피드백을 가져오는 AJAX 함수 (expense_feedback용) ⭐
     async function fetchChatGptFeedback() {
         const feedbackContentDiv = document.getElementById('chatGptFeedbackContent');
-        // 로딩 스피너 표시
         feedbackContentDiv.innerHTML = '<p>AI가 현재 소비 패턴을 분석하여 개인 맞춤 피드백을 생성 중입니다... <span class="loading-spinner"></span></p>';
 
         try {
-            // 새로 만든 API 엔드포인트 호출
             const response = await fetch('/consumption/getChatGptFeedbackForEfeedback');
-            const data = await response.json(); // JSON 응답 파싱
+            const data = await response.json();
 
             if (data.feedback) {
-                // 받은 응답을 div에 삽입
                 feedbackContentDiv.innerHTML = '<p>' + data.feedback + '</p>';
-                // 상태 텍스트 변경
                 const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
                 if (goalStatusDiv) {
                      goalStatusDiv.textContent = '✔️ 분석 완료';
@@ -254,7 +213,7 @@
                 if (goalStatusDiv) {
                      goalStatusDiv.textContent = '❌ 오류 발생';
                      goalStatusDiv.classList.remove('status-warning');
-                     goalStatusDiv.classList.add('status-danger'); // 새 클래스 추가 필요 시
+                     goalStatusDiv.classList.add('status-danger');
                 }
             } else {
                 feedbackContentDiv.innerHTML = '<p>피드백을 가져오는 데 실패했습니다.</p>';
@@ -272,11 +231,10 @@
             if (goalStatusDiv) {
                 goalStatusDiv.textContent = '❌ 네트워크 오류';
                 goalStatusDiv.classList.remove('status-warning');
-                goalStatusDiv.classList.add('status-danger'); // 새 클래스 추가 필요 시
+                goalStatusDiv.classList.add('status-danger');
             }
         }
     }
-    /*]]>*/
 </script>
 </body>
 </html>

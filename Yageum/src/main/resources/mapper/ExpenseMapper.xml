@@ -17,7 +17,7 @@
 	    JOIN category_sub c ON e.cs_in = c.cs_in
 	    WHERE e.expense_date &gt;= CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE)
 	      AND e.expense_date &lt; DATE_ADD(CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE), INTERVAL 1 MONTH)
-	      AND e.expense_type = 2
+	      AND e.expense_type = 1
 	      AND e.member_in = #{memberIn}
 	    GROUP BY c.cs_name
 	    ORDER BY total_expense DESC
@@ -31,7 +31,7 @@
 	    JOIN category_sub c ON e.cs_in = c.cs_in
 	    WHERE e.expense_date &gt;= DATE_SUB(CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE), INTERVAL 1 MONTH)
 	      AND e.expense_date &lt; CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE)
-	      AND e.expense_type = 2
+	      AND e.expense_type = 1
 	      AND e.member_in = #{memberIn}
 	    GROUP BY c.cs_name
 	    ORDER BY total_expense DESC
@@ -43,7 +43,7 @@
 	    JOIN category_sub c ON e.cs_in = c.cs_in
 	    WHERE e.expense_date &gt;= DATE_SUB(CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE), INTERVAL 1 MONTH)
 	      AND e.expense_date &lt; CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE)
-	      AND e.expense_type = 2
+	      AND e.expense_type = 1
 	      AND e.member_in = #{memberIn}
 	    GROUP BY c.cs_name
 	    ORDER BY total_expense DESC
@@ -57,7 +57,7 @@
 	    FROM expense e
 	    JOIN category_sub c ON e.cs_in = c.cs_in
 	    WHERE e.member_in = #{memberIn}
-	      AND e.expense_type = 2
+	      AND e.expense_type = 1
 	      AND MONTH(e.expense_date) = #{month}
 	      AND YEAR(e.expense_date) = #{year}
 	    GROUP BY c.cs_name, DATE(e.expense_date)
@@ -70,7 +70,7 @@
 	    WHERE member_in = #{memberIn}
 	      AND EXTRACT(MONTH FROM expense_date) = #{month}
 	      AND EXTRACT(YEAR FROM expense_date) = #{year}
-	      AND expense_type = 2
+	      AND expense_type = 1
 	</select>
 
 </mapper>

@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
                 .requestMatchers("/member/**").permitAll()
                 .requestMatchers("/cashbook/**").permitAll()
+                .requestMatchers("/mypage/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/consumption/**", "/eanalysis/**", "/efeedback/**", "/canalysis/**", "/bplanner/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")

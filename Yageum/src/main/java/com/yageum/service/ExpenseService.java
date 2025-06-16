@@ -1,0 +1,129 @@
+package com.yageum.service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.yageum.domain.CardDTO;
+import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.CategorySubDTO;
+import com.yageum.entity.BankAccount;
+import com.yageum.entity.Card;
+import com.yageum.entity.CategoryMain;
+import com.yageum.entity.CategorySub;
+import com.yageum.entity.Expense;
+import com.yageum.repository.BankAccountRepository;
+import com.yageum.repository.CardRepository;
+import com.yageum.repository.CategoryMainRepository;
+import com.yageum.repository.CategorySubRepository;
+import com.yageum.repository.ExpenseRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
+
+@Transactional
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class ExpenseService {
+
+	 private final ExpenseRepository expenseRepository;
+	 private final CategoryMainRepository categoryMainRepository;
+	 private final CategorySubRepository categorySubRepository;
+	 private final CardRepository cardRepository;
+	 private final BankAccountRepository bankAccountRepository;
+
+	    public void saveExpense(Expense expense) {
+	        expenseRepository.save(expense);
+	    }
+	    
+	 // 대분류 전체 가져오기
+	    public List<CategoryMainDTO> getAllMainCategories() {
+	        List<CategoryMain> mainList = categoryMainRepository.findAll();
+	        List<CategoryMainDTO> dtoList = new ArrayList<>();
+
+	        for (CategoryMain main : mainList) {
+	            CategoryMainDTO cmDTO = new CategoryMainDTO();
+	            cmDTO.setCmIn(main.getCmIn());
+	            cmDTO.setCmName(main.getCmName());
+	            dtoList.add(cmDTO);
+	        }
+
+	        return dtoList;
+	    }
+
+	    // 대분류 ID로 소분류 목록 가져오기
+	    public List<CategorySubDTO> getSubCategoriesByCmIn(int cmIn) {
+	        List<CategorySub> subList = categorySubRepository.findByCmIn(cmIn);
+	        System.out.println("subList size: " + subList.size());
+	        
+	        List<CategorySubDTO> dtoList = new ArrayList<>();
+
+	        for (CategorySub sub : subList) {
+	            CategorySubDTO csDTO = new CategorySubDTO();
+	            csDTO.setCsIn(sub.getCsIn());
+	            csDTO.setCmIn(sub.getCmIn());
+	            csDTO.setCsName(sub.getCsName());
+	            dtoList.add(csDTO);
+	        }
+
+	        return dtoList;
+	    }
+
+	    public List<Map<String, Object>> findMethodListByTypeAndMember(String type, int memberIn) {
+	        if ("card".equals(type)) {
+	            List<Card> cards = cardRepository.findByMemberIn(memberIn);
+	            if (cards == null) return Collections.emptyList();
+
+	            return cards.stream()
+	                .map(card -> {
+	                    Map<String, Object> map = new HashMap<>();
+	                    map.put("id", card.getCardIn());
+	                    map.put("name", card.getCardName());
+	                    return map;
+	                })
+	                .collect(Collectors.toList());
+
+	        } else if ("account".equals(type)) {
+	            List<BankAccount> accounts = bankAccountRepository.findByMemberId(memberIn);
+	            if (accounts == null) return Collections.emptyList();
+
+	            return accounts.stream()
+	                .map(acc -> {
+	                    Map<String, Object> map = new HashMap<>();
+	                    map.put("id", acc.getAccountIn());
+	                    map.put("name", acc.getBankIn() + " (" + acc.getAccountNum() + ")");
+	                    return map;
+	                })
+	                .collect(Collectors.toList());
+	        }
+
+	        return Collections.emptyList(); // 카드, 계좌 외의 경우
+	    }
+
+//	    public List<Card> findCardListByMethodAndMember(int methodIn, int memberIn) {
+//	    	log.info("요청 들어온 memberId={}, methodIn={}" + memberIn + ',' + methodIn);
+//	        return cardRepository.findByMemberInAndMethodIn(methodIn, memberIn);
+//	    }
+	    
+	    public List<CardDTO> findCardListByMethodAndMember(int methodIn, int memberIn) {
+	    	log.info("ExpenseService findCardListByMethodAndMember()");
+	    	log.info("쿼리 전 memberIn={}, methodIn={}", memberIn, methodIn);
+	    	List<Card> cards = cardRepository.findCardsByMemberInAndMethodIn(memberIn, methodIn);
+	    	log.info("쿼리 후 카드 리스트: {}", cards);
+	        log.info("카드 개수: " + cards.size());  
+	        return cards.stream()
+	                    .map(CardDTO::new)
+	                    .collect(Collectors.toList());
+	    }
+	
+	    
+	
+}

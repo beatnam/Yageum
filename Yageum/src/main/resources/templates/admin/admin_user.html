@@ -70,7 +70,10 @@
                             th:data-name="${member.memberName}" 
                             th:data-id="${#strings.length(member.memberId) >= 43 ? member.memberPasswd : member.memberId}">
                             
-                            <td th:text="${member.memberRole}"></td>
+                            <td 
+								th:text="${member.memberRole}"
+								>
+							</td>
                             
                             <td>
                                 <!-- 네이버 가입자 (ID 길이가 43자 이상) -->
@@ -85,7 +88,7 @@
                             <td th:text="${member.memberName}"></td>
                             <td th:text="${member.memberEmail}"></td>
                             <td th:text="${member.memberPhone}"></td>
-                            <td><button class="detail-btn">상세보기</button></td>
+                            <td><button href = # class="detail-btn" th:value="${member.memberId}">상세보기</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -105,8 +108,19 @@
             </div>
         </div>
     </div>
-
+<script src="../js/jquery-3.6.0.js"></script>
     <script>
+		
+		$(document).ready(function(){
+			$('.detail-btn').click(function(){
+				var memberId = $(this).val();
+				var url = '/admin/user_detail?memberId=' + memberId;
+				window.open(url, "popup", "width=730,height=940");
+					
+			});
+			
+		});
+		
         // 사이트 설정 하위 메뉴 토글
         function toggleSubmenu(event) {
             event.preventDefault();
