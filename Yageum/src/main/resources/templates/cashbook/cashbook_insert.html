@@ -67,12 +67,13 @@
             <div class="form-group">
                 <label class="form-label">수단 <span class="required">*</span></label>
                 <div class="select-group">
-                    <select class="form-select" id="method1" name="method1" onchange="updateMethod2()" required>
-                        <option value="">선택</option>
-                        <option value="card">카드</option>
-                        <option value="cash">현금</option>
-                        <option value="account">계좌이체</option>
-                    </select>
+					<select class="form-select" id="method1" name="method_in" onchange="updateMethod2()" required>
+					    <option value="">선택</option>
+					    <option value="1">신용카드</option>
+					    <option value="2">체크카드</option>
+					    <option value="3">현금</option>
+					    <option value="4">계좌이체</option>
+					</select>
                     <select class="form-select" id="method2" name="method2" disabled required>
                         <option value="">상세 선택</option>
                     </select>
@@ -150,34 +151,21 @@
 		    method2.innerHTML = '<option value="">상세 선택</option>';
 		    method2.disabled = true;
 
-		    if (method1 === "cash" || method1 === "") {
-		        // 현금 선택 시 비활성화
-		        return;
+		    if (method1 === "1" || method1 === "2") {
+		        // 카드 관련 수단만 서버에서 가져옴
+		        fetch(`/cashbook/cards/byMethod/${method1}`)
+		            .then(res => res.json())
+		            .then(data => {
+						console.log("카드 응답 데이터:", data);
+		                data.forEach(card => {
+		                    const option = document.createElement("option");
+		                    option.value = card.card_in;
+		                    option.textContent = card.card_name;
+		                    method2.appendChild(option);
+		                });
+		                method2.disabled = false;
+		            });
 		    }
-
-		    // 카드 또는 계좌일 경우 → 서버에서 데이터 가져오기
-			fetch(`/cashbook/methods/${method1}`)
-			       .then(res => {
-			           if (!res.ok) throw new Error("서버 응답 실패");
-			           return res.json(); 
-			       })
-			       .then(data => {
-			           console.log("받은 목록:", data);
-
-			           // 받은 목록으로 옵션 추가
-			           data.forEach(item => {
-			               const option = document.createElement("option");
-			               option.value = item.id;
-			               option.textContent = item.name;
-			               method2.appendChild(option);
-			           });
-
-			           // 여기서 활성화!
-			           method2.disabled = false;
-			       })
-			       .catch(err => {
-			           console.error("method2 로딩 오류:", err.message); 
-			       });
 		}
 
         // 카테고리 선택 팝업 (실제로는 팝업창으로 구현)

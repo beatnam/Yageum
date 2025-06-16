@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.entity.BankAccount;
@@ -25,10 +26,11 @@ import com.yageum.repository.ExpenseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @Service
-@Log
+@Slf4j
 @RequiredArgsConstructor
 public class ExpenseService {
 
@@ -77,7 +79,7 @@ public class ExpenseService {
 
 	    public List<Map<String, Object>> findMethodListByTypeAndMember(String type, int memberIn) {
 	        if ("card".equals(type)) {
-	            List<Card> cards = cardRepository.findByMemberId(memberIn);
+	            List<Card> cards = cardRepository.findByMemberIn(memberIn);
 	            if (cards == null) return Collections.emptyList();
 
 	            return cards.stream()
@@ -105,6 +107,23 @@ public class ExpenseService {
 
 	        return Collections.emptyList(); // 카드, 계좌 외의 경우
 	    }
+
+//	    public List<Card> findCardListByMethodAndMember(int methodIn, int memberIn) {
+//	    	log.info("요청 들어온 memberId={}, methodIn={}" + memberIn + ',' + methodIn);
+//	        return cardRepository.findByMemberInAndMethodIn(methodIn, memberIn);
+//	    }
+	    
+	    public List<CardDTO> findCardListByMethodAndMember(int methodIn, int memberIn) {
+	    	log.info("ExpenseService findCardListByMethodAndMember()");
+	    	log.info("쿼리 전 memberIn={}, methodIn={}", memberIn, methodIn);
+	    	List<Card> cards = cardRepository.findCardsByMemberInAndMethodIn(memberIn, methodIn);
+	    	log.info("쿼리 후 카드 리스트: {}", cards);
+	        log.info("카드 개수: " + cards.size());  
+	        return cards.stream()
+	                    .map(CardDTO::new)
+	                    .collect(Collectors.toList());
+	    }
 	
+	    
 	
 }

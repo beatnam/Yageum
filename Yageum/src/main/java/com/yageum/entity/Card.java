@@ -23,7 +23,7 @@ public class Card {
     private int cardIn;
 
     @Column(name = "member_in", nullable = false)
-    private int memberId;
+    private int memberIn;
 
     @Column(name = "card_num", nullable = false, unique = true, length = 16)
     private String cardNum;
@@ -45,7 +45,8 @@ public class Card {
 
     @Column(name = "cc_in")
     private int ccIn;
+    
+    @Column(name = "method_in")
+    private int methodIn;
 
-    @Column(name = "cm_name", length = 255)
-    private String cmName;
 }
