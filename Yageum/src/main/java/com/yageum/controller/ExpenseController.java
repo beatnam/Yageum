@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.MemberDTO;
+import com.yageum.entity.Card;
 import com.yageum.entity.Expense;
 import com.yageum.entity.Member;
 import com.yageum.service.ExpenseService;
@@ -27,9 +29,11 @@ import com.yageum.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
+
+@Slf4j
 @Controller
-@Log
 @RequiredArgsConstructor
 @RequestMapping("/cashbook/*")
 public class ExpenseController {
@@ -83,17 +87,14 @@ public class ExpenseController {
         return expenseService.getSubCategoriesByCmIn(cmIn);  
     }
 	
-	@GetMapping("/methods/{type}") // type = "card" or "account"
+	@GetMapping("/cards/byMethod/{methodIn}")
 	@ResponseBody
-	public List<Map<String, Object>> getMethods(@PathVariable("type") String type, Principal principal) {
-		try {
-		    String loginId = principal.getName();
-		    Member member = memberService.findByMemberId(loginId).orElseThrow();
-		    return expenseService.findMethodListByTypeAndMember(type, member.getMemberIn());
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    return Collections.emptyList(); // 절대 null 반환 ❌
-		    }
+	public List<CardDTO> getCardsByMethod(@PathVariable("methodIn") int methodIn, Principal principal) {
+		log.info("ExpenseController getCardsByMethod()");
+	    String loginId = principal.getName();
+	    Member member = memberService.findByMemberId(loginId).orElseThrow();
+	    log.info("요청 들어온 memberIn={}, methodIn={}", member.getMemberIn(), methodIn);
+	    return expenseService.findCardListByMethodAndMember(methodIn, member.getMemberIn());
 	}
 	 
 	
@@ -112,7 +113,7 @@ public class ExpenseController {
 	
 	
 	@PostMapping("/insertPro")
-	public String insertPro(Expense expense, @RequestParam("expenseSum") String rawSum, @RequestParam("method1") String method1, @RequestParam("method2") String method2, Principal principal) {
+	public String insertPro(Expense expense, @RequestParam("expenseSum") String rawSum,  @RequestParam("method_in") int methodIn, @RequestParam(value = "method2", required = false) String method2, Principal principal) {
 	    log.info("ExpenseController insertPro()");
 	    log.info("입력된 값: " + expense.toString());
 
@@ -123,10 +124,14 @@ public class ExpenseController {
 	    String loginId = principal.getName(); 
 	    Member member = memberService.findByMemberId(loginId).orElseThrow();
 	    expense.setMemberIn(member.getMemberIn());
+	    
+	    
+	    expense.setMethodIn(methodIn);
 
-	    if ("card".equals(method1)) {
+	    // 카드 or 계좌라면 method2 세팅
+	    if (methodIn == 1 || methodIn == 2) { // 신용 or 체크
 	        expense.setCardIn(Integer.parseInt(method2));
-	    } else if ("account".equals(method1)) {
+	    } else if (methodIn == 4) { // 계좌
 	        expense.setAccountIn(Integer.parseInt(method2));
 	    }
 
