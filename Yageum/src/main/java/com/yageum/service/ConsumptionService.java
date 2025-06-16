@@ -145,29 +145,20 @@ public class ConsumptionService {
     // ⭐ 수정: 지난 달 절약 목표 정보
     public Map<String, Object> getPreviousMonthSavingsPlan(Integer memberIn) {
         log.info("ConsumptionService getPreviousMonthSavingsPlan() 호출: memberIn=" + memberIn);
-
         YearMonth previousMonth = YearMonth.now().minusMonths(1);
         int prevMonthValue = previousMonth.getMonthValue();
         int prevMonthYear = previousMonth.getYear();
-
         Map<String, Object> savingsPlan = savingsPlanMapper.findSavingsPlanByMonthAndYear(memberIn, prevMonthValue, prevMonthYear);
-
         if (savingsPlan != null) {
             Integer currentSavings = savingsPlanMapper.calculateBalanceUpToMonth(memberIn, prevMonthValue, prevMonthYear);
             if (currentSavings == null) {
                 currentSavings = 0;
             }
             savingsPlan.put("currentSavings", currentSavings);
-        } else {
-            savingsPlan = new HashMap<>();
-            savingsPlan.put("currentSavings", 0);
-            savingsPlan.put("save_name", "미설정");
-            savingsPlan.put("save_amount", 0);
-            savingsPlan.put("save_created_date", LocalDate.of(1900, 1, 1));
-            savingsPlan.put("save_target_date", LocalDate.of(1900, 1, 1));
         }
         return savingsPlan;
     }
+
 
     public List<Map<String, Object>> getMonthlyExpensesForCurrentYear(Integer memberIn) {
         List<Map<String, Object>> monthlyExpenses = new ArrayList<>();
@@ -190,10 +181,11 @@ public class ConsumptionService {
         YearMonth lastMonth = YearMonth.now().minusMonths(1);
         int lastMonthYear = lastMonth.getYear();
         int lastMonthValue = lastMonth.getMonthValue();
-
         int totalExpenseLastMonth = expenseMapper.getTotalExpenseForMonth(memberIn, lastMonthValue, lastMonthYear);
-
-        int budgetLastMonth = savingsPlanMapper.budgetLastMons(memberIn);
+        Integer budgetLastMonthFromMapper = savingsPlanMapper.budgetLastMons(memberIn);
+        int budgetLastMonth = (budgetLastMonthFromMapper != null) ? budgetLastMonthFromMapper : 0;
+        log.info("지난달 예산 (처리 후): " + budgetLastMonth);
+        log.info("지난달 총 지출: " + totalExpenseLastMonth);
 
         return budgetLastMonth - totalExpenseLastMonth;
     }
@@ -213,4 +205,25 @@ public class ConsumptionService {
 		log.info("ConsumptionService updateMonthlyIncome()");
 		return savingsPlanMapper.planChack(memberIn);
 	}
+
+    public double getPreviousMonthBudgetUsageProgress(Integer memberIn) {
+        log.info("ConsumptionService getPreviousMonthBudgetUsageProgress() 호출: memberIn=" + memberIn);
+
+        // 1. 지난달 정보 가져오기
+        YearMonth lastMonth = YearMonth.now().minusMonths(1);
+        int lastMonthYear = lastMonth.getYear();
+        int lastMonthValue = lastMonth.getMonthValue();
+        int totalExpenseLastMonth = expenseMapper.getTotalExpenseForMonth(memberIn, lastMonthValue, lastMonthYear);
+        Integer budgetLastMonthFromMapper = savingsPlanMapper.budgetLastMons(memberIn);
+        int budgetLastMonth = (budgetLastMonthFromMapper != null) ? budgetLastMonthFromMapper : 0;
+
+        // 4. 예산 사용률 계산
+        double previousMonthBudgetUsageProgress = 0.0;
+        if (budgetLastMonth > 0) {
+            previousMonthBudgetUsageProgress = (totalExpenseLastMonth * 100.0) / budgetLastMonth;
+        }
+        return Math.max(0.0, previousMonthBudgetUsageProgress);
+    }
+    
+    
 }
