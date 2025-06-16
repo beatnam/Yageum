@@ -1,0 +1,19 @@
+package com.yageum.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
+
+import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.CategorySubDTO;
+
+@Mapper
+@Repository
+public interface AdminMapper {
+
+	List<CategoryMainDTO> showCategoryMain();
+
+	List<CategorySubDTO> subCategorySelect(int cmIn);
+
+}

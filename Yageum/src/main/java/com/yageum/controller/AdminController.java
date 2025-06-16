@@ -8,8 +8,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.CategorySubDTO;
 import com.yageum.entity.Member;
+import com.yageum.service.AdminService;
 import com.yageum.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,8 @@ public class AdminController {
 	
 	private final MemberService memberService;
 
+	private final AdminService adminService;
+	
 	// 회원 관리 페이지
 	@GetMapping("/user")
 	public String user(Model model) {
@@ -91,12 +97,25 @@ public class AdminController {
 	}
 	
 	@GetMapping("/quest_gener")
-	public String questgener() {
+	public String questgener(Model model) {
 		log.info("AdminController questgener()");
 		
+		List<CategoryMainDTO> categoryMainList = adminService.showCategoryMain();
 		
+		model.addAttribute("categoryMainList", categoryMainList);
 		return "/admin/quest_gener";
 	}
+	
+	@GetMapping("/categorySelect")
+	@ResponseBody
+	public List<CategorySubDTO> subCategorySelect(@RequestParam("cmIn") int cmIn) {
+		log.info("소분류 카테고리를 불러오기 위한 ajax");
+		
+		List<CategorySubDTO> result = adminService.subCategorySelect(cmIn);
+		System.out.println(result);
+		return result;
+	}
+	
 	
 	@GetMapping("/quest_update")
 	public String questupdate() {
