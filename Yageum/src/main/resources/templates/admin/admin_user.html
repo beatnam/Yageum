@@ -82,7 +82,8 @@
                                 
                                 <!-- 일반 가입자 (ID 길이가 30자 미만) -->
                                 <span th:if="${#strings.length(member.memberId) < 30}" 
-                                      th:text="${member.memberId}"></span>
+                                      th:text="${member.memberId}">
+								</span>
                             </td>
                             
                             <td th:text="${member.memberName}"></td>

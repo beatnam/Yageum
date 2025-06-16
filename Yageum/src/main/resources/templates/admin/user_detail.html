@@ -25,47 +25,50 @@
 	                       <tr>
 	                           <td>사용자 권한<span class="required">*</span></td>
 	                           <td>
-	                               <select name="userRole" class="form-select" required>
-	                                   <option value="USER" selected>USER</option>
-	                                   <option value="ADMIN">ADMIN</option>
+								
+								
+									<select name="userRole" class="form-select" required>
+										<option value="USER" th:selected="${member.memberRole == 'USER'}">USER</option>
+	                                   	<option value="ADMIN" th:selected="${member.memberRole == 'ADMIN'}">ADMIN</option>
 	                               </select>
 	                           </td>
 	                       </tr>
 	                       <tr>
 	                           <td>회원 ID</td>
 	                           <td>
-	                               <input type="text" name="userId" class="form-input readonly" value="USER001" readonly>
-	                               <input type="hidden" name="userIdHidden" value="USER001">
+	                               <input type="text" th:if="${#strings.length(member.memberId) >= 43}" name="memberId" class="form-input readonly"  th:value="${member.memberPasswd}" readonly>
+	                               <input type="text" th:if="${#strings.length(member.memberId) < 43}" name="memberId" class="form-input readonly"  th:value="${member.memberId}" readonly>
 	                           </td>
 	                       </tr>
 	                       <tr>
 	                           <td>회원 이름</td>
 	                           <td>
-	                               <input type="text" name="userName" class="form-input readonly" value="김철수" readonly>
+	                               <input type="text" name="memberName" class="form-input readonly" th:value="${member.memberName}" readonly>
 	                           </td>
 	                       </tr>
 	                       <tr>
 	                           <td>성별</td>
 	                           <td>
-	                               <input type="text" name="gender" class="form-input readonly" value="남성" readonly>
+	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'M'}"value="남자" readonly>
+	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'G'}"value="여자" readonly>
 	                           </td>
 	                       </tr>
 	                       <tr>
 	                           <td>주소</td>
 	                           <td>
-	                               <input type="text" name="address" class="form-input readonly" value="서울특별시 강남구 테헤란로 123" readonly>
+	                               <input type="text" name="memberAddress" class="form-input readonly" th:value="${member.memberAddress}" readonly>
 	                           </td>
 	                       </tr>
 	                       <tr>
 	                           <td>이메일</td>
 	                           <td>
-	                               <input type="email" name="email" class="form-input readonly" value="kimcs@example.com" readonly>
+	                               <input type="text" name="memberEmail" class="form-input readonly" th:value="${member.memberEmail}" readonly>
 	                           </td>
 	                       </tr>
 	                       <tr>
 	                           <td>전화번호</td>
 	                           <td>
-	                               <input type="text" name="phone" class="form-input readonly" value="010-1234-5678" readonly>
+	                               <input type="text" name="memberPhone" class="form-input readonly" th:value="${member.memberPhone}" readonly>
 	                           </td>
 	                       </tr>
 	                   </table>
@@ -82,7 +85,7 @@
 	                   <tr>
 	                       <td>가입날짜</td>
 	                       <td>
-	                           <input type="text" class="form-input readonly" value="2024-01-15" readonly>
+                               <input type="text" class="form-input readonly" th:value="${member.createDate}" readonly>
 	                       </td>
 	                   </tr>
 	                   <tr>
@@ -94,7 +97,7 @@
 	                   <tr>
 	                       <td>회원 상태</td>
 	                       <td>
-	                           <span class="status-active">활성</span>
+	                           <span class="status-active" th:text="${member.memberState}"></span>
 	                       </td>
 	                   </tr>
 	                   <tr>
@@ -138,13 +141,15 @@
 	                   <tr>
 	                       <td>개인정보 동의</td>
 	                       <td>
-	                           <span class="consent-yes">동의</span>
+	                           <span class="consent-yes" th:if="${member.memberConsent == true}" >동의</span>
+	                           <span class="consent-no" th:if="${member.memberConsent} == false" >비동의</span>
 	                       </td>
 	                   </tr>
 	                   <tr>
 	                       <td>이메일 동의</td>
 	                       <td>
-	                           <span class="consent-no">미동의</span>
+								<span class="consent-yes" th:if="${member.emailConsent == true}" >동의</span>
+                          		<span class="consent-no" th:if="${member.emailConsent} == false" >비동의</span>
 	                       </td>
 	                   </tr>
 	               </table>

@@ -43,7 +43,11 @@ public class AdminController {
 		log.info("AdminController user_detail()");
 		Optional<Member> member = memberService.findByMemberId(memberId);
 		
-		model.addAttribute("member", member);
+		log.info("가지고 온 값" + member.toString() + "===================");
+		
+		
+		
+		model.addAttribute("member", member.get());
 		// html 페이지로 가서 상세보기 페이지에서 표시해줄 정보 입력해주기
 		
 		
