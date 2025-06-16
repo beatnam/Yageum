@@ -50,7 +50,6 @@ implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 // https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter-test
 testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
 
-
 implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
 
 // https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-extras-jackson2dialect
@@ -61,16 +60,6 @@ implementation 'nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.2.0'
 // https://mvnrepository.com/artifact/org.json/json
 implementation 'org.json:json:20250107'
 
-<<<<<<< HEAD
-
-=======
-implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
-
-// https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-extras-jackson2dialect
-implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.1'
-
-implementation 'nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.2.0'
->>>>>>> branch 'ivan' of https://github.com/beatnam/Yageum.git
 }
 
 tasks.named('test') {
