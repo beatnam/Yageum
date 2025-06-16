@@ -36,8 +36,11 @@
 	                       <tr>
 	                           <td>회원 ID</td>
 	                           <td>
+										<!--네이버 로그인인 경우 히든으로 id 값 넘길 수 있게 해줌-->
 	                               <input type="input" th:if="${#strings.length(member.memberId) >= 43}" class="form-input readonly"  th:value="${member.memberPasswd}">
-						   		   <input type="hidden" name="memberId"  th:value="${member.memberId}">
+						   		   <input type="hidden"th:if="${#strings.length(member.memberId) >= 43}" name="memberId"  th:value="${member.memberId}">
+								   
+								   		<!--일반 가입자 인경우-->
 	                               <input type="text" th:if="${#strings.length(member.memberId) < 43}" name="memberId" class="form-input readonly"  th:value="${member.memberId}" readonly>
 	                           </td>
 	                       </tr>
@@ -52,8 +55,8 @@
 	                       <tr>
 	                           <td>성별</td>
 	                           <td>
-	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'M'}"value="남자" readonly>
-	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'G'}"value="여자" readonly>
+	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'M'}" value="남자" readonly>
+	                           		<input type="text" name="memberGender" class="form-input readonly" th:if="${member.memberGender == 'F'}"value="여자" readonly>
 	                           </td>
 	                       </tr>
 	                       <tr>
