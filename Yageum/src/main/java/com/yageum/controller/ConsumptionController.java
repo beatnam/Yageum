@@ -518,6 +518,18 @@ public class ConsumptionController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping("/checkPlan")
+    @ResponseBody
+    public int checkPlan(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    	log.info("ConsumptionController canalysis()");
+    	String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        
+        int chackPlan = consumptionService.planChack(memberIn);
+        
+    	return chackPlan;
+    }
 
     @GetMapping("/canalysis")
     public String canalysis(@AuthenticationPrincipal UserDetails userDetails, Model model) {
