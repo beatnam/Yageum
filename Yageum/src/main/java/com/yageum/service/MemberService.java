@@ -98,6 +98,26 @@ public class MemberService {
 	}
 
 
+
 	//마이페이지 - 회원정보 수정 저장 로직 끝
+
+	
+	
+	
+	//관리자 페이지 사용자 권한 부여---------------------------
+	public void update(MemberDTO memberDTO) {
+		log.info("MemberService update()");
+		
+		Member member = new Member();
+		member.setMemberEntity(memberDTO);
+		
+		memberRepository.save(member);
+		
+	}
+
+	public Member find(String memberId) {
+		return memberRepository.findByMemberId(memberId);
+	}
+	//관리자 페이지 사용자 권한 부여----------------------------
 	
 }
