@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yageum.entity.CategoryMain;
+import com.yageum.entity.CategorySub;
 import com.yageum.entity.Member;
+import com.yageum.service.CategoryService;
 import com.yageum.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,8 @@ import lombok.extern.java.Log;
 public class AdminController {
 	
 	private final MemberService memberService;
+	private final CategoryService categoryService;
+	
 
 	// 회원 관리 페이지
 	@GetMapping("/user")
@@ -88,11 +93,28 @@ public class AdminController {
 
 	// 통계 / 리포트 페이지
 
+	
+	
+	
+	
+	
+	
+	
 	// 사이트 설정 - 카테고리 설정 페이지
 	@GetMapping("/category")
-	public String category() {
+	public String category(Model model) {
 		log.info("AdminController category()");
 
+		List<CategoryMain> categoryMain = categoryService.cateMFindAll();
+		List<CategorySub> categorySub = categoryService.cateSFindAll();
+		
+		
+		
+		model.addAttribute("cateMain", categoryMain);
+		model.addAttribute("cateSub", categorySub);
+		
+		
+		
 		return "/admin/admin_category";
 	}
 

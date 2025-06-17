@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.yageum.domain.MemberDTO;
+import com.yageum.entity.CategoryMain;
 import com.yageum.entity.Member;
 import com.yageum.mapper.MemberMapper;
 import com.yageum.repository.MemberRepository;
@@ -118,6 +119,7 @@ public class MemberService {
 	public Member find(String memberId) {
 		return memberRepository.findByMemberId(memberId);
 	}
+
 	//관리자 페이지 사용자 권한 부여----------------------------
 	
 }
