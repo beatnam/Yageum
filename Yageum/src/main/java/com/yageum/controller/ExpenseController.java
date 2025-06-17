@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
@@ -97,6 +98,13 @@ public class ExpenseController {
 	    return expenseService.findCardListByMethodAndMember(methodIn, member.getMemberIn());
 	}
 	 
+	@GetMapping("/accounts")
+	@ResponseBody
+	public List<BankAccountDTO> getAccounts(Principal principal) {
+	    String loginId = principal.getName();
+	    Member member = memberService.findByMemberId(loginId).orElseThrow();
+	    return expenseService.findAccountListByMember(member.getMemberIn());
+	}
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -113,7 +121,7 @@ public class ExpenseController {
 	
 	
 	@PostMapping("/insertPro")
-	public String insertPro(Expense expense, @RequestParam("expenseSum") String rawSum,  @RequestParam("method_in") int methodIn, @RequestParam(value = "method2", required = false) String method2, Principal principal) {
+	public String insertPro(Expense expense, @RequestParam("expenseSum") String rawSum,  @RequestParam("method_in") int methodIn,  @RequestParam("cs_in") int csIn, @RequestParam(value = "method2", required = false) String method2, Principal principal) {
 	    log.info("ExpenseController insertPro()");
 	    log.info("입력된 값: " + expense.toString());
 
@@ -125,7 +133,7 @@ public class ExpenseController {
 	    Member member = memberService.findByMemberId(loginId).orElseThrow();
 	    expense.setMemberIn(member.getMemberIn());
 	    
-	    
+	    expense.setCsIn(csIn);
 	    expense.setMethodIn(methodIn);
 
 	    // 카드 or 계좌라면 method2 세팅

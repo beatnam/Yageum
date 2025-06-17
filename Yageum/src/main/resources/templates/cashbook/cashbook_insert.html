@@ -152,36 +152,33 @@
 		    method2.disabled = true;
 
 		    if (method1 === "1" || method1 === "2") {
-		        // 카드 관련 수단만 서버에서 가져옴
 		        fetch(`/cashbook/cards/byMethod/${method1}`)
 		            .then(res => res.json())
 		            .then(data => {
 						console.log("카드 응답 데이터:", data);
 		                data.forEach(card => {
 		                    const option = document.createElement("option");
-		                    option.value = card.card_in;
-		                    option.textContent = card.card_name;
+		                    option.value = card.cardIn;
+		                    option.textContent = card.cardName;
 		                    method2.appendChild(option);
 		                });
 		                method2.disabled = false;
 		            });
-		    }
+		    }				else if (method1 === "4") { 
+				        fetch(`/cashbook/accounts`)
+				            .then(res => res.json())
+				            .then(data => {
+				                console.log("계좌 응답 데이터:", data);
+				                data.forEach(account => {
+				                    const option = document.createElement("option");
+				                    option.value = account.accountIn;  
+				                    option.textContent = account.bankName + " " + account.accountNum;
+				                    method2.appendChild(option);
+				                });
+				                method2.disabled = false;
+				            });
+				    }
 		}
-
-        // 카테고리 선택 팝업 (실제로는 팝업창으로 구현)
-        //function openCategoryPopup() {
-            // 임시로 간단한 프롬프트로 구현 (실제로는 팝업창)
-         //   const categories = ['식비', '교통비', '쇼핑', '의료비', '문화/여가', '기타'];
-        //    const selected = prompt('카테고리를 입력하세요:\n' + categories.join(', '));
-            
-        //    if (selected && categories.includes(selected)) {
-        //        selectedCategory = selected;
-        //        document.getElementById('category').value = selected;
-        //        document.getElementById('categoryDisplay').textContent = selected;
-        //        document.getElementById('categoryDisplay').style.color = '#333';
-        //        removeError('category');
-        //    }
-      //  }
 
         // 에러 상태 제거
         function removeError(fieldName) {
@@ -270,7 +267,7 @@
 			  subs.forEach(sub => {
 			    const li = document.createElement("li");
 			    li.textContent = sub.csName;
-			    li.onclick = () => selectCategory(sub.csId, element.textContent, sub.csName);
+			    li.onclick = () => selectCategory(sub.csIn, element.textContent, sub.csName);
 			    subList.appendChild(li);
 			  });
 		    });

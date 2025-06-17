@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
@@ -92,7 +93,7 @@ public class ExpenseService {
 	                .collect(Collectors.toList());
 
 	        } else if ("account".equals(type)) {
-	            List<BankAccount> accounts = bankAccountRepository.findByMemberId(memberIn);
+	            List<BankAccount> accounts = bankAccountRepository.findByMemberIn(memberIn);
 	            if (accounts == null) return Collections.emptyList();
 
 	            return accounts.stream()
@@ -116,13 +117,31 @@ public class ExpenseService {
 	    public List<CardDTO> findCardListByMethodAndMember(int methodIn, int memberIn) {
 	    	log.info("ExpenseService findCardListByMethodAndMember()");
 	    	log.info("쿼리 전 memberIn={}, methodIn={}", memberIn, methodIn);
+	    	
 	    	List<Card> cards = cardRepository.findCardsByMemberInAndMethodIn(memberIn, methodIn);
+	    	
 	    	log.info("쿼리 후 카드 리스트: {}", cards);
 	        log.info("카드 개수: " + cards.size());  
+	        
 	        return cards.stream()
 	                    .map(CardDTO::new)
 	                    .collect(Collectors.toList());
 	    }
+
+		public List<BankAccountDTO> findAccountListByMember(int memberIn) {
+			log.info("ExpenseService findAccountListByMember()");
+			log.info("쿼리 전 memberIn={}", memberIn);
+			
+			List<BankAccount> accounts = bankAccountRepository.findByMemberIn(memberIn);
+		    
+			log.info("쿼리 후 계좌 리스트: {}", accounts);
+	        log.info("계좌 개수: " + accounts.size()); 
+			
+			return accounts.stream()
+		                   .map(BankAccountDTO::new)
+		                   .collect(Collectors.toList());
+			
+		}
 	
 	    
 	
