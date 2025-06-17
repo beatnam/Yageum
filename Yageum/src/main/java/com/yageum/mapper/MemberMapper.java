@@ -1,5 +1,7 @@
 package com.yageum.mapper;
 
+import java.time.LocalDate;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +16,8 @@ public interface MemberMapper {
 	public MemberDTO infoMember(String id);
 
 	public MemberDTO loginMember(String memberId);
+
+	public void updateDate(MemberDTO memberDTO2);
 
 
 }

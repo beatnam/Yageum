@@ -2,6 +2,8 @@ package com.yageum.controller;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -116,6 +118,8 @@ public class MemberController {
          HttpSession httpSession = request.getSession(true);
          httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
+         memberDTO.setLastLoginDate(LocalDate.now());
+         memberService.updateDate(memberDTO);
          session.setAttribute("memberName", memberDTO.getMemberName());
 
          return "redirect:/cashbook/main";
@@ -169,9 +173,13 @@ public class MemberController {
 
 //      System.out.println("memberDTO2 : "+memberDTO2.toString());
 
+      
       if (memberDTO2 == null) {
          log.info("존재하지 않는 회원 ID");
          return "redirect:/member/login";
+      }else {
+    	  memberDTO2.setLastLoginDate(LocalDate.now());
+    	  memberService.updateDate(memberDTO2);
       }
 
       boolean match = passwordEncoder.matches(memberDTO.getMemberPasswd(), memberDTO2.getMemberPasswd());
