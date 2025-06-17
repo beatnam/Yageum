@@ -41,4 +41,21 @@ public class AdminService {
 		return adminMapper.listQuest();
 	}
 
+	public QuestDTO questDetail(int questIn) {
+		// TODO Auto-generated method stub
+		return adminMapper.questDetail(questIn);
+	}
+
+	public void updateQuest(QuestDTO questDTO) {
+
+		adminMapper.updateQuest(questDTO);
+
+	}
+
+	public void deleteQuest(int questIn) {
+		
+		adminMapper.deleteQuest(questIn);// TODO Auto-generated method stub
+
+	}
+
 }

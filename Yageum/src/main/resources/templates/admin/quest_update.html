@@ -1,123 +1,224 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="../css/quest_edit.css">
-    <title>퀘스트 변경</title>
-    <style>
-       
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/quest_gener.css">
+	<script src="/js/jquery-3.6.0.js"></script>
+	<title>퀘스트 생성</title>
 </head>
+
 <body>
 	<div class="quest-form-container">
-	      <div class="form-header">
-	          <h2>퀘스트 생성</h2>
-	      </div>
-	      
-	      <form id="questForm" action="/admin/questPro" method="POST" onsubmit="submitQuest(event)">
-	          <div class="form-content">
-	              <table class="form-table">
-	                  <tr>
-	                      <td>퀘스트 이름<span class="required">*</span></td>
-	                      <td>
-	                          <input type="text" name="questName" id="questName" class="form-input" placeholder="퀘스트 이름을 입력하세요" required>
-	                      </td>
-	                  </tr>
-	                  <tr>
-	                      <td>카테고리<span class="required">*</span></td>
-	                      <td>
-	                          <div class="category-group">
-	                              <select name="mainCategory" id="mainCategory" class="form-select" required>
-	                                  <option value="">메인 카테고리 선택</option>
-	                                  <option value="daily">일일 퀘스트</option>
-	                                  <option value="weekly">주간 퀘스트</option>
-	                                  <option value="special">특별 퀘스트</option>
-	                                  <option value="event">이벤트 퀘스트</option>
-	                              </select>
-	                              <select name="subCategory" id="subCategory" class="form-select" required>
-	                                  <option value="">서브 카테고리 선택</option>
-	                                  <option value="combat">전투</option>
-	                                  <option value="collection">수집</option>
-	                                  <option value="exploration">탐험</option>
-	                                  <option value="social">소셜</option>
-	                                  <option value="crafting">제작</option>
-	                              </select>
-	                          </div>
-	                      </td>
-	                  </tr>
-	                  <tr>
-	                      <td>목표치<span class="required">*</span></td>
-	                      <td>
-	                          <input type="number" name="targetValue" id="targetValue" class="form-input" placeholder="목표치를 입력하세요" min="1" required>
-	                      </td>
-	                  </tr>
-	                  <tr>
-	                      <td>보상<span class="required">*</span></td>
-	                      <td>
-	                          <input type="number" name="reward" id="reward" class="form-input" placeholder="보상을 입력하세요" min="0" required>
-	                      </td>
-	                  </tr>
-	                  <tr>
-	                      <td>퀘스트 기간<span class="required">*</span></td>
-	                      <td>
-	                          <div class="date-group">
-	                              <input type="date" name="startDate" id="startDate" class="form-input" required>
-	                              <span class="date-separator">~</span>
-	                              <input type="date" name="endDate" id="endDate" class="form-input" required>
-	                          </div>
-	                      </td>
-	                  </tr>
-	              </table>
-	          </div>
-	          
-	          <div class="form-actions">
-	              <button type="button" class="btn btn-secondary" onclick="cancelQuest()">취소</button>
-	              <button type="submit" class="btn btn-primary">퀘스트 생성</button>
-	          </div>
-	      </form>
-	  </div>
+		<div class="form-header">
+			<h2>퀘스트 생성</h2>
+		</div>
 
-	  <script>
-	      
-		// 폼 제출 처리
-//	      function submitQuest(event) {
-//	          event.preventDefault(); // 기본 폼 제출 방지
-	          
-//	          const form = document.getElementById('questForm');
-//	          const formData = new FormData(form);
-	          
-	          // 날짜 검증
-//	          const startDate = formData.get('startDate');
-//	          const endDate = formData.get('endDate');
-	          
-//	          if (new Date(startDate) >= new Date(endDate)) {
-//	              alert('종료일은 시작일보다 늦어야 합니다.');
-//	              return false; // 검증 실패 시 폼 제출 중단
-//	          }
-	          
-	          // 검증 통과 시 실제 폼 제출
-//	          console.log('퀘스트 데이터를 서버로 전송합니다...');
-//	          form.submit(); // 서버로 폼 제출 (페이지 이동됨)
-//	      }
-	      
-	      // 취소 처리
-	      function cancelQuest() {
-	          if (confirm('퀘스트 생성을 취소하시겠습니까?')) {
-	              window.close(); // 팝업창 닫기
-	          }
-	      }
-	      
-	      // 오늘 날짜를 기본값으로 설정
-	      document.addEventListener('DOMContentLoaded', function() {
-	          const today = new Date().toISOString().split('T')[0];
-	          document.getElementById('startDate').value = today;
-	          
-	          // 종료일 기본값을 일주일 후로 설정
-	          const nextWeek = new Date();
-	          nextWeek.setDate(nextWeek.getDate() + 7);
-	          document.getElementById('endDate').value = nextWeek.toISOString().split('T')[0];
-	      });
-	  </script>
+		<form id="questForm" method="post" onsubmit="submitQuest(event)">
+			<!-- 수정 대상 퀘스트의 고유번호 hidden 전달 -->
+			<input type="hidden" name="questIn" th:value="${quest.questIn}" />
+
+			<div class="form-content">
+				<table class="form-table">
+					<tr>
+						<td>퀘스트 이름<span class="required">*</span></td>
+						<td>
+							<input type="text" name="questName" id="questName" class="form-input"
+								placeholder="퀘스트 이름을 입력하세요" required th:value="${quest.questName}">
+						</td>
+					</tr>
+
+					<tr>
+						<td>퀘스트 유형<span class="required">*</span></td>
+						<td>
+							<div class="category-group">
+								<select name="questTypeIn" id="mainCategory" class="form-select" required>
+									<option value="">퀘스트 유형 선택</option>
+									<option value="2" th:selected="${quest.questTypeIn == 2}">연속 출석</option>
+									<option value="3" th:selected="${quest.questTypeIn == 3}">연속 작성</option>
+									<option value="4" th:selected="${quest.questTypeIn == 4}">~이하 사용(절약)</option>
+									<option value="5" th:selected="${quest.questTypeIn == 5}">~이상 저축(저금)</option>
+								</select>
+							</div>
+						</td>
+					</tr>
+
+					<tr>
+						<td>카테고리<span class="required">*</span></td>
+						<td>
+							<div class="category-group">
+								<select name="cmIn" id="categoryMain" class="form-select"
+									onchange="LoadcsIn(this.value)">
+									<option value="">절약, 저축인 경우</option>
+									<option th:each="categoryMainDTO : ${categoryMainList}"
+										th:value="${categoryMainDTO.cmIn}" th:text="${categoryMainDTO.cmName}"
+										th:selected="${categoryMainDTO.cmIn == quest.cmIn}"></option>
+								</select>
+								<select name="csIn" id="subCategory" class="form-select">
+									<!-- 하위 카테고리는 JavaScript로 동적 로드되므로 선택된 값은 JS에서 처리 -->
+								</select>
+							</div>
+						</td>
+					</tr>
+
+					<tr>
+						<td>목표치<span class="required">*</span></td>
+						<td>
+							<input type="number" name="goalValue" id="targetValue" class="form-input"
+								placeholder="목표치를 입력하세요" min="1" required th:value="${quest.goalValue}">
+						</td>
+					</tr>
+
+					<tr>
+						<td>보상<span class="required">*</span></td>
+						<td>
+							<input type="number" name="rewardValue" id="reward" class="form-input"
+								placeholder="보상을 입력하세요" min="0" required th:value="${quest.rewardValue}">
+						</td>
+					</tr>
+
+					<tr>
+						<td>퀘스트 기간<span class="required">*</span></td>
+						<td>
+							<div class="date-group">
+								<input type="date" name="startDate" id="startDate" class="form-input" required
+									th:value="${quest.startDate}">
+								<span class="date-separator">~</span>
+								<input type="date" name="endDate" id="endDate" class="form-input" required
+									th:value="${quest.endDate}">
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<!-- CSRF 토큰 -->
+			<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
+
+			<div class="form-actions">
+				<button type="button" class="btn btn-secondary" onclick="cancelQuest()">취소</button>
+				<button type="submit" class="btn btn-primary">퀘스트 수정</button>
+			</div>
+		</form>
+	</div>
+
+	<script>
+		function LoadcsIn(cmIn) {
+			const $subCategorySelect = $('#subCategory');
+
+			// 초기화
+			$subCategorySelect.html('<option value="">상위 카테고리를 선택하세요.</option>');
+
+			if (cmIn) {
+				// 로딩 상태 표시
+				$subCategorySelect.html('<option value="">로딩 중...</option>').prop('disabled', true);
+
+				$.ajax({
+					type: "GET",
+					url: '/admin/categorySelect',
+					data: {'cmIn': cmIn},
+					dataType: 'json',
+					timeout: 10000, // 10초 타임아웃 설정
+					beforeSend: function () {
+						console.log("Ajax 요청 시작:", cmIn);
+					},
+					success: function (result) {
+						console.log("Ajax 응답 성공:", result);
+
+						// 옵션 초기화 및 기본 옵션 추가
+						$subCategorySelect.empty().append('<option value="">하위 카테고리를 선택하세요.</option>');
+
+						// 결과가 배열인지 확인
+						if (Array.isArray(result) && result.length > 0) {
+							$.each(result, function (index, item) {
+								if (item.csIn && item.csName) {
+									$subCategorySelect.append('<option value="' + item.csIn + '">' + item.csName + '</option>');
+								}
+							});
+						} else {
+							$subCategorySelect.append('<option value="">하위 카테고리가 없습니다.</option>');
+						}
+
+						// 로딩 상태 해제
+						$subCategorySelect.prop('disabled', false);
+					},
+					error: function (xhr, status, error) {
+						console.error("Ajax 에러 발생:");
+						console.error("Status:", status);
+						console.error("Error:", error);
+						console.error("Response:", xhr.responseText);
+
+						// 에러 상태 표시
+						$subCategorySelect.html('<option value="">오류가 발생했습니다.</option>').prop('disabled', false);
+
+						// 구체적인 에러 메시지
+						let errorMessage = "서브 카테고리를 불러오는 중 오류가 발생했습니다.";
+						if (status === 'timeout') {
+							errorMessage += " (요청 시간 초과)";
+						} else if (status === 'error') {
+							errorMessage += " (서버 오류: " + xhr.status + ")";
+						} else if (status === 'abort') {
+							errorMessage += " (요청 취소됨)";
+						}
+
+						alert(errorMessage);
+					},
+					complete: function () {
+						console.log("Ajax 요청 완료");
+					}
+				});
+			} else {
+				// cmIn이 비어있을 때
+				$subCategorySelect.html('<option value="">상위 카테고리를 선택하세요.</option>').prop('disabled', false);
+			}
+		}
+	</script>
+
+	<script>
+		function submitQuest(event) {
+			event.preventDefault();
+
+			const form = document.getElementById('questForm');
+			const formData = new FormData(form);
+
+			const startDate = formData.get('startDate');
+			const endDate = formData.get('endDate');
+			if (new Date(startDate) >= new Date(endDate)) {
+				alert('종료일은 시작일보다 늦어야 합니다.');
+				return false;
+			}
+
+			if (!confirm('퀘스트 생성을 하시겠습니까?')) {
+				return;
+			}
+
+			$.ajax({
+				type: 'POST',
+				url: '/admin/update_Q',
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+					alert('퀘스트가 성공적으로 생성되었습니다.');
+
+					// 부모 창 갱신
+					if (window.opener && !window.opener.closed) {
+						window.opener.location.reload();  // 부모 페이지 전체 새로고침
+						// 또는 opener의 특정 함수 호출 가능
+					}
+
+					// 팝업 닫기
+					window.close();
+				},
+				error: function (xhr, status, error) {
+					alert('퀘스트 생성 중 오류가 발생했습니다.');
+					console.error(error);
+				}
+			});
+		}
+
+	</script>
 </body>
+
 </html>

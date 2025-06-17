@@ -22,4 +22,10 @@ public interface AdminMapper {
 
 	List<Map<Object, Object>> listQuest();
 
+	QuestDTO questDetail(int questIn);
+
+	void updateQuest(QuestDTO questDTO);
+
+	void deleteQuest(int questIn);
+
 }
