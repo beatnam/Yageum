@@ -228,6 +228,12 @@ public class ConsumptionService {
         }
         return Math.max(0.0, previousMonthBudgetUsageProgress);
     }
+
+	public void processAiFeedback(Integer memberIn, String aiFeedback) {
+		log.info("ConsumptionService getPreviousMonthBudgetUsageProgress()");
+		
+		savingsPlanMapper.processAiFeedback(memberIn, aiFeedback);
+	}
     
     
 }
