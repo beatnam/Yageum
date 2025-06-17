@@ -341,7 +341,7 @@ public class ConsumptionController {
                     promptBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("원\n");
                 }
                 promptBuilder.append("총 지출: ").append(totalExpense).append("원\n\n");
-                promptBuilder.append("이 지출 내역을 바탕으로 따뜻한 어조로 카테고리별로 분석하고, 장단점과 함께 피드백을 해줘. 그리고 전반적인 소비 패턴에 대한 의견도 줘. 그리고 300글자 내로 답해줘.");
+                promptBuilder.append("이 지출 내역을 바탕으로 따뜻한 어조로 카테고리별로 분석하고, 장단점과 함께 피드백을 해줘. 그리고 전반적인 소비 패턴에 대한 의견도 줘. 답변은 최대 300글자 내로 줄바꿈을 포함하여 가독성 있게 작성해줘.\\n\\n");
             }
 
             String prompt = promptBuilder.toString();
@@ -600,6 +600,31 @@ public class ConsumptionController {
         log.info("ConsumptionController canalysis()");
         String memberId = userDetails.getUsername();
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        
+        //이달의 총지출액(이번 달 총 지출)
+        int totalExpense = consumptionService.getTotalExpenseForCurrentMonth(memberIn);
+        model.addAttribute("totalExpense", totalExpense);
+
+        LocalDate today = LocalDate.now();
+        int totalDaysInMonth = today.lengthOfMonth();
+        int currentDayOfMonth = today.getDayOfMonth();
+        int daysLeft = totalDaysInMonth - currentDayOfMonth;
+        //일별 지출액(일평균 지출)
+        double averageDailyExpense = (currentDayOfMonth > 0) ? (double) totalExpense / currentDayOfMonth : 0;
+        model.addAttribute("averageDailyExpense", (int) Math.round(averageDailyExpense));
+        model.addAttribute("daysLeft", daysLeft);
+        
+        //이번달 지출 횟수(총 거래 건수)
+        int countThisMonth = consumptionService.thisMonthCount(memberIn);
+        model.addAttribute("countThisMonth", countThisMonth);
+        
+        //이번달 남은 금액(이번 달 남은 금액)
+        int currentMonthBudget = consumptionService.getBudgetForCurrentMonth(memberIn);
+        int remainingBudget = currentMonthBudget - totalExpense;
+        model.addAttribute("remainingBudget", remainingBudget);
+        
+        List<Map<String, Object>> categoryExpenses = consumptionService.getCategoryExpensesForChart(memberIn, totalDaysInMonth, currentDayOfMonth);
+        model.addAttribute("categoryExpenses", categoryExpenses);
         
         return "/consumption/consumption_analysis";
     }

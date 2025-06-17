@@ -294,7 +294,7 @@
             const data = await response.json();
 
             if (data.feedback) {
-                feedbackContentDiv.innerHTML = '<p>' + data.feedback + '</p>';
+                feedbackContentDiv.innerHTML = '<p>' + data.feedback.replace(/\n/g, '<br>') + '</p>';
                 const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
                 if (goalStatusDiv) {
                      goalStatusDiv.textContent = '✔️ 분석 완료';
@@ -329,6 +329,12 @@
             }
         }
     }
+    
+    function logout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+           window.location.href = '/logout';
+        }
+     }
 </script>
 </body>
 </html>

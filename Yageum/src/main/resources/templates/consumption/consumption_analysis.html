@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>소비분석 종합결과</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
@@ -23,45 +24,51 @@
 
 
         <!-- 메인 컨텐츠 -->
-        <div class="main-wrapper">
+		<div class="main-wrapper">
             <div class="container">
             
-                <!-- 헤더 섹션 -->
                 <div class="header">
-                    <h1>💰 소비분석 종합결과</h1>
-                    <p>2024년 12월 기준 • 개인 소비 패턴 분석 리포트</p>
-                </div>
-
-                <!-- 주요 통계 카드 -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number">₩2,450,000</div>
-                        <div class="stat-label">이번 달 총 지출</div>
-                        <div class="trend-indicator trend-down">↓ 12.5%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">₩98,000</div>
-                        <div class="stat-label">일평균 지출</div>
-                        <div class="trend-indicator trend-up">↑ 8.2%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">156</div>
-                        <div class="stat-label">총 거래 건수</div>
-                        <div class="trend-indicator trend-up">↑ 15.3%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">₩750,000</div>
-                        <div class="stat-label">이번 달 절약액</div>
-                        <div class="trend-indicator trend-up">↑ 22.1%</div>
-                    </div>
-                </div>
+				    <h1>💰 소비분석 종합결과</h1>
+				    <p th:text="|${#dates.format(#dates.createNow(), 'yyyy년 MM월')} 기준 • 개인 소비 패턴 분석 리포트|">2024년 12월 기준 • 개인 소비 패턴 분석 리포트</p>
+				</div>
+				
+				<div class="stats-grid">
+				    <div class="stat-card">
+				        <div class="stat-number">
+				            <span th:if="${totalExpense != 0}" th:text="${#numbers.formatCurrency(totalExpense)}">₩2,450,000</span>
+				            <span th:unless="${totalExpense != 0}">데이터 없음</span>
+				        </div>
+				        <div class="stat-label">이번 달 총 지출</div>
+				        </div>
+				    <div class="stat-card">
+				        <div class="stat-number">
+				            <span th:if="${averageDailyExpense != 0}" th:text="${#numbers.formatCurrency(averageDailyExpense)}">₩98,000</span>
+				            <span th:unless="${averageDailyExpense != 0}">데이터 없음</span>
+				        </div>
+				        <div class="stat-label">일평균 지출</div>
+				        </div>
+				    <div class="stat-card">
+				        <div class="stat-number">
+				            <span th:if="${countThisMonth != 0}" th:text="${#numbers.formatInteger(countThisMonth, 0, 'COMMA')}">156</span>
+				            <span th:unless="${countThisMonth != 0}">데이터 없음</span>
+				        </div>
+				        <div class="stat-label">총 거래 건수</div>
+				        </div>
+				    <div class="stat-card">
+				        <div class="stat-number">
+				            <span th:if="${remainingBudget != 0}" th:text="${#numbers.formatCurrency(remainingBudget)}">₩750,000</span>
+				            <span th:unless="${remainingBudget != 0}">데이터 없음</span>
+				        </div>
+				        <div class="stat-label">이번 달 남은 금액</div>
+				        </div>
+				</div>
 
                 <!-- 메인 컨텐츠 -->
                 <div class="main-content">
                     <div class="chart-section">
-                        <h2 class="section-title">📊 월별 지출 추이</h2>
+                        <h2 class="section-title">📊 카테고리별 지출</h2>
                         <div class="chart-placeholder">
-                            월별 지출 그래프<br>
+                            카테고리별 지출<br>
                             (차트 라이브러리 연동 필요)
                         </div>
                     </div>
@@ -134,50 +141,126 @@
 	<div th:replace="fragments/footer :: footer"></div>
 
     <script>
-        // 카드 호버 효과 강화
-        document.querySelectorAll('.stat-card, .category-item').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // 인사이트 카드 클릭 효과
-        document.querySelectorAll('.insight-item').forEach(item => {
-            item.addEventListener('click', function() {
-                this.style.backgroundColor = '#fdcb6e';
-                setTimeout(() => {
-                    this.style.backgroundColor = '';
-                }, 200);
-            });
-        });
-
-        // 숫자 카운트업 애니메이션
-        function animateNumbers() {
-            document.querySelectorAll('.stat-number').forEach(element => {
-                const text = element.textContent;
-                const number = parseInt(text.replace(/[^\d]/g, ''));
-                if (number > 0) {
-                    let current = 0;
-                    const increment = number / 100;
-                    const timer = setInterval(() => {
-                        current += increment;
-                        if (current >= number) {
-                            element.textContent = text;
-                            clearInterval(timer);
-                        } else {
-                            element.textContent = text.replace(number, Math.floor(current).toLocaleString());
-                        }
-                    }, 20);
-                }
-            });
-        }
-
-        // 페이지 로드 시 애니메이션 실행
-        window.addEventListener('load', animateNumbers);
+	    document.querySelectorAll('.stat-card, .category-item').forEach(card => {
+	        card.addEventListener('mouseenter', function() {
+	            this.style.transform = 'translateY(-10px) scale(1.02)';
+	        });
+	        
+	        card.addEventListener('mouseleave', function() {
+	            this.style.transform = 'translateY(0) scale(1)';
+	        });
+	    });
+		
+	    document.querySelectorAll('.insight-item').forEach(item => {
+	        item.addEventListener('click', function() {
+	            this.style.backgroundColor = '#fdcb6e';
+	            setTimeout(() => {
+	                this.style.backgroundColor = '';
+	            }, 200);
+	        });
+	    });
+	    function logout() {
+	        if (confirm('로그아웃 하시겠습니까?')) {
+	           window.location.href = '/logout';
+	        }
+	     }
+	    const categoryExpenses = /*[[${categoryExpenses}]]*/ [];
+	    const labels = [];
+	    const data = [];
+	    const backgroundColors = [];
+	    const colorPalette = [
+	        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+	        '#FF9F40', '#E7E9ED', '#C9CBCE', '#A7AEB8', '#868B94',
+	        '#6B6B6B', '#FFD700', '#ADFF2F', '#8A2BE2', '#D2691E'
+	    ];
+	    categoryExpenses.forEach((item, index) => {
+	        labels.push(item.categoryName);
+	        data.push(item.amount);
+	        backgroundColors.push(colorPalette[index % colorPalette.length]);
+	    });
+	    if (data.length === 0 || data.every(amount => amount === 0)) {
+	        const chartContainer = document.querySelector('.chart-container');
+	        if (chartContainer) {
+	            chartContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #555;">데이터가 없습니다. 지출을 기록해주세요!</p>';
+	            chartContainer.style.display = 'flex';
+	            chartContainer.style.alignItems = 'center';
+	            chartContainer.style.justifyContent = 'center';
+	            chartContainer.style.minHeight = '200px';
+	        }
+	    } else {
+	        const ctx = document.getElementById('categoryChart').getContext('2d');
+	        const categoryChart = new Chart(ctx, {
+	            type: 'pie',
+	            data: {
+	                labels: labels,
+	                datasets: [{
+	                    data: data,
+	                    backgroundColor: backgroundColors,
+	                    hoverOffset: 4
+	                }]
+	            },
+	            options: {
+	                responsive: true,
+	                plugins: {
+	                    legend: {
+	                        position: 'right',
+	                    },
+	                    tooltip: {
+	                        callbacks: {
+	                            label: function(context) {
+	                                let label = context.label || '';
+	                                if (label) {
+	                                    label += ': ';
+	                                }
+	                                const value = context.parsed;
+	                                label += '₩' + value.toLocaleString('ko-KR');
+	                                return label;
+	                            },
+	                            afterLabel: function(context) {
+	                                const sum = context.dataset.data.reduce((a, b) => a + b, 0);
+	                                const currentValue = context.parsed;
+	                                const percentage = parseFloat((currentValue / sum * 100).toFixed(1));
+	                                return `(${percentage}%)`;
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	        });
+	    }
+	    function animateNumbers() {
+	        document.querySelectorAll('.stat-number').forEach(element => {
+	            const textContent = element.textContent;
+	            let number = parseInt(textContent.replace('₩', '').replace(/,/g, ''));
+	            if (isNaN(number) || number === 0) {
+	                return;
+	            }
+	            let current = 0;
+	            const duration = 1000;
+	            let startTime = null;
+	
+	            function easeOutQuad(t) {
+	                return t * (2 - t);
+	            }
+	            function animate(currentTime) {
+	                if (!startTime) startTime = currentTime;
+	                const progress = (currentTime - startTime) / duration;
+	                const easedProgress = easeOutQuad(Math.min(progress, 1));
+	                const animatedValue = Math.floor(easedProgress * number);
+	                element.textContent = '₩' + animatedValue.toLocaleString('ko-KR');
+	
+	                if (progress < 1) {
+	                    requestAnimationFrame(animate);
+	                } else {
+	                    element.textContent = textContent;
+	                }
+	            }
+	            requestAnimationFrame(animate);
+	        });
+	    }
+	    window.addEventListener('load', function() {
+	        animateNumbers();
+	    });
     </script>
 </body>
 </html>
