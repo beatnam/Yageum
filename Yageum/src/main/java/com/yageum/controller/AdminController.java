@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.QuestDTO;
 import com.yageum.entity.Member;
 import com.yageum.service.AdminService;
 import com.yageum.service.MemberService;
@@ -80,9 +81,13 @@ public class AdminController {
 	// 사이트 설정 - 퀘스트 설정 페이지
 
 	@GetMapping("/quest")
-	public String quest() {
+	public String quest(Model model) {
 		log.info("AdminController quest()");
 
+		List<Map<Object, Object>> questList = adminService.listQuest();
+
+		System.out.println(questList);
+		model.addAttribute("questList", questList);
 		return "/admin/admin_quest";
 	}
 
@@ -98,13 +103,18 @@ public class AdminController {
 
 	@PostMapping("/insert_Q")
 	@ResponseBody
-	public String insertQuest(@RequestParam Map<Object, Object> quest) {
+	public String insertQuest(QuestDTO questDTO) {
 		log.info("AdminController insertQuest()");
 		// 입력값 확인
-		System.out.println(quest);
+		System.out.println(questDTO);
 
-		adminService.insertQuest(quest);
-		
+		if (questDTO.getQuestTypeIn() == 2 || questDTO.getQuestTypeIn() == 3) {
+			questDTO.setCmIn(null);
+			questDTO.setCsIn(null);
+		}
+
+		adminService.insertQuest(questDTO);
+
 		return "redirect:/admin/admin_quest";
 	}
 
@@ -119,9 +129,11 @@ public class AdminController {
 	}
 
 	@GetMapping("/quest_update")
-	public String questupdate() {
+	public String questUpdate(Model model, @RequestParam("questIn") int questIn) {
 		log.info("AdminController questupdate()");
 
+		
+		
 		return "/admin/quest_update";
 	}
 	// 사이트 설정 - 퀘스트 설정 페이지

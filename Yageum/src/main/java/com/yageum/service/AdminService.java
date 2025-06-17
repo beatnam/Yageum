@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.QuestDTO;
 import com.yageum.mapper.AdminMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,15 @@ public class AdminService {
 		return adminMapper.subCategorySelect(cmIn);
 	}
 
-	public void insertQuest(Map<Object, Object> quest) {
+	public void insertQuest(QuestDTO questDTO) {
 		log.info("AdminService insertQuest()");
 
-		adminMapper.insertQuest(quest);
+		adminMapper.insertQuest(questDTO);
+	}
+
+	public List<Map<Object, Object>> listQuest() {
+		// TODO Auto-generated method stub
+		return adminMapper.listQuest();
 	}
 
 }

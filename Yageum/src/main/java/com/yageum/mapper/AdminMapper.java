@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.QuestDTO;
 
 @Mapper
 @Repository
@@ -17,6 +18,8 @@ public interface AdminMapper {
 
 	List<CategorySubDTO> subCategorySelect(int cmIn);
 
-	void insertQuest(Map<Object, Object> quest);
+	void insertQuest(QuestDTO questDTO);
+
+	List<Map<Object, Object>> listQuest();
 
 }
