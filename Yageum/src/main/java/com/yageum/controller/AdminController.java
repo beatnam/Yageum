@@ -59,7 +59,6 @@ public class AdminController {
 		model.addAttribute("member", member.get());
 
 
-		model.addAttribute("member", member);
 
 		return "/admin/user_detail";
 	}
