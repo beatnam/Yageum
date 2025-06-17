@@ -294,7 +294,7 @@
             const data = await response.json();
 
             if (data.feedback) {
-                feedbackContentDiv.innerHTML = '<p>' + data.feedback + '</p>';
+                feedbackContentDiv.innerHTML = '<p>' + data.feedback.replace(/\n/g, '<br>') + '</p>';
                 const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
                 if (goalStatusDiv) {
                      goalStatusDiv.textContent = '✔️ 분석 완료';

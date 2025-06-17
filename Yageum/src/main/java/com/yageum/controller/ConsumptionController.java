@@ -341,7 +341,7 @@ public class ConsumptionController {
                     promptBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("원\n");
                 }
                 promptBuilder.append("총 지출: ").append(totalExpense).append("원\n\n");
-                promptBuilder.append("이 지출 내역을 바탕으로 따뜻한 어조로 카테고리별로 분석하고, 장단점과 함께 피드백을 해줘. 그리고 전반적인 소비 패턴에 대한 의견도 줘. 그리고 300글자 내로 답해줘.");
+                promptBuilder.append("이 지출 내역을 바탕으로 따뜻한 어조로 카테고리별로 분석하고, 장단점과 함께 피드백을 해줘. 그리고 전반적인 소비 패턴에 대한 의견도 줘. 답변은 최대 300글자 내로 줄바꿈을 포함하여 가독성 있게 작성해줘.\\n\\n");
             }
 
             String prompt = promptBuilder.toString();
