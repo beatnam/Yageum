@@ -36,55 +36,41 @@
                     <button class="date-nav-btn" onclick="nextDay()">▶</button>
                 </div>
 
-                <div class="transaction-list">
-                    <!-- 수입 내역 -->
-                    <div class="transaction-item">
-                        <div class="transaction-icon">💰</div>
-                        <div class="transaction-info">
-                            <div class="transaction-name">아이템 6월 월급</div>
-                            <div class="transaction-method">국민은행 계좌</div>
-                        </div>
-                        <div class="transaction-amount income">+ 2,560,000</div>
-                    </div>
+				<!-- 수입 지출 리스트 -->
+				<div class="transaction-list">
+				    <div th:each="e : ${expenses}" class="transaction-item">
+				        <div class="transaction-icon" th:text="${e.expenseType} ? '💸' : '💰'">💰</div>
 
-                    <!-- 지출 내역들 -->
-                    <div class="transaction-item">
-                        <div class="transaction-icon">🍴</div>
-                        <div class="transaction-info">
-                            <div class="transaction-name">밀양돼지국밥</div>
-                            <div class="transaction-method">케이뱅크 체크카드</div>
-                        </div>
-                        <div class="transaction-amount expense">- 9,000</div>
-                    </div>
+				        <div class="transaction-info">
+				            <div class="transaction-name" th:text="${e.expenseMemo}">아이템 이름</div>
+				            <div class="transaction-method" th:text="${e.expenseContent}">결제 수단 또는 출처</div>
+				        </div>
 
-                    <div class="transaction-item">
-                        <div class="transaction-icon">🛒</div>
-                        <div class="transaction-info">
-                            <div class="transaction-name">다이소 서면중앙점</div>
-                            <div class="transaction-method">현금</div>
-                        </div>
-                        <div class="transaction-amount expense">- 4,000</div>
-                    </div>
-
-                    <div class="transaction-item">
-                        <div class="transaction-icon">☕</div>
-                        <div class="transaction-info">
-                            <div class="transaction-name">스타벅스 서면역점</div>
-                            <div class="transaction-method">네이버삼성카드</div>
-                        </div>
-                        <div class="transaction-amount expense">- 12,000</div>
-                    </div>
-                </div>
+				        <div class="transaction-amount"
+				             th:classappend="${e.expenseType} ? ' expense' : ' income'"
+				             th:text="${e.expenseType ? '- ' + #numbers.formatInteger(e.expenseSum, 3, 'COMMA') : '+ ' + #numbers.formatInteger(e.expenseSum, 3, 'COMMA')}">
+				        </div>
+				    </div>
+				</div>
 
                 <!-- 일일 합계 -->
-                <div class="daily-summary">
-                    <div class="summary-row">
-                        <span>수입: <span class="income">+ 2,560,000원</span></span>
-                        <span>지출: <span class="expense">- 25,000원</span></span>
-                        <span class="total">잔액: <span class="balance">+ 2,535,000원</span></span>
-                    </div>
-                </div>
+				<div class="daily-summary">
+				    <div class="summary-row">
+						<span class="income"
+						      th:text="|총 수입 : +${#numbers.formatInteger(incomeTotal, 3, 'COMMA')}원|">
+						</span>
+
+						<span class="expense"
+						      th:text="|총 지출 : -${#numbers.formatInteger(expenseTotal, 3, 'COMMA')}원|">
+						</span>
+
+						<span class="balance"
+						      th:text="|총 금액 : ${balance >= 0 ? '+' : '-'}${#numbers.formatInteger(T(java.lang.Math).abs(balance), 3, 'COMMA')}원|">
+						</span>  
+					</div>
+				</div>
 				
+				<!-- 가계부 추가 버튼 -->
 				<div class="floating-label">가계부 추가</div>
 				<a href="/cashbook/insert" class="floating-btn">+</a>
             </div>
@@ -94,55 +80,11 @@
 	<!--	푸터-->
 		<div th:replace="fragments/footer :: footer"></div>
 
-    <script>
-  
-		//url에서 쿼리 파라미터 값 들고옴
-		function getDateFromURL() {
-	        const params = new URLSearchParams(window.location.search);
-	        return params.get("date");
-	    }
-
-		//YYYY-MM-DD → "2025년 6월 15일"로 변환
-	    function formatDateToKorean(dateStr) {
-	        const [year, month, day] = dateStr.split("-");
-	        return `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
-	    }
-
-		//날짜 영역에 url에서 가지고 온 값을 날짜 형식으로 변환한대로 출력
-	    document.addEventListener("DOMContentLoaded", function () {
-	        const dateStr = getDateFromURL();
-	        if (dateStr) {
-	            const formatted = formatDateToKorean(dateStr);
-	            document.getElementById("currentDate").textContent = formatted;
-	        }
-			
-			document.querySelectorAll('.transaction-item').forEach(item => {
-			    item.addEventListener('click', () => {
-			        const dateStr = getDateFromURL();  // 현재 날짜 쿼리
-			        // const transactionId = item.dataset.id;
-			        // 예시: 날짜만 넘기기
-			        window.location.href = `/cashbook/detail?date=${dateStr}`;
-			    });
-			});
-			
-	    });   
+    <script src="../js/cashbook_list.js">
   
 		
-        function logout() {
-            if(confirm('로그아웃 하시겠습니까?')) {
-                window.location.href = '/logout';
-            }
-        }
+		
 
-            function previousDay() {
-            // 이전 날짜로 이동하는 로직
-            console.log('이전 날짜로 이동');
-        }
-
-        function nextDay() {
-            // 다음 날짜로 이동하는 로직
-            console.log('다음 날짜로 이동');
-        }
     </script>
 </body>
 </html>
