@@ -21,13 +21,36 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	<insert id="insertQuest" parameterType="com.yageum.domain.QuestDTO">
 		insert into quest(quest_name, quest_type_in, cm_in, cs_in, goal_value,
 		reward_value, start_date, end_date)
-		values(#{questName}, #{questTypeIn},#{cmIn},#{csIn},#{goalValue},#{rewardValue},#{startDate},
+		values(#{questName},
+		#{questTypeIn},#{cmIn},#{csIn},#{goalValue},#{rewardValue},#{startDate},
 		#{endDate})
 	</insert>
 
 	<select id="listQuest" resultType="map">
-		select * 
-		from quest;
+		select quest_in, quest_name, quest_type_name,
+		goal_value, reward_value, start_date, end_date
+		from quest q
+		join quest_type t
+		on q.quest_type_in = t.quest_type_in;
 	</select>
 
+	<select id="questDetail" resultType="com.yageum.domain.QuestDTO">
+		select *
+		from quest
+		where quest_in = #{questIn}
+	</select>
+	
+	<update id = "updateQuest"  parameterType="com.yageum.domain.QuestDTO">
+		update quest
+		set quest_name = #{questName} , quest_type_in = #{questTypeIn}, cm_in = #{cmIn}, cs_in = #{csIn},
+		    goal_value = #{goalValue}, reward_value = #{rewardValue}, start_date = #{startDate},
+		    end_date = #{endDate} 
+		where quest_in = #{questIn}	
+	</update>
+
+	<delete id = "deleteQuest" parameterType="com.yageum.domain.QuestDTO">
+		delete from quest
+		where quest_in = #{questIn}
+	
+	</delete>
 </mapper>

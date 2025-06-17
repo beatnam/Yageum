@@ -2,6 +2,8 @@ package com.yageum.controller;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,18 +47,20 @@ public class MemberController {
 
    private final PasswordEncoder passwordEncoder;
 
+   // 네이버 클라이언트 아이디
    @Value("${naver.client-id}")
-   private String NclientId;
+   private String nClientId;
 
+   // 네이버 API 비밀번호
    @Value("${naver.client-secret}")
-   private String NclientSecret;
+   private String nClientSecret;
 
    // 네이버 로그인 URL을 만들면서
    @GetMapping("/login")
    public String login(Model model, HttpSession session) {
       log.info("MemberController login()");
 
-      String clientId = NclientId;
+      String clientId = nClientId;
 
       String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
       String state = UUID.randomUUID().toString();
@@ -116,6 +120,8 @@ public class MemberController {
          HttpSession httpSession = request.getSession(true);
          httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
+         memberDTO.setLastLoginDate(LocalDate.now());
+         memberService.updateDate(memberDTO);
          session.setAttribute("memberName", memberDTO.getMemberName());
 
          return "redirect:/cashbook/main";
@@ -130,8 +136,8 @@ public class MemberController {
 
    public String getAccessToken(String code, String state) {
 
-      String clientId = NclientId;
-      String clientSecret = NclientSecret;
+      String clientId = nClientId;
+      String clientSecret = nClientSecret;
 
       String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
 
@@ -169,9 +175,13 @@ public class MemberController {
 
 //      System.out.println("memberDTO2 : "+memberDTO2.toString());
 
+      
       if (memberDTO2 == null) {
          log.info("존재하지 않는 회원 ID");
          return "redirect:/member/login";
+      }else {
+    	  memberDTO2.setLastLoginDate(LocalDate.now());
+    	  memberService.updateDate(memberDTO2);
       }
 
       boolean match = passwordEncoder.matches(memberDTO.getMemberPasswd(), memberDTO2.getMemberPasswd());

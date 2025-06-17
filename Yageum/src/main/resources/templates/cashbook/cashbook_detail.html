@@ -34,38 +34,43 @@
 				<div class="transaction-detail-box">
 					<!-- 금액 및 아이콘 -->
 					<div class="transaction-amount">
-						<div class="transaction-icon">💰</div>
-						<span class="amount income">+ 2,500,000</span>
+					    <div class="transaction-icon" th:text="${expense.expenseType} ? '💸' : '💰'">💰</div>
+					    <span class="amount"
+					          th:classappend="${expense.expenseType} ? ' expense' : ' income'"
+					          th:text="${expense.expenseType ? '-' : '+'} + #numbers.formatInteger(expense.expenseSum, 3, 'COMMA')">
+					    </span>
 					</div>
 
 					<!-- 거래 정보 -->
 					<table class="transaction-info">
-						<tr>
-							<td><strong>날짜</strong></td>
-							<td class="right" id="transactionDate"></td>
-						</tr>
-						<tr>
-							<td><strong>유형</strong></td>
-							<td class="right">수입</td>
-						</tr>
-						<tr>
-							<td><strong>내용</strong></td>
-							<td class="right">아이티월 6월 월급</td>
-						</tr>
-						<tr>
-							<td><strong>수단</strong></td>
-							<td class="right">국민은행 계좌</td>
-						</tr>
-						<tr>
-							<td><strong>카테고리</strong></td>
-							<td class="right">월급 / 월급</td>
-						</tr>
+					    <tr>
+					        <td><strong>날짜</strong></td>
+					        <td class="right" th:text="${#temporals.format(expense.expenseDate, 'yyyy년 MM월 dd일')}">2025년 06월 15일</td>
+					    </tr>
+					    <tr>
+					        <td><strong>유형</strong></td>
+					        <td class="right" th:text="${expense.expenseType ? '지출' : '수입'}">수입</td>
+					    </tr>
+					    <tr>
+					        <td><strong>내용</strong></td>
+					        <td class="right" th:text="${expense.expenseContent}">아이템 내용</td>
+					    </tr>
+					    <tr>
+					        <td><strong>수단</strong></td>
+					        <td class="right"
+					            th:text="${expense.methodType == '카드' ? expense.cardName : (expense.methodType == '계좌이체' ? expense.bankName + ' ' + expense.accountName : '현금')}">
+					        </td>
+					    </tr>
+					    <tr>
+					        <td><strong>카테고리</strong></td>
+					        <td class="right" th:text="${expense.cmName + ' / ' + expense.csName}">카테고리</td>
+					    </tr>
 					</table>
 
 					<!-- 메모 -->
 					<div class="memo-section">
-						<label for="memo">메모</label><br>
-						<textarea id="memo" name="memo" rows="3">6월 월급</textarea>
+					    <label for="memo">메모</label><br>
+					    <textarea id="memo" name="memo" rows="3" th:text="${expense.expenseMemo}"></textarea>
 					</div>
 
 					<!-- 버튼 -->
@@ -74,6 +79,10 @@
 					</div>
 				</div>
 			</div>
+			<!-- 가계부 추가 버튼 -->
+			<div class="floating-label">가계부 추가</div>
+				<a href="/cashbook/insert" class="floating-btn">+</a>
+            </div>
 		</main>
 	</div>
 
@@ -106,8 +115,10 @@
 		
 		//수정하기 버튼 누르면 수정 페이지로 넘어감
 		document.querySelector(".btn-edit").addEventListener("click", function () {
-			const dateStr = getDateFromURL();
-			window.location.href = `/cashbook/update?date=${dateStr}`;
+		    const params = new URLSearchParams(window.location.search);
+		    const id = params.get("id");
+		    const date = params.get("date");
+		    window.location.href = `/cashbook/update?id=${id}&date=${date}`;
 		});
 		
 		
