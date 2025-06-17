@@ -250,10 +250,10 @@ public class ConsumptionService {
 		return expenseMapper.thisMonthCount(memberIn, month, year);
 	}
 
-	public List<Map<String, Object>> getCategoryExpensesForChart(Integer memberIn, int year, int month) {
+	public List<Map<String, Object>> getCategoryExpensesForChart(Integer memberIn, int month, int year) {
 		log.info("ConsumptionService getCategoryExpensesForChart()");
 		
-		return expenseMapper.getCategoryExpensesData(memberIn, year, month);
+		return expenseMapper.getCategoryExpensesData(memberIn, month, year);
 	}
     
     

@@ -93,5 +93,6 @@
 		AND EXTRACT(YEAR FROM expense_date) = #{year}
 		AND expense_type = 1;
     </select>
+    
 
 </mapper>

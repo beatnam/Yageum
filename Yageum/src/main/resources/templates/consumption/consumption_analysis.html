@@ -17,14 +17,12 @@
 <div th:replace="fragments/header :: header"></div>
 <div class="app-container">
 	
-	<!-- 사이드 바 메뉴-->
-<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
+	<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
 <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
 
 
 
-        <!-- 메인 컨텐츠 -->
-		<div class="main-wrapper">
+        <div class="main-wrapper">
             <div class="container">
             
                 <div class="header">
@@ -63,13 +61,11 @@
 				        </div>
 				</div>
 
-                <!-- 메인 컨텐츠 -->
                 <div class="main-content">
                     <div class="chart-section">
                         <h2 class="section-title">📊 카테고리별 지출</h2>
-                        <div class="chart-placeholder">
-                            카테고리별 지출<br>
-                            (차트 라이브러리 연동 필요)
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
                         </div>
                     </div>
 
@@ -90,7 +86,6 @@
                     </div>
                 </div>
 
-                <!-- 카테고리별 지출 -->
                 <div class="categories-section">
                     <h2 class="section-title">🏷️ 카테고리별 지출 현황</h2>
                     <div class="category-grid">
@@ -127,7 +122,6 @@
                     </div>
                 </div>
 
-                <!-- 푸터 -->
                 <div class="footer">
                     <p>📈 스마트한 소비 관리로 더 나은 미래를 만들어보세요</p>
                     <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.7;">
@@ -140,7 +134,7 @@
 
 	<div th:replace="fragments/footer :: footer"></div>
 
-    <script>
+    <script th:inline="javascript">
 	    document.querySelectorAll('.stat-card, .category-item').forEach(card => {
 	        card.addEventListener('mouseenter', function() {
 	            this.style.transform = 'translateY(-10px) scale(1.02)';
@@ -173,11 +167,18 @@
 	        '#FF9F40', '#E7E9ED', '#C9CBCE', '#A7AEB8', '#868B94',
 	        '#6B6B6B', '#FFD700', '#ADFF2F', '#8A2BE2', '#D2691E'
 	    ];
+
 	    categoryExpenses.forEach((item, index) => {
 	        labels.push(item.categoryName);
-	        data.push(item.amount);
+	        data.push(Number(item.amount));
 	        backgroundColors.push(colorPalette[index % colorPalette.length]);
 	    });
+		
+	    console.log("Labels for Chart:", labels);
+	    console.log("Data for Chart (amounts):", data);
+	    console.log("Data length:", data.length);
+	    console.log("Are all data values zero?", data.every(amount => amount === 0));
+		
 	    if (data.length === 0 || data.every(amount => amount === 0)) {
 	        const chartContainer = document.querySelector('.chart-container');
 	        if (chartContainer) {

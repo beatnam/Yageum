@@ -608,6 +608,8 @@ public class ConsumptionController {
         LocalDate today = LocalDate.now();
         int totalDaysInMonth = today.lengthOfMonth();
         int currentDayOfMonth = today.getDayOfMonth();
+        int year = today.getYear();
+        int month = today.getMonthValue();
         int daysLeft = totalDaysInMonth - currentDayOfMonth;
         //일별 지출액(일평균 지출)
         double averageDailyExpense = (currentDayOfMonth > 0) ? (double) totalExpense / currentDayOfMonth : 0;
@@ -623,7 +625,8 @@ public class ConsumptionController {
         int remainingBudget = currentMonthBudget - totalExpense;
         model.addAttribute("remainingBudget", remainingBudget);
         
-        List<Map<String, Object>> categoryExpenses = consumptionService.getCategoryExpensesForChart(memberIn, totalDaysInMonth, currentDayOfMonth);
+        List<Map<String, Object>> categoryExpenses = consumptionService.getCategoryExpensesForChart(memberIn, month, year);
+        log.info("categoryExpenses : " + categoryExpenses);
         model.addAttribute("categoryExpenses", categoryExpenses);
         
         return "/consumption/consumption_analysis";
