@@ -230,9 +230,15 @@ public class ConsumptionService {
     }
 
 	public void processAiFeedback(Integer memberIn, String aiFeedback) {
-		log.info("ConsumptionService getPreviousMonthBudgetUsageProgress()");
+		log.info("ConsumptionService processAiFeedback()");
 		
 		savingsPlanMapper.processAiFeedback(memberIn, aiFeedback);
+	}
+
+	public void processAicFeedback(Integer memberIn, String aiFeedback) {
+		log.info("ConsumptionService processAicFeedback()");
+		
+		savingsPlanMapper.processAicFeedback(memberIn, aiFeedback);
 	}
     
     

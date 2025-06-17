@@ -32,5 +32,7 @@ public interface SavingsPlanMapper {
 	int planChack(@Param("memberIn") Integer memberIn);
 
 	void processAiFeedback(@Param("memberIn") Integer memberIn, @Param("saveFeedback") String saveFeedback);
+
+	void processAicFeedback(@Param("memberIn") Integer memberIn, @Param("budFeedback") String budFeedback);
 	
 }

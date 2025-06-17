@@ -570,6 +570,31 @@ public class ConsumptionController {
 	    }
     }
     
+    @PostMapping("/cfeedset")
+    @ResponseBody
+    public Map<String, Object> cfeedset(@AuthenticationPrincipal UserDetails userDetails,
+            							@RequestBody Map<String, Object> payload) {
+        log.info("ConsumptionController efeedset()");
+    	String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        String aiFeedback = (String) payload.get("feedbackContent");
+        int checkPlan = consumptionService.planChack(memberIn);
+        if(checkPlan == 1) {
+	        log.info("수신된 AI 피드백 내용: {}" + aiFeedback);
+	        consumptionService.processAicFeedback(memberIn, aiFeedback);
+
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("success", true);
+	        response.put("message", "AI 피드백 처리 및 목표 생성이 성공적으로 완료되었습니다.");
+	        return response;
+	    } else {
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "회원 " + memberId + "님의 이번달 계획이 없습니다. 예산 설정을 하세요.");
+	        return response;
+	    }
+    }
+    
     @GetMapping("/canalysis")
     public String canalysis(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         log.info("ConsumptionController canalysis()");
