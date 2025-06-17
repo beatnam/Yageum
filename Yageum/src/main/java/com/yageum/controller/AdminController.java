@@ -151,15 +151,50 @@ public class AdminController {
 	}
 
 	@GetMapping("/quest_update")
-	public String questUpdate(Model model, @RequestParam("questIn") int questIn) {
-		log.info("AdminController questupdate()");
-
+	public String questDetail(Model model, @RequestParam("questIn") int questIn) {
+		log.info("AdminController questUpdate()");
+		System.out.println(questIn);
+		QuestDTO questDTO= adminService.questDetail(questIn);
+		List<CategoryMainDTO> categoryMainList = adminService.showCategoryMain();
 		
+		
+		model.addAttribute("quest", questDTO);
+		model.addAttribute("categoryMainList", categoryMainList);
 		
 		return "/admin/quest_update";
 	}
 	// 사이트 설정 - 퀘스트 설정 페이지
 
+	@PostMapping("/update_Q")
+	@ResponseBody
+	public String updateQuest(QuestDTO questDTO) {
+		log.info("AdminController updateQuest()");
+		// 입력값 확인
+		System.out.println(questDTO);
+
+		if (questDTO.getQuestTypeIn() == 2 || questDTO.getQuestTypeIn() == 3) {
+			questDTO.setCmIn(null);
+			questDTO.setCsIn(null);
+		}
+
+		adminService.updateQuest(questDTO);
+		
+		return "redirect:/admin/admin_quest";
+	}
+	
+	@GetMapping("/quest_delete")
+	public String deleteQuest(@RequestParam("questIn") int questIn) {
+		log.info("AdminController deleteQuest()");
+		
+		adminService.deleteQuest(questIn);
+		
+		return "redirect:/admin/quest";
+	}
+	
+	
+	
+	
+	
 	// 사이트 설정 - 공지사항 페이지
 
 	@GetMapping("/noticfication")
