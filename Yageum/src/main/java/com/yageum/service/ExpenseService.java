@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -14,11 +15,13 @@ import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.ExpenseDTO;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Card;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
 import com.yageum.entity.Expense;
+import com.yageum.mapper.CashbookMapper;
 import com.yageum.repository.BankAccountRepository;
 import com.yageum.repository.CardRepository;
 import com.yageum.repository.CategoryMainRepository;
@@ -41,6 +44,7 @@ public class ExpenseService {
 	 private final CategorySubRepository categorySubRepository;
 	 private final CardRepository cardRepository;
 	 private final BankAccountRepository bankAccountRepository;
+	 private final CashbookMapper cashbookMapper;
 
 	    public void saveExpense(Expense expense) {
 	        expenseRepository.save(expense);
@@ -153,6 +157,11 @@ public class ExpenseService {
 			LocalDate date = LocalDate.parse(dateStr);
 			boolean expenseType = (type == 1); // 1이면 지출(true), 0이면 수입(false)
 		    return expenseRepository.sumExpenseByDateAndType(memberIn, date, expenseType);
+		}
+
+
+		public ExpenseDTO getExpenseDetailById(int id) {
+			return cashbookMapper.selectExpenseDetail(id);
 		}
 	
 	    

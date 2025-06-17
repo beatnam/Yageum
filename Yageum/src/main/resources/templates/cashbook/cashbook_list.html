@@ -38,7 +38,7 @@
 
 				<!-- 수입 지출 리스트 -->
 				<div class="transaction-list">
-				    <div th:each="e : ${expenses}" class="transaction-item">
+				    <div th:each="e : ${expenses}" class="transaction-item" th:data-id="${e.expenseIn}">
 				        <div class="transaction-icon" th:text="${e.expenseType} ? '💸' : '💰'">💰</div>
 
 				        <div class="transaction-info">

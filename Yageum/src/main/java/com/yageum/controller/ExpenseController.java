@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.ExpenseDTO;
 import com.yageum.domain.MemberDTO;
 import com.yageum.entity.Card;
 import com.yageum.entity.Expense;
@@ -83,8 +85,11 @@ public class ExpenseController {
 	}
 
 	@GetMapping("/detail")
-	public String detail() {
+	public String detail(@RequestParam("id") int id, @RequestParam("date") String date, Model model) {
 		log.info("ExpenseController detail()");
+		ExpenseDTO expense = expenseService.getExpenseDetailById(id);
+	    model.addAttribute("expense", expense);
+	    model.addAttribute("date", date);
 
 		return "/cashbook/cashbook_detail";
 	}

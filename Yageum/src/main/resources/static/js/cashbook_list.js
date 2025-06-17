@@ -22,9 +22,8 @@
 			document.querySelectorAll('.transaction-item').forEach(item => {
 			    item.addEventListener('click', () => {
 			        const dateStr = getDateFromURL();  // 현재 날짜 쿼리
-			        // const transactionId = item.dataset.id;
-			        // 예시: 날짜만 넘기기
-			        window.location.href = `/cashbook/detail?date=${dateStr}`;
+					const expenseId = item.dataset.id;
+					window.location.href = `/cashbook/detail?id=${expenseId}&date=${dateStr}`;
 			    });
 			});
 			
