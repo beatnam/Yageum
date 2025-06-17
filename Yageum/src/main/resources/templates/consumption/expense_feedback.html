@@ -7,12 +7,24 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 	<link rel="stylesheet" href="../css/e_feedback.css">
 	<link rel="stylesheet" href="../css/common.css">
 	
 </head>
 <body>
+
+<div id="budgetAlertModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>예산 설정이 필요합니다</h2>
+        <p>원활한 소비 분석을 위해 예산을 설정해주세요.</p>
+        <button class="btn" onclick="redirectToBudgetSetting()">예산 설정하기</button>
+    </div>
+</div>
+
+
 <div th:replace="fragments/header :: header"></div>
 <div class="app-container">
 	
@@ -80,6 +92,52 @@
 	<div th:replace="fragments/footer :: footer"></div>
 
 <script th:inline="javascript">
+	$(document).ready(function() {
+	    $.ajax({
+	        url: '/consumption/checkPlan',
+	        type: 'GET',
+	        success: function(response) {
+	            if (response === 0) {
+	                $('#budgetAlertModal').css('display', 'flex');
+	                $('#analysisContent').css('display', 'none');
+	            } else {
+	                $('#budgetAlertModal').css('display', 'none');
+	                $('#analysisContent').css('display', 'block');
+	            }
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("'/checkPlan' 호출 중 오류 발생:", error);
+	            alert("예산 설정 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
+	            $('#budgetAlertModal').css('display', 'flex');
+	            $('#analysisContent').css('display', 'none');
+	        }
+	    });
+	    $('.close-button').on('click', function() {
+	        $('#budgetAlertModal').css('display', 'none');
+	    });
+	});
+	function redirectToBudgetSetting() {
+	    window.location.href = '/consumption/bplanner';
+	}
+	$(window).on('click', function(event) {
+	    if ($(event.target).is('#budgetAlertModal')) {
+	        $('#budgetAlertModal').css('display', 'none');
+	    }
+	});
+	
+	function createProgressChart() {
+	    console.log("createProgressChart 함수가 호출되었습니다. (이 함수 내부에 차트 로직을 구현해야 합니다.)");
+	}
+	
+	document.addEventListener("DOMContentLoaded", function () {
+	    animateScore();
+	    animateProgressBars();
+	    createProgressChart();
+	    animateCards();
+	    
+	    fetchChatGptFeedback();
+	});
+	
     function createProgressChart() {
         
         console.log("createProgressChart 함수가 호출되었습니다. (이 함수 내부에 차트 로직을 구현해야 합니다.)");

@@ -203,9 +203,10 @@ public class ConsumptionController {
 
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
         if (memberIn == null) {
-            log.warning("Member not found for memberId: " + memberId);
+            log.info("Member not found for memberId: " + memberId);
             return "redirect:/error";
         }
+
         // 1. 이번 달 기준 데이터 (Current Month Data)
 
         // 이번 달 총 지출
@@ -227,12 +228,13 @@ public class ConsumptionController {
         int remainingBudget = currentMonthBudget - totalExpense;
         model.addAttribute("remainingBudget", remainingBudget);
 
-        // 예산 사용률 (이번 달 기준)
-        double budgetUsageProgress = 0.0;
+        // 예산 사용률 (이번 달 기준) - 변수명 변경: currentMonthBudgetUsageProgress
+        double currentMonthBudgetUsageProgress = 0.0;
         if (currentMonthBudget != 0) {
-            budgetUsageProgress = (totalExpense * 100.0) / currentMonthBudget;
+            currentMonthBudgetUsageProgress = (totalExpense * 100.0) / currentMonthBudget;
         }
-        model.addAttribute("budgetUsageProgress", budgetUsageProgress);
+        model.addAttribute("currentMonthBudgetUsageProgress", Math.max(0.0, currentMonthBudgetUsageProgress));
+
 
         // 월별 지출 추이 그래프 데이터 (현재 연도 데이터)
         List<Map<String, Object>> monthlyExpensesData = consumptionService.getMonthlyExpensesForCurrentYear(memberIn);
@@ -246,7 +248,7 @@ public class ConsumptionController {
 
         if (!monthlyExpensesData.isEmpty()) {
             monthlyExpensesData.forEach(entry -> {
-                int monthValue = (int) entry.get("month");
+                int monthValue = ((Number) entry.get("month")).intValue();
                 int totalExpenseAmount = ((Number) entry.get("totalExpense")).intValue();
 
                 monthlyExpensesLabels.add(monthValue + "월");
@@ -262,6 +264,11 @@ public class ConsumptionController {
         // 지난달 절약 목표 정보 가져오기
         Map<String, Object> previousMonthSavingsPlan = consumptionService.getPreviousMonthSavingsPlan(memberIn);
 
+        if (previousMonthSavingsPlan != null && previousMonthSavingsPlan.isEmpty()) {
+            previousMonthSavingsPlan = null;
+            log.info("previousMonthSavingsPlan was an empty map, setting to null for Thymeleaf processing.");
+        }
+
         if (previousMonthSavingsPlan != null) {
             if (previousMonthSavingsPlan.get("save_created_date") instanceof java.sql.Date) {
                 previousMonthSavingsPlan.put("save_created_date", ((java.sql.Date) previousMonthSavingsPlan.get("save_created_date")).toLocalDate());
@@ -272,10 +279,17 @@ public class ConsumptionController {
         }
         model.addAttribute("savingsPlan", previousMonthSavingsPlan);
 
-
         //지난달 저축가능 금액
-        int previousMonthSavableAmount = consumptionService.getPreviousMonthRemainingBudget(memberIn);
+        Integer previousMonthSavableAmount = consumptionService.getPreviousMonthRemainingBudget(memberIn);
+        if (previousMonthSavableAmount == null) {
+            previousMonthSavableAmount = 0;
+            log.info("previousMonthSavableAmount was null, setting to 0.");
+        }
         model.addAttribute("previousMonthSavableAmount", previousMonthSavableAmount);
+
+        //지난달 예산 사용률
+        double previousMonthBudgetUsageProgress = consumptionService.getPreviousMonthBudgetUsageProgress(memberIn);
+        model.addAttribute("previousMonthBudgetUsageProgress", previousMonthBudgetUsageProgress);
 
 
         return "/consumption/expense_analysis";
@@ -517,6 +531,18 @@ public class ConsumptionController {
             response.put("message", "예산 저장 중 서버 내부 오류가 발생했습니다: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @GetMapping("/checkPlan")
+    @ResponseBody
+    public int checkPlan(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    	log.info("ConsumptionController canalysis()");
+    	String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        
+        int chackPlan = consumptionService.planChack(memberIn);
+        
+    	return chackPlan;
     }
 
     @GetMapping("/canalysis")
