@@ -71,5 +71,33 @@
 		    AND save_created_date BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())
 		) AS is_exists;
     </select>
+    
+	<update id="processAiFeedback">
+	    UPDATE savings_plan t1
+	    JOIN (
+	        SELECT save_in
+	        FROM savings_plan
+	        WHERE
+	            member_in = #{memberIn}
+	            AND YEAR(save_created_date) = YEAR(CURRENT_DATE())    AND MONTH(save_created_date) = MONTH(CURRENT_DATE())  ORDER BY save_created_date DESC, save_in DESC
+	        LIMIT 1
+	    ) t2 ON t1.save_in = t2.save_in
+	    SET
+	        t1.save_feedback = #{saveFeedback}
+	</update>
+	
+	<update id="processAicFeedback">
+	    UPDATE savings_plan t1
+	    JOIN (
+	        SELECT save_in
+	        FROM savings_plan
+	        WHERE
+	            member_in = #{memberIn}
+	            AND YEAR(save_created_date) = YEAR(CURRENT_DATE())    AND MONTH(save_created_date) = MONTH(CURRENT_DATE())  ORDER BY save_created_date DESC, save_in DESC
+	        LIMIT 1
+	    ) t2 ON t1.save_in = t2.save_in
+	    SET
+	        t1.bud_feedback = #{budFeedback}
+	</update>
 
     </mapper>

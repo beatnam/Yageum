@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>가계부 소비분석 및 피드백</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
@@ -19,35 +20,41 @@
 <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
 
     <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">💳</div>
-                <div class="stat-label">이번달 달 총 지출</div>
-                <div class="stat-value" id="totalExpense">&#8361;<span th:text="${#numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-label">하루 평균 지출</div>
-                <div class="stat-value" id="averageDailyExpense">&#8361;<span th:text="${#numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-label">남은 일수</div>
-                <div class="stat-value" id="daysLeft" th:text="${daysLeft + '일'}">0일</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💰</div>
-                <div class="stat-label">남은 예산</div>
-                <div class="stat-value" id="remainingBudget">&#8361;<span th:text="${#numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-        </div>
-
-        <div class="chart-section">
-            <h2>월별 지출 추이</h2>
-            <div class="chart-container">
-                <canvas id="monthlyExpenseChart"></canvas>
-            </div>
-        </div>
+	    <div class="stats-grid">
+	        <div class="stat-card">
+	            <div class="stat-icon">💳</div>
+	            <div class="stat-label">이번달 달 총 지출</div>
+	            <div class="stat-value" id="totalExpense">
+	                &#8361;<span th:text="${totalExpense != null ? #numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">📊</div>
+	            <div class="stat-label">하루 평균 지출</div>
+	            <div class="stat-value" id="averageDailyExpense">
+	                &#8361;<span th:text="${averageDailyExpense != null ? #numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">⏳</div>
+	            <div class="stat-label">남은 일수</div>
+	            <div class="stat-value" id="daysLeft" th:text="${daysLeft != null ? daysLeft + '일' : '데이터 없음'}">0일</div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">💰</div>
+	            <div class="stat-label">남은 예산</div>
+	            <div class="stat-value" id="remainingBudget">
+	                &#8361;<span th:text="${remainingBudget != null ? #numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	    </div>
+	
+	    <div class="chart-section">
+	        <h2>월별 지출 추이</h2>
+	        <div class="chart-container">
+	            <canvas id="monthlyExpenseChart"></canvas>
+	        </div>
+	    </div>
 
         <div class="feedback-section">
             <h2>ChatGPT의 소비 피드백</h2>
@@ -96,7 +103,7 @@
 		
 		    <div class="savings-plan-section" th:if="${savingsPlan != null and not #maps.isEmpty(savingsPlan)}">
 		        <p>설정된 절약 목표가 있습니다. 종합분석으로 확실하게!</p>
-		        <button class="btn" onclick="move1()">종합분석 화면으로 가기</button>
+		        <button class="btn" id="moveToCanalysisBtn">종합분석 화면으로 가기</button>
 		    </div>
 		</div>
 	</div>
@@ -195,7 +202,7 @@
             })
             .then(data => {
                 if (data && data.feedback) {
-                    feedbackArea.innerHTML = '<p>' + data.feedback.replace(/\n/g, '<br>') + '</p>';
+                    feedbackArea.innerHTML = '<p id="chatGptFeedbackContent">' + data.feedback.replace(/\n/g, '<br>') + '</p>';
                 } else if (data && data.error) {
                     feedbackArea.innerHTML = '<p style="color: red;">오류: ' + data.error + '</p>';
                 } else {
@@ -210,6 +217,7 @@
 
         loadFeedbackAutomatically();
 
+        // '새로운 예산 생성하기' 버튼의 move 함수는 기존대로 유지
         function move() {
             const btn = event.target;
             btn.textContent = '예산 설정으로 가는 중...';
@@ -223,17 +231,67 @@
             }, 2000);
         }
         
-        function move1() {
-            const btn = event.target;
+        // move1 함수를 DOMContentLoaded 스코프 내에서 정의하고,
+        // 버튼에 이벤트 리스너를 연결합니다.
+        async function handleMoveToCanalysis() {
+            const btn = document.getElementById('moveToCanalysisBtn'); // ID로 버튼을 가져옵니다.
             btn.textContent = '종합 분석하는 중...';
             btn.disabled = true;
 
-            setTimeout(() => {
-                btn.textContent = '종합분석 화면으로 가기';
-                btn.disabled = false;
+            const feedbackElement = document.getElementById('chatGptFeedbackContent');
+            let aiFeedback = "";
 
-                window.location.href = '/consumption/canalysis';
-            }, 2000);
+            if (feedbackElement) {
+                aiFeedback = feedbackElement.innerText;
+            } else {
+                console.warn("chatGptFeedbackContent 요소를 찾을 수 없습니다. 피드백을 빈 문자열로 처리합니다.");
+            }
+
+            console.log("종합분석을 위해 저장할 AI 피드백 내용:", aiFeedback);
+
+            try {
+                const response = await fetch('/consumption/cfeedset', { // 수정된 컨트롤러 주소
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken 
+                    },
+                    body: JSON.stringify({
+                        feedbackContent: aiFeedback
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorResult = await response.json().catch(() => {
+                        return response.text().then(text => ({ message: text || '알 수 없는 서버 오류' }));
+                    });
+                    throw new Error(errorResult.message || `서버 오류 발생: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('종합분석 피드백 저장 결과:', result);
+
+                if (result.success) {
+                    console.log("종합분석 피드백 저장 성공:", result.message);
+                } else {
+                    alert("종합분석 피드백 저장 실패: " + result.message);
+                }
+            } catch (error) {
+                console.error('종합분석 피드백 저장 중 오류 발생:', error);
+                alert("종합분석 피드백 저장 중 오류가 발생했습니다: " + error.message);
+            } finally {
+                setTimeout(() => {
+                    btn.textContent = '종합분석 화면으로 가기';
+                    btn.disabled = false;
+                    window.location.href = '/consumption/canalysis'; // 페이지 이동
+                }, 2000);
+            }
+        }
+
+        // '종합분석 화면으로 가기' 버튼에 이벤트 리스너 연결
+        const moveToCanalysisButton = document.getElementById('moveToCanalysisBtn');
+        if (moveToCanalysisButton) {
+            moveToCanalysisButton.addEventListener('click', handleMoveToCanalysis);
         }
     });
 </script>
