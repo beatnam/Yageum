@@ -17,4 +17,11 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		from category_sub
 		where cm_in= #{cmIn}
 	</select>
+
+	<insert id="insertQuest" parameterType="map">
+		insert into quest(quest_type_in, cm_in, cs_in, goal_value,
+		reward_value, start_date, end_date)
+		values(#{questTypeIn},#{cmIn},#{csIn},#{goalValue},#{rewardValue},#{startDate},
+		#{endDate})
+	</insert>
 </mapper>

@@ -1,6 +1,7 @@
 package com.yageum.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -15,5 +16,7 @@ public interface AdminMapper {
 	List<CategoryMainDTO> showCategoryMain();
 
 	List<CategorySubDTO> subCategorySelect(int cmIn);
+
+	void insertQuest(Map<Object, Object> quest);
 
 }

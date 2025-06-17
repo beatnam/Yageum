@@ -1,6 +1,7 @@
 package com.yageum.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,9 @@ import lombok.extern.java.Log;
 @Log
 @RequiredArgsConstructor
 public class AdminService {
-	
+
 	private final AdminMapper adminMapper;
-	
+
 	public List<CategoryMainDTO> showCategoryMain() {
 		log.info("AdminService showCategoryMain()");
 		return adminMapper.showCategoryMain();
@@ -26,6 +27,12 @@ public class AdminService {
 	public List<CategorySubDTO> subCategorySelect(int cmIn) {
 		log.info("AdminService subCategorySelect()");
 		return adminMapper.subCategorySelect(cmIn);
+	}
+
+	public void insertQuest(Map<Object, Object> quest) {
+		log.info("AdminService insertQuest()");
+
+		adminMapper.insertQuest(quest);
 	}
 
 }
