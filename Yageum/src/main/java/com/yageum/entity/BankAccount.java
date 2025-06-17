@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,10 +27,14 @@ public class BankAccount {
     private int accountIn;
 
     @Column(name = "member_in", nullable = false)
-    private int memberId;
+    private int memberIn;
 
     @Column(name = "bank_in")
     private int bankIn;
+    
+    @ManyToOne
+    @JoinColumn(name = "bank_in", insertable = false, updatable = false)
+    private Bank bank;
 
     @Column(name = "account_num", nullable = false, unique = true, length = 14)
     private String accountNum;
@@ -36,8 +42,8 @@ public class BankAccount {
     @Column(name = "finnum", length = 255)
     private String finnum;
 
-    @Column(name = "account_alias", length = 50)
-    private String accountAlias;
+    @Column(name = "account_name", length = 50)
+    private String accountName;
 
     @Column(name = "create_date")
     private LocalDate createDate;

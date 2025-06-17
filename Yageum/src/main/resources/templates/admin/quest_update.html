@@ -10,171 +10,114 @@
     </style>
 </head>
 <body>
-	<div class="user-detail-container">
+	<div class="quest-form-container">
 	      <div class="form-header">
-	          <h2>사용자 상세보기</h2>
+	          <h2>퀘스트 생성</h2>
 	      </div>
 	      
-	      <form id="userDetailForm" action="/admin/userUpdate" method="POST" onsubmit="submitUserUpdate(event)">
+	      <form id="questForm" action="/admin/questPro" method="POST" onsubmit="submitQuest(event)">
 	          <div class="form-content">
-	              <!-- 기본 정보 섹션 -->
-	              <div class="info-section">
-	                  <div class="section-title">기본 정보</div>
-	                  <table class="form-table">
-	                      <tr>
-	                          <td>사용자 권한<span class="required">*</span></td>
-	                          <td>
-	                              <select name="userRole" id="userRole" class="form-select" required>
-	                                  <option value="USER" selected>USER</option>
-	                                  <option value="ADMIN">ADMIN</option>
+	              <table class="form-table">
+	                  <tr>
+	                      <td>퀘스트 이름<span class="required">*</span></td>
+	                      <td>
+	                          <input type="text" name="questName" id="questName" class="form-input" placeholder="퀘스트 이름을 입력하세요" required>
+	                      </td>
+	                  </tr>
+	                  <tr>
+	                      <td>카테고리<span class="required">*</span></td>
+	                      <td>
+	                          <div class="category-group">
+	                              <select name="mainCategory" id="mainCategory" class="form-select" required>
+	                                  <option value="">메인 카테고리 선택</option>
+	                                  <option value="daily">일일 퀘스트</option>
+	                                  <option value="weekly">주간 퀘스트</option>
+	                                  <option value="special">특별 퀘스트</option>
+	                                  <option value="event">이벤트 퀘스트</option>
 	                              </select>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>회원 ID</td>
-	                          <td>
-	                              <input type="text" name="userId" id="userId" class="form-input readonly" value="USER001" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>회원 이름</td>
-	                          <td>
-	                              <input type="text" name="userName" id="userName" class="form-input readonly" value="김철수" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>성별</td>
-	                          <td>
-	                              <input type="text" name="gender" id="gender" class="form-input readonly" value="남성" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>주소</td>
-	                          <td>
-	                              <input type="text" name="address" id="address" class="form-input readonly" value="서울특별시 강남구 테헤란로 123" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>이메일</td>
-	                          <td>
-	                              <input type="email" name="email" id="email" class="form-input readonly" value="kimcs@example.com" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>전화번호</td>
-	                          <td>
-	                              <input type="text" name="phone" id="phone" class="form-input readonly" value="010-1234-5678" readonly>
-	                          </td>
-	                      </tr>
-	                  </table>
-	              </div>
-
-	              <!-- 계정 정보 섹션 -->
-	              <div class="info-section">
-	                  <div class="section-title">계정 정보</div>
-	                  <table class="form-table">
-	                      <tr>
-	                          <td>가입날짜</td>
-	                          <td>
-	                              <input type="text" name="joinDate" id="joinDate" class="form-input readonly" value="2024-01-15" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>마지막 로그인</td>
-	                          <td>
-	                              <input type="text" name="lastLogin" id="lastLogin" class="form-input readonly" value="2025-06-14 14:30:25" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>회원 상태</td>
-	                          <td>
-	                              <span class="status-active">활성</span>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>포인트</td>
-	                          <td>
-	                              <input type="text" name="points" id="points" class="form-input readonly" value="15,500 P" readonly>
-	                          </td>
-	                      </tr>
-	                  </table>
-	              </div>
-
-	              <!-- 연결 정보 섹션 -->
-	              <div class="info-section">
-	                  <div class="section-title">연결 정보</div>
-	                  <table class="form-table">
-	                      <tr>
-	                          <td>연결된 계좌 수</td>
-	                          <td>
-	                              <input type="text" name="accountCount" id="accountCount" class="form-input readonly" value="3개" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>연결된 카드 수</td>
-	                          <td>
-	                              <input type="text" name="cardCount" id="cardCount" class="form-input readonly" value="2개" readonly>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>달성한 퀘스트 수</td>
-	                          <td>
-	                              <input type="text" name="questCount" id="questCount" class="form-input readonly" value="47개" readonly>
-	                          </td>
-	                      </tr>
-	                  </table>
-	              </div>
-
-	              <!-- 동의 정보 섹션 -->
-	              <div class="info-section">
-	                  <div class="section-title">동의 정보</div>
-	                  <table class="form-table">
-	                      <tr>
-	                          <td>개인정보 동의</td>
-	                          <td>
-	                              <span class="consent-yes">동의</span>
-	                          </td>
-	                      </tr>
-	                      <tr>
-	                          <td>이메일 동의</td>
-	                          <td>
-	                              <span class="consent-no">미동의</span>
-	                          </td>
-	                      </tr>
-	                  </table>
-	              </div>
+	                              <select name="subCategory" id="subCategory" class="form-select" required>
+	                                  <option value="">서브 카테고리 선택</option>
+	                                  <option value="combat">전투</option>
+	                                  <option value="collection">수집</option>
+	                                  <option value="exploration">탐험</option>
+	                                  <option value="social">소셜</option>
+	                                  <option value="crafting">제작</option>
+	                              </select>
+	                          </div>
+	                      </td>
+	                  </tr>
+	                  <tr>
+	                      <td>목표치<span class="required">*</span></td>
+	                      <td>
+	                          <input type="number" name="targetValue" id="targetValue" class="form-input" placeholder="목표치를 입력하세요" min="1" required>
+	                      </td>
+	                  </tr>
+	                  <tr>
+	                      <td>보상<span class="required">*</span></td>
+	                      <td>
+	                          <input type="number" name="reward" id="reward" class="form-input" placeholder="보상을 입력하세요" min="0" required>
+	                      </td>
+	                  </tr>
+	                  <tr>
+	                      <td>퀘스트 기간<span class="required">*</span></td>
+	                      <td>
+	                          <div class="date-group">
+	                              <input type="date" name="startDate" id="startDate" class="form-input" required>
+	                              <span class="date-separator">~</span>
+	                              <input type="date" name="endDate" id="endDate" class="form-input" required>
+	                          </div>
+	                      </td>
+	                  </tr>
+	              </table>
 	          </div>
 	          
 	          <div class="form-actions">
-	              <button type="button" class="btn btn-secondary" onclick="closeDetail()">닫기</button>
-	              <button type="submit" class="btn btn-primary">수정</button>
+	              <button type="button" class="btn btn-secondary" onclick="cancelQuest()">취소</button>
+	              <button type="submit" class="btn btn-primary">퀘스트 생성</button>
 	          </div>
 	      </form>
 	  </div>
 
 	  <script>
-	      // 폼 제출 처리
-	      function submitUserUpdate(event) {
-	          event.preventDefault();
+	      
+		// 폼 제출 처리
+//	      function submitQuest(event) {
+//	          event.preventDefault(); // 기본 폼 제출 방지
 	          
-	          const form = document.getElementById('userDetailForm');
-	          const formData = new FormData(form);
+//	          const form = document.getElementById('questForm');
+//	          const formData = new FormData(form);
 	          
-	          // 변경사항 확인
-	          if (confirm('사용자 권한을 변경하시겠습니까?')) {
-	              console.log('사용자 정보 변경 데이터를 서버로 전송합니다...');
-	              // 실제로는 서버로 전송
-	              alert('사용자 권한이 성공적으로 변경되었습니다.');
-	              // form.submit();
+	          // 날짜 검증
+//	          const startDate = formData.get('startDate');
+//	          const endDate = formData.get('endDate');
+	          
+//	          if (new Date(startDate) >= new Date(endDate)) {
+//	              alert('종료일은 시작일보다 늦어야 합니다.');
+//	              return false; // 검증 실패 시 폼 제출 중단
+//	          }
+	          
+	          // 검증 통과 시 실제 폼 제출
+//	          console.log('퀘스트 데이터를 서버로 전송합니다...');
+//	          form.submit(); // 서버로 폼 제출 (페이지 이동됨)
+//	      }
+	      
+	      // 취소 처리
+	      function cancelQuest() {
+	          if (confirm('퀘스트 생성을 취소하시겠습니까?')) {
+	              window.close(); // 팝업창 닫기
 	          }
 	      }
-
-	      // 닫기 처리
-	      function closeDetail() {
-	          if (confirm('사용자 상세보기를 닫으시겠습니까?')) {
-	              window.close();
-	          }
-	      }
+	      
+	      // 오늘 날짜를 기본값으로 설정
+	      document.addEventListener('DOMContentLoaded', function() {
+	          const today = new Date().toISOString().split('T')[0];
+	          document.getElementById('startDate').value = today;
+	          
+	          // 종료일 기본값을 일주일 후로 설정
+	          const nextWeek = new Date();
+	          nextWeek.setDate(nextWeek.getDate() + 7);
+	          document.getElementById('endDate').value = nextWeek.toISOString().split('T')[0];
+	      });
 	  </script>
 </body>
 </html>
