@@ -47,18 +47,20 @@ public class MemberController {
 
    private final PasswordEncoder passwordEncoder;
 
+   // 네이버 클라이언트 아이디
    @Value("${naver.client-id}")
-   private String NclientId;
+   private String nClientId;
 
+   // 네이버 API 비밀번호
    @Value("${naver.client-secret}")
-   private String NclientSecret;
+   private String nClientSecret;
 
    // 네이버 로그인 URL을 만들면서
    @GetMapping("/login")
    public String login(Model model, HttpSession session) {
       log.info("MemberController login()");
 
-      String clientId = NclientId;
+      String clientId = nClientId;
 
       String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
       String state = UUID.randomUUID().toString();
@@ -134,8 +136,8 @@ public class MemberController {
 
    public String getAccessToken(String code, String state) {
 
-      String clientId = NclientId;
-      String clientSecret = NclientSecret;
+      String clientId = nClientId;
+      String clientSecret = nClientSecret;
 
       String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
 
