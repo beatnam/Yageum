@@ -26,12 +26,18 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where member_id = #{memberId}
 
 	</select>
-	
-	<select id="loginMember" parameterType="String" resultType="com.yageum.domain.MemberDTO">
+
+	<select id="loginMember" parameterType="String"
+		resultType="com.yageum.domain.MemberDTO">
 		select member_id, member_passwd, member_role, member_name
 		from member
 		where member_id = #{memberId}
 
 	</select>
 
+	<update id="updateDate">
+		update member
+		set lastlogin_date = #{lastLoginDate}
+		where member_id = #{memberId}
+	</update>
 </mapper>
