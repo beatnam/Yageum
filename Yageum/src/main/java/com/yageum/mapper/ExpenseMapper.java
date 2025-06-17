@@ -26,6 +26,10 @@ public interface ExpenseMapper {
     int getTotalExpenseForMonth(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
     
     List<Map<String, Object>> getLastMonthExpenseAnalysis(@Param("memberIn") int memberIn);
+
+	int thisMonthCount(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
+
+	List<Map<String, Object>> getCategoryExpensesData(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
     
     
     

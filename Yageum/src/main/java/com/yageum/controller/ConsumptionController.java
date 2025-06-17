@@ -601,6 +601,31 @@ public class ConsumptionController {
         String memberId = userDetails.getUsername();
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
         
+        //이달의 총지출액(이번 달 총 지출)
+        int totalExpense = consumptionService.getTotalExpenseForCurrentMonth(memberIn);
+        model.addAttribute("totalExpense", totalExpense);
+
+        LocalDate today = LocalDate.now();
+        int totalDaysInMonth = today.lengthOfMonth();
+        int currentDayOfMonth = today.getDayOfMonth();
+        int daysLeft = totalDaysInMonth - currentDayOfMonth;
+        //일별 지출액(일평균 지출)
+        double averageDailyExpense = (currentDayOfMonth > 0) ? (double) totalExpense / currentDayOfMonth : 0;
+        model.addAttribute("averageDailyExpense", (int) Math.round(averageDailyExpense));
+        model.addAttribute("daysLeft", daysLeft);
+        
+        //이번달 지출 횟수(총 거래 건수)
+        int countThisMonth = consumptionService.thisMonthCount(memberIn);
+        model.addAttribute("countThisMonth", countThisMonth);
+        
+        //이번달 남은 금액(이번 달 남은 금액)
+        int currentMonthBudget = consumptionService.getBudgetForCurrentMonth(memberIn);
+        int remainingBudget = currentMonthBudget - totalExpense;
+        model.addAttribute("remainingBudget", remainingBudget);
+        
+        List<Map<String, Object>> categoryExpenses = consumptionService.getCategoryExpensesForChart(memberIn, totalDaysInMonth, currentDayOfMonth);
+        model.addAttribute("categoryExpenses", categoryExpenses);
+        
         return "/consumption/consumption_analysis";
     }
 }

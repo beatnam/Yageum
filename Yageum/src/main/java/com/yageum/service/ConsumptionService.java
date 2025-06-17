@@ -240,6 +240,21 @@ public class ConsumptionService {
 		
 		savingsPlanMapper.processAicFeedback(memberIn, aiFeedback);
 	}
+
+	public int thisMonthCount(Integer memberIn) {
+		log.info("ConsumptionService thisMonthCount()");
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+        
+		return expenseMapper.thisMonthCount(memberIn, month, year);
+	}
+
+	public List<Map<String, Object>> getCategoryExpensesForChart(Integer memberIn, int year, int month) {
+		log.info("ConsumptionService getCategoryExpensesForChart()");
+		
+		return expenseMapper.getCategoryExpensesData(memberIn, year, month);
+	}
     
     
 }
