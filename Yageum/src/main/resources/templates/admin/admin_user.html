@@ -66,10 +66,10 @@
                     </thead>
                     <tbody id="userTableBody">
                         <!-- Thymeleaf로 회원 정보 반복 출력 -->
-                        <tr th:each="member : ${member}" 
+                        <tr 
+							th:each="member : ${member}" 
                             th:data-name="${member.memberName}" 
                             th:data-id="${#strings.length(member.memberId) >= 43 ? member.memberPasswd : member.memberId}">
-                            
                             <td 
 								th:text="${member.memberRole}"
 								>
