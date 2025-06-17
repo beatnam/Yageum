@@ -138,8 +138,12 @@ public class ConsumptionService {
     
     // 이번 달 예산 설정 금액 가져오기
     public int getBudgetForCurrentMonth(Integer memberIn) {
-        log.info("ConsumptionService getBudgetForCurrentMonth() 호출: memberIn=" + memberIn);
-        return savingsPlanMapper.getBudgetForMonth(memberIn, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
+        Integer budget = savingsPlanMapper.getBudgetForMonth(memberIn, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
+
+        if (budget == null) {
+            return 0;
+        }
+        return budget;
     }
     
     // ⭐ 수정: 지난 달 절약 목표 정보

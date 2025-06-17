@@ -19,35 +19,41 @@
 <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
 
     <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">💳</div>
-                <div class="stat-label">이번달 달 총 지출</div>
-                <div class="stat-value" id="totalExpense">&#8361;<span th:text="${#numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-label">하루 평균 지출</div>
-                <div class="stat-value" id="averageDailyExpense">&#8361;<span th:text="${#numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-label">남은 일수</div>
-                <div class="stat-value" id="daysLeft" th:text="${daysLeft + '일'}">0일</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💰</div>
-                <div class="stat-label">남은 예산</div>
-                <div class="stat-value" id="remainingBudget">&#8361;<span th:text="${#numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-        </div>
-
-        <div class="chart-section">
-            <h2>월별 지출 추이</h2>
-            <div class="chart-container">
-                <canvas id="monthlyExpenseChart"></canvas>
-            </div>
-        </div>
+	    <div class="stats-grid">
+	        <div class="stat-card">
+	            <div class="stat-icon">💳</div>
+	            <div class="stat-label">이번달 달 총 지출</div>
+	            <div class="stat-value" id="totalExpense">
+	                &#8361;<span th:text="${totalExpense != null ? #numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">📊</div>
+	            <div class="stat-label">하루 평균 지출</div>
+	            <div class="stat-value" id="averageDailyExpense">
+	                &#8361;<span th:text="${averageDailyExpense != null ? #numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">⏳</div>
+	            <div class="stat-label">남은 일수</div>
+	            <div class="stat-value" id="daysLeft" th:text="${daysLeft != null ? daysLeft + '일' : '데이터 없음'}">0일</div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">💰</div>
+	            <div class="stat-label">남은 예산</div>
+	            <div class="stat-value" id="remainingBudget">
+	                &#8361;<span th:text="${remainingBudget != null ? #numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	    </div>
+	
+	    <div class="chart-section">
+	        <h2>월별 지출 추이</h2>
+	        <div class="chart-container">
+	            <canvas id="monthlyExpenseChart"></canvas>
+	        </div>
+	    </div>
 
         <div class="feedback-section">
             <h2>ChatGPT의 소비 피드백</h2>
