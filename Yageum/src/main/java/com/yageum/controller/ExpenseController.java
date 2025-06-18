@@ -106,6 +106,8 @@ public class ExpenseController {
 		log.info("조회 요청 id = {}", id);
 	    ExpenseDTO expense = expenseService.getExpenseDetailById(id);
 	    log.info("결과 expense = {}", expense);
+	    log.info("accountIn: {}", expense.getAccountIn());
+	    log.info("methodIn: {}", expense.getMethodIn());
 	    
 		List<CategoryMainDTO> mainList = expenseService.getAllMainCategories();
 	    model.addAttribute("mainList", mainList);

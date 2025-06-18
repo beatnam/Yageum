@@ -42,15 +42,15 @@ public class SecurityConfig {
             .securityContext(security -> security
                 .securityContextRepository(new HttpSessionSecurityContextRepository())
             )
-            .formLogin(form -> form
-                .loginPage("/member/login")
-                .loginProcessingUrl("/member/loginPro")
-                .usernameParameter("memberId")
-                .passwordParameter("memberPasswd")
-                .defaultSuccessUrl("/cashbook/main", true)
-                .failureUrl("/member/login")
-                .permitAll()
-            )
+//            .formLogin(form -> form
+//                .loginPage("/member/login")
+//                .loginProcessingUrl("/member/loginPro")
+//                .usernameParameter("memberId")
+//                .passwordParameter("memberPasswd")
+//                .defaultSuccessUrl("/cashbook/main", true)
+//                .failureUrl("/member/login")
+//                .permitAll()
+//            )
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/")

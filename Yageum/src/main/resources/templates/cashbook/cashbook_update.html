@@ -76,6 +76,8 @@
 					    <option value="3" th:selected="${expense.methodIn == 3}">현금</option>
 					    <option value="4" th:selected="${expense.methodIn == 4}">계좌</option>
 					</select>
+					<input type="hidden" id="cardIn" th:value="${expense.cardIn}"/>
+					<input type="hidden" id="accountIn" th:value="${expense.accountIn}"/>
                     <select class="form-select" id="method2" name="method2" disabled required>
                         <option value="">상세 선택</option>
                     </select>
@@ -132,6 +134,7 @@
 		<div th:replace="fragments/footer :: footer"></div>
 
     <script>
+		console.log("✅ 페이지 로딩됨!");
 		// 페이지 로드되자마자 기존 expenseType 값에 따라 버튼 색상 지정
 		document.addEventListener("DOMContentLoaded", () => {
 		    const expenseType = document.getElementById("expenseType").value;
@@ -163,21 +166,26 @@
 		    }
 		}
 		
+		//수단 관련
 		document.addEventListener("DOMContentLoaded", function () {
 		    const method1 = document.getElementById("method1").value;
+			console.log("🎯 method1 값:", method1);
 		    const method2 = document.getElementById("method2");
-		    const selectedCardIn = /*[[${expense.cardIn}]]*/ 0;
-		    const selectedAccountIn = /*[[${expense.accountIn}]]*/ 0;
+		    const selectedCardIn = document.getElementById("cardIn").value;
+		    const selectedAccountIn = document.getElementById("accountIn").value;
 
 		    if (method1 === "1" || method1 === "2") {
 		        fetch(`/cashbook/cards/byMethod/${method1}`)
 		            .then(res => res.json())
 		            .then(data => {
+						console.log("📦 카드 데이터:", data);
+						console.log("🎯 선택된 카드 ID:", selectedCardIn);
+						
 		                data.forEach(card => {
 		                    const option = document.createElement("option");
 		                    option.value = card.cardIn;
 		                    option.textContent = card.cardName;
-		                    if (card.cardIn === selectedCardIn) {
+		                    if (String(card.cardIn) === selectedCardIn) {
 		                        option.selected = true;
 		                    }
 		                    method2.appendChild(option);
@@ -188,11 +196,15 @@
 		        fetch(`/cashbook/accounts`)
 		            .then(res => res.json())
 		            .then(data => {
+						console.log("🏦 계좌 데이터:", data);
+						console.log("🎯 선택된 계좌 ID:", selectedAccountIn);
+						
 		                data.forEach(account => {
 		                    const option = document.createElement("option");
 		                    option.value = account.accountIn;
 		                    option.textContent = account.bankName + " " + account.accountNum;
-		                    if (account.accountIn === selectedAccountIn) {
+							console.log("계좌 option ID 비교: ", account.accountIn, selectedAccountIn);
+		                    if (String(account.accountIn) === selectedAccountIn) {
 		                        option.selected = true;
 		                    }
 		                    method2.appendChild(option);
