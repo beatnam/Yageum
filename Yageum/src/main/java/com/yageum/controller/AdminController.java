@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
 import com.yageum.entity.Member;
+import com.yageum.repository.CategoryMainRepository;
 import com.yageum.service.CategoryService;
 import com.yageum.service.MemberService;
 
@@ -28,6 +29,7 @@ public class AdminController {
 	
 	private final MemberService memberService;
 	private final CategoryService categoryService;
+	private final CategoryMainRepository categoryMainRepository;
 	
 
 	// 회원 관리 페이지
@@ -118,6 +120,91 @@ public class AdminController {
 		return "/admin/admin_category";
 	}
 
+	
+	@GetMapping("/category_gener")
+	public String cateGener(Model model) {
+		log.info("AdminController categoryGerner()");
+
+		List<CategoryMain> categoryMain = categoryService.cateMFindAll();
+
+		
+		model.addAttribute("cateMain", categoryMain);
+		
+		return "/admin/category_gener";
+	}
+	@PostMapping("/category_generPro1")
+	@ResponseBody		//대분류 카테고리 생성하는 로직
+	public void cateGenerPro1(@RequestParam("categoryName") String cmName) {
+		log.info("AdminController cateGenerPro1()");
+		
+		categoryService.save(cmName);
+		
+	}
+	
+	
+	@PostMapping("/category_generPro2")
+	@ResponseBody		//소분류 카테고리 생성하는 로직
+	public void cateGenerPro2(@RequestParam("categoryName") String csName,
+								  @RequestParam("parentCategory") int cmIn) {
+		
+		log.info("AdminController cateGenerPro2()");
+		
+		
+		CategorySub categorySub = new CategorySub();
+		categorySub.setCmIn(cmIn);
+		categorySub.setCsName(csName);
+		
+		categoryService.save2(categorySub);
+		
+		
+	}
+	
+	
+	@GetMapping("/category_update1")
+	public String cateUpdate1(@RequestParam("cmIn")int cmIn, Model model) {
+		log.info("AdminController cateUpdate1()");
+		Optional<CategoryMain> categoryMain = categoryService.findById1(cmIn);
+		
+		
+		model.addAttribute("cateMain", categoryMain.get());
+		
+		return "/admin/category_update1";
+	}
+	
+	@PostMapping("/category_updatePro1")
+	@ResponseBody		//소분류 카테고리 생성하는 로직
+	public void cateUpdatePro1(CategoryMain categoryMain) {
+		
+		log.info("AdminController cateUpdatePro1()");
+		
+		CategoryMain cateFound = categoryService.find(categoryMain.getCmIn());
+		
+		
+		
+		
+	
+		
+		
+	}
+	
+	
+	@GetMapping("/category_update2")
+	public String cateUpdate2(@RequestParam("cmIn") int cmIn , Model model) {
+		log.info("AdminController cateUpdate2()");
+		
+		Optional<CategorySub> categorySub = categoryService.findById2(cmIn);
+		List<CategoryMain> categoryMain = categoryMainRepository.findAll();
+		
+		model.addAttribute("cateSub", categorySub);
+		model.addAttribute("cateMain", categoryMain);
+
+		return "/admin/category_update2";
+	}
+	
+	
+	
+	
+	
 	// 사이트 설정 - 카테고리 설정 페이지
 	
 	

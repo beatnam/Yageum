@@ -95,7 +95,7 @@
 									<td><span class="category-tag main" >대분류</span></td>
 									<td th:text="${cateMain.cmName}"></td>
 									<td>
-										<button class="action-btn edit" th:onclick="editCategory([[${cateMain.cmIn}]])">변경</button>
+										<button class="action-btn edit" th:onclick="categoryMain([[${cateMain.cmIn}]])">변경</button>
 										<button class="action-btn delete" th:onclick="deleteCategory([[${cateMain.cmIn}]])">삭제</button>
 									</td>
 								</tr>
@@ -107,7 +107,7 @@
 									<td><span class="category-tag sub">소분류</span></td>
 									<td th:text="${cateSub.csName}"></td>
 									<td>
-										<button class="action-btn edit" th:onclick="editCategory([[${cateSub.csIn}]])">변경</button>
+										<button class="action-btn edit" th:onclick="categorySub([[${cateSub.cmIn}]])">변경</button>
 										<button class="action-btn delete" th:onclick="deleteCategory(${cateSub.csIn}]])">삭제</button>
 									</td>
 								</tr>
@@ -168,24 +168,41 @@
 
 		// 카테고리 추가 기능
 		function addCategory() {
-			alert('카테고리 추가 페이지로 이동합니다.');
-			// 실제로는 카테고리 추가 페이지로 이동하거나 모달을 띄움
+			const uri = "/admin/category_gener";
+			window.open(uri, "popup", "height=400, width=470" );
+			
+			
 		}
 
 		// 카테고리 변경 기능
-		function editCategory(id) {
-			alert('카테고리 ID ' + id + ' 변경 페이지로 이동합니다.');
-			// 실제로는 카테고리 변경 페이지로 이동하거나 모달을 띄움
+		function categoryMain(id) {
+			const uri = "/admin/category_update1?cmIn=" + id ;
+			window.open(uri, "popup", "height=400, width=470" );
+			
+		}
+		function categorySub(id) {
+			const uri = "/admin/category_update2?cmIn=" + id;
+			window.open(uri, "popup", "height=400, width=470" );
+			
 		}
 
 		// 카테고리 삭제 기능
-		function deleteCategory(id) {
+
+		function deleteCategory1(id) {
+						
 			if (confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {
-				alert('카테고리 ID ' + id + '가 삭제되었습니다.');
-				// 실제로는 서버에 삭제 요청을 보냄
+				alert('대분류 카테고리 Name ' + id + '가 삭제되었습니다.');
+				window.location.href="/admin/category_delete1?cmName=" + id;
 			}
 		}
-
+		function deleteCategory2(id) {
+						
+			if (confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {
+				alert('소분류 카테고리 Name ' + id + '가 삭제되었습니다.');
+				window.location.href="/admin/category_delete2?csName=" + id;
+			}
+		}
+		// 카테고리 삭제 기능
 
 		//로그아웃 기능
 		function logout() {
