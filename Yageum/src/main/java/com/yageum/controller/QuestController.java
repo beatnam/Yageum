@@ -28,7 +28,7 @@ public class QuestController {
 	private final AdminService adminService;
 
 	private final QuestService questService;
-	
+
 	@GetMapping("/list")
 	public String listQuest(Model model) {
 
@@ -41,24 +41,20 @@ public class QuestController {
 	}
 
 	@PostMapping("/acceptQuest")
-	public String acceptQuest(@RequestParam("questIn") int questIn,
-            @AuthenticationPrincipal UserDetails userDetails) {
+	public String acceptQuest(@RequestParam("questIn") int questIn, @AuthenticationPrincipal UserDetails userDetails) {
 
 		String memberId = userDetails.getUsername();
 		System.out.println(userDetails.getUsername());
-		
+
 		int memberIn = questService.searchMemberIn(memberId);
 		System.out.println(memberIn);
-		
+
 		QuestStateDTO questStateDTO = new QuestStateDTO();
 		questStateDTO.setQuestIn(questIn);
 		questStateDTO.setMemberIn(memberIn);
 
 		questService.acceptQuest(questStateDTO);
-		
-		
-		
-		
+
 		return "redirect:/quest/list";
 	}
 }
