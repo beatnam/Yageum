@@ -58,7 +58,7 @@
 					    <tr>
 					        <td><strong>수단</strong></td>
 					        <td class="right"
-					            th:text="${expense.methodType == '카드' ? expense.cardName : (expense.methodType == '계좌이체' ? expense.bankName + ' ' + expense.accountName : '현금')}">
+					            th:text="${expense.methodType == '신용카드' ? expense.cardName : (expense.methodType == '계좌이체' ? expense.bankName + ' ' + expense.accountName : '현금')}">
 					        </td>
 					    </tr>
 					    <tr>
