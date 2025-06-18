@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/category_update.css">
+	    <title>카테고리 변경</title>
+</head>
+<body>
+    <div class="popup-overlay">
+        <div class="user-detail-container">
+            <div class="form-header">
+                <button class="close-btn" onclick="closePopup()">&times;</button>
+                <h2>카테고리 변경</h2>
+            </div>
+            
+            <div class="form-content">
+                <form id="categoryEditForm">
+                    <table class="form-table">
+                        <tr>
+                            <td>분류<span class="required">*</span></td>
+                            <td>
+                                <select class="form-select" id="categoryType" required onchange="toggleParentCategory()">
+                                    <option value="">분류를 선택하세요</option>
+                                    <option value="major"th:selected="${cateMain ne null}">대분류</option>
+                                    <option value="minor" th:selected="${cateSub ne null}">소분류</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="parentCategoryRow" style="display: none;">
+                            <td>상위 분류<span class="required">*</span></td>
+                            <td>
+                                <select class="form-select" id="parentCategory">
+                                    <option value="">대분류를 선택하세요</option>
+									<div th:if="${cateSub ne null}" th:each="cateMain : ${cateMain}">
+										<option th:value="${cateMain.cmIn}" th:text="${cateMain.cmName}" th:selected="${cateMain.cmIn eq cateSub.cmIn}"></option>
+									</div>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>이름<span class="required">*</span></td>
+                            <td>
+                                <input type="text" class="form-input" id="categoryName" placeholder="카테고리 이름을 입력하세요" required>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" onclick="updateCategory()">변경하기</button>
+                <button type="button" class="btn btn-secondary" onclick="closePopup()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 초기화
+       
+
+        function toggleParentCategory() {
+            const categoryType = document.getElementById('categoryType').value;
+            const parentRow = document.getElementById('parentCategoryRow');
+            const parentSelect = document.getElementById('parentCategory');
+            
+            if (categoryType === 'minor') {
+                parentRow.style.display = 'table-row';
+                parentSelect.required = true;
+            } else {
+                parentRow.style.display = 'none';
+                parentSelect.required = false;
+                parentSelect.value = '';
+            }
+        }
+        
+        // 기존 카테고리 데이터 로드
+        function loadCategoryData(categoryData) {
+            if (!categoryData) return;
+            
+            // 분류 타입 설정
+            document.getElementById('categoryType').value = categoryData.type;
+            document.getElementById('categoryName').value = categoryData.name || '';
+            
+            // 분류 타입에 따라 상위 분류 행 표시/숨김
+            toggleParentCategory();
+            
+            // 소분류인 경우 상위 분류 설정
+            if (categoryData.type === 'minor' && categoryData.parentId) {
+                document.getElementById('parentCategory').value = categoryData.parentId;
+            }
+        }
+        
+        function updateCategory() {
+            const categoryType = document.getElementById('categoryType').value;
+            const categoryName = document.getElementById('categoryName').value;
+            const parentCategory = document.getElementById('parentCategory').value;
+            
+            if (!categoryType) {
+                alert('분류를 선택해주세요.');
+                return;
+            }
+            
+            if (categoryType === 'minor' && !parentCategory) {
+                alert('상위 분류를 선택해주세요.');
+                return;
+            }
+            
+            if (!categoryName.trim()) {
+                alert('카테고리 이름을 입력해주세요.');
+                return;
+            }
+            
+            // 여기에 카테고리 변경 로직 추가
+            const categoryData = {
+                type: categoryType,
+                name: categoryName
+            };
+            
+            if (categoryType === 'minor') {
+                categoryData.parentId = parentCategory;
+            }
+            
+            console.log('카테고리 변경:', categoryData);
+            
+            alert('카테고리가 변경되었습니다.');
+            closePopup();
+        }
+        
+        function closePopup() {
+            // 팝업 닫기 로직
+            console.log('팝업 닫기');
+            // 실제 구현에서는 부모 창에서 이 팝업을 닫는 함수를 호출하거나
+            // window.close() 또는 display:none 처리
+        }
+        
+        // 엔터키로 폼 제출
+        document.getElementById('categoryName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updateCategory();
+            }
+        });
+        
+        // ESC 키로 팝업 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePopup();
+            }
+        });
+        
+        // 배경 클릭시 팝업 닫기
+        document.querySelector('.popup-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+    </script>
+</body>
+</html>
