@@ -89,11 +89,12 @@
 		            <span class="goal-value" th:text="${previousMonthSavableAmount != null and previousMonthSavableAmount > 0 ? '₩' + #numbers.formatInteger(previousMonthSavableAmount, 0, 'COMMA') : '지난 달의 데이터가 없습니다.'}">₩0</span>
 		        </div>
 		
-		        <div class="progress-bar-container" th:if="${previousMonthBudgetUsageProgress != null and previousMonthBudgetUsageProgress >= 0}">
-				    <div class="progress-bar-label">예산 사용률:</div> <div class="progress-bar-bg">
-				        <div class="progress-bar-fill"
-				             th:style="'width:' + ${#numbers.formatDecimal(previousMonthBudgetUsageProgress, 0, 0)} + '%'">
-				            <span th:text="${#numbers.formatDecimal(previousMonthBudgetUsageProgress, 0, 0)} + '%'">0%</span>
+				<div class="budget-usage-section" th:if="${previousMonthBudgetUsageProgress != null and previousMonthBudgetUsageProgress >= 0}">
+				    <h3 class="section-title">예산 사용률</h3> <div class="progress-bar-container"> <div class="progress-bar-bg">
+				            <div class="progress-bar-fill"
+				                 th:style="'width:' + ${#numbers.formatDecimal(previousMonthBudgetUsageProgress, 0, 0)} + '%'">
+				                <span th:text="${#numbers.formatDecimal(previousMonthBudgetUsageProgress, 0, 0)} + '%'">0%</span>
+				            </div>
 				        </div>
 				    </div>
 				</div>
