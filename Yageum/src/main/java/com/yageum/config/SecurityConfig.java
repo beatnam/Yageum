@@ -32,7 +32,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
                 .requestMatchers("/member/**").permitAll()
-                .requestMatchers("/cashbook/**").permitAll()
+                .requestMatchers("/cashbook/**","/quest/**").permitAll()
                 .requestMatchers("/mypage/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/consumption/**", "/eanalysis/**", "/efeedback/**", "/canalysis/**", "/bplanner/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/").permitAll()

@@ -11,19 +11,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class QuestDTO {
+public class QuestStateDTO {
 
+	private int memberIn;
 	private int questIn;
-	private int questTypeIn;
-	private String questName;
-	private Integer cmIn;
-	private Integer csIn;
-	private int goalValue;
-	private int rewardValue;
+	private int qpIn;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date startDate;
+	private Date qsSuccessDate;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date endDate;
-	private boolean isValid;
-
+	private Date rewardDate;
+	
 }

@@ -134,6 +134,7 @@ public class AdminController {
 			questDTO.setCsIn(null);
 		}
 
+		questDTO.setValid(true);
 		adminService.insertQuest(questDTO);
 
 		return "redirect:/admin/admin_quest";
