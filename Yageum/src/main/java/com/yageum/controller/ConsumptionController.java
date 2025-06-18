@@ -40,6 +40,7 @@ public class ConsumptionController {
 
     private final ConsumptionService consumptionService;
     private final ChatGPTClient chatGPTClient;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/efeedback")
     public String efeedback(Model model) {
@@ -255,9 +256,22 @@ public class ConsumptionController {
                 monthlyExpensesValues.add(totalExpenseAmount);
             });
         }
+        
+        try {
+            // ObjectMapper를 사용하여 리스트를 JSON 문자열로 변환
+            String labelsJson = objectMapper.writeValueAsString(monthlyExpensesLabels);
+            String valuesJson = objectMapper.writeValueAsString(monthlyExpensesValues);
 
-        model.addAttribute("monthlyExpensesLabels", monthlyExpensesLabels);
-        model.addAttribute("monthlyExpensesValues", monthlyExpensesValues);
+            // 변환된 JSON 문자열을 HTML에서 찾는 이름으로 모델에 추가
+            model.addAttribute("monthlyExpensesLabelsJson", labelsJson);
+            model.addAttribute("monthlyExpensesValuesJson", valuesJson);
+
+        } catch (Exception e) {
+            log.info("월별 지출 추이 JSON 변환 중 오류 발생: " + e.getMessage() + e);
+            // 오류 발생 시 빈 JSON 배열 문자열이라도 넘겨주어 클라이언트에서 파싱 오류 방지
+            model.addAttribute("monthlyExpensesLabelsJson", "[]");
+            model.addAttribute("monthlyExpensesValuesJson", "[]");
+        }
 
         // 2. 지난 달 기준 데이터 (Previous Month Data)
 
