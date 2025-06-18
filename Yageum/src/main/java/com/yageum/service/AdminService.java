@@ -58,4 +58,9 @@ public class AdminService {
 
 	}
 
+	public void changeQuestVaild() {
+		adminMapper.changeQuestValid();
+		
+	}
+
 }
