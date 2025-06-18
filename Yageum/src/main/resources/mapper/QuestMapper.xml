@@ -10,13 +10,23 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		select member_in
 		from member
 		where member_id = #{memberId}
-	
+
 	</select>
 
 	<insert id="acceptQuest">
 		insert into quest_state
-		values(#{memberIn}, #{questIn}, #{qpIn}, #{qsSuccessDate}, #{rewardDate})
-	
+		values(#{memberIn}, #{questIn}, #{qpIn}, #{qsSuccessDate},
+		#{rewardDate})
+
 	</insert>
+
+	<select id="listQuest" resultType="map">
+		select quest_in, quest_name, quest_type_name,
+		goal_value, reward_value, start_date, end_date, is_valid
+		from quest q
+		join quest_type t
+		on q.quest_type_in = t.quest_type_in
+		where quest_in not in (select quest_in from quest_state where member_in = #{memberIn})
+	</select>
 
 </mapper>

@@ -36,10 +36,6 @@ public class AdminService {
 		adminMapper.insertQuest(questDTO);
 	}
 
-	public List<Map<Object, Object>> listQuest() {
-		// TODO Auto-generated method stub
-		return adminMapper.listQuest();
-	}
 
 	public QuestDTO questDetail(int questIn) {
 		// TODO Auto-generated method stub
@@ -61,6 +57,10 @@ public class AdminService {
 	public void changeQuestVaild() {
 		adminMapper.changeQuestValid();
 		
+	}
+
+	public List<Map<Object, Object>> listQuest() {
+		return adminMapper.listQuest();
 	}
 
 }

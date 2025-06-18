@@ -1,5 +1,8 @@
 package com.yageum.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import com.yageum.domain.QuestStateDTO;
@@ -27,6 +30,11 @@ public class QuestService {
 		questStateDTO.setRewardDate(null);
 
 		questMapper.acceptQuest(questStateDTO);
+	}
+
+	public List<Map<Object, Object>> listQuest(int memberIn) {
+		// TODO Auto-generated method stub
+		return questMapper.listQuest(memberIn);
 	}
 
 }

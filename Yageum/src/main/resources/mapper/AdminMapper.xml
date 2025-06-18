@@ -31,7 +31,7 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		goal_value, reward_value, start_date, end_date, is_valid
 		from quest q
 		join quest_type t
-		on q.quest_type_in = t.quest_type_in;
+		on q.quest_type_in = t.quest_type_in
 	</select>
 
 	<select id="questDetail" resultType="com.yageum.domain.QuestDTO">

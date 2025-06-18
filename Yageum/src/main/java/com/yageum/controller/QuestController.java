@@ -30,9 +30,17 @@ public class QuestController {
 	private final QuestService questService;
 
 	@GetMapping("/list")
-	public String listQuest(Model model) {
+	public String listQuest(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+		
+		// 접속중인 userDetails에서 Id 찾아서 memberIn 검색 해오기
+		String memberId = userDetails.getUsername();
+		System.out.println(userDetails.getUsername());
 
-		List<Map<Object, Object>> questList = adminService.listQuest();
+		int memberIn = questService.searchMemberIn(memberId);
+		
+		
+		
+		List<Map<Object, Object>> questList = questService.listQuest(memberIn);
 
 		System.out.println(questList);
 
