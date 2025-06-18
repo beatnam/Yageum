@@ -20,15 +20,15 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 
 	<insert id="insertQuest" parameterType="com.yageum.domain.QuestDTO">
 		insert into quest(quest_name, quest_type_in, cm_in, cs_in, goal_value,
-		reward_value, start_date, end_date)
+		reward_value, start_date, end_date, is_valid)
 		values(#{questName},
 		#{questTypeIn},#{cmIn},#{csIn},#{goalValue},#{rewardValue},#{startDate},
-		#{endDate})
+		#{endDate}, #{isValid})
 	</insert>
 
 	<select id="listQuest" resultType="map">
 		select quest_in, quest_name, quest_type_name,
-		goal_value, reward_value, start_date, end_date
+		goal_value, reward_value, start_date, end_date, is_valid
 		from quest q
 		join quest_type t
 		on q.quest_type_in = t.quest_type_in;
@@ -53,4 +53,12 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where quest_in = #{questIn}
 	
 	</delete>
+	
+	
+	<update id = "changeQuestValid">
+		update quest
+		set is_valid = false
+		where end_date &lt; (select CURDATE())
+	
+	</update>
 </mapper>
