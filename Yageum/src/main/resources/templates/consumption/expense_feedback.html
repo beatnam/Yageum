@@ -64,29 +64,8 @@
                 <p>AI가 현재 소비 패턴을 분석하여 개인 맞춤 피드백을 생성 중입니다... <span class="loading-spinner"></span></p>
             </div>
         </div>
-        <div class="recommendations">
-            <h2>맞춤형 개선 제안</h2>
-            <div class="recommendation-list">
-                <div class="recommendation-item" th:each="rec : ${efeedbackData.recommendations}">
-                    <div class="recommendation-title" th:text="${rec.title}"></div>
-                    <div class="recommendation-desc" th:text="${rec.description}"></div>
-                </div>
-            </div>
-        </div>
 
         <div class="progress-section">
-            <h2>힘내!</h2>
-            <div class="progress-grid">
-                <div class="progress-item" th:each="prog : ${efeedbackData.progress}">
-                    <div class="progress-label">
-                        <span>절약률</span>
-                        <span th:text="${prog.progressText}"></span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" th:style="'width: ' + ${prog.progressPercentage} + '%'"></div>
-                    </div>
-                </div>
-            </div>
             <button class="btn" onclick="generateNewGoals(event)">전반적으로 분석하기</button>
         </div>
     </div>

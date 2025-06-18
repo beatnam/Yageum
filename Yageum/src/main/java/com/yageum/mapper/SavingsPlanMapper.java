@@ -34,5 +34,7 @@ public interface SavingsPlanMapper {
 	void processAiFeedback(@Param("memberIn") Integer memberIn, @Param("saveFeedback") String saveFeedback);
 
 	void processAicFeedback(@Param("memberIn") Integer memberIn, @Param("budFeedback") String budFeedback);
+
+	Map<String, Object> getAllFeedback(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
 	
 }

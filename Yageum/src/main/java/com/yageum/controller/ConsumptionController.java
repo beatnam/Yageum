@@ -601,7 +601,7 @@ public class ConsumptionController {
         String memberId = userDetails.getUsername();
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
         
-        //이달의 총지출액(이번 달 총 지출)
+        // 이달의 총지출액(이번 달 총 지출)
         int totalExpense = consumptionService.getTotalExpenseForCurrentMonth(memberIn);
         model.addAttribute("totalExpense", totalExpense);
 
@@ -611,24 +611,116 @@ public class ConsumptionController {
         int year = today.getYear();
         int month = today.getMonthValue();
         int daysLeft = totalDaysInMonth - currentDayOfMonth;
-        //일별 지출액(일평균 지출)
+        
+        // 일별 지출액(일평균 지출)
         double averageDailyExpense = (currentDayOfMonth > 0) ? (double) totalExpense / currentDayOfMonth : 0;
         model.addAttribute("averageDailyExpense", (int) Math.round(averageDailyExpense));
         model.addAttribute("daysLeft", daysLeft);
         
-        //이번달 지출 횟수(총 거래 건수)
+        // 이번달 지출 횟수(총 거래 건수)
         int countThisMonth = consumptionService.thisMonthCount(memberIn);
         model.addAttribute("countThisMonth", countThisMonth);
         
-        //이번달 남은 금액(이번 달 남은 금액)
+        // 이번달 남은 금액(이번 달 남은 금액)
         int currentMonthBudget = consumptionService.getBudgetForCurrentMonth(memberIn);
         int remainingBudget = currentMonthBudget - totalExpense;
         model.addAttribute("remainingBudget", remainingBudget);
         
+        // 이번 달 카테고리별 지출 데이터 (차트용)
         List<Map<String, Object>> categoryExpenses = consumptionService.getCategoryExpensesForChart(memberIn, month, year);
         log.info("categoryExpenses : " + categoryExpenses);
         model.addAttribute("categoryExpenses", categoryExpenses);
+
+        // 1. 카테고리별 지출 분석 인사이트 (텍스트)
+        String categoryAnalysisInsights = consumptionService.analyzeCategoryExpenses(categoryExpenses);
+        model.addAttribute("categoryAnalysisInsights", categoryAnalysisInsights);
+
+        // 2. 지난달 소비 수준 분석
+        Map<String, Object> lastMonthAnalysis = consumptionService.getLastMonthExpenseAnalysis(memberIn);
+        model.addAttribute("lastMonthAnalysis", lastMonthAnalysis);
+
+        // 3. 지난달 절약 목표 정보
+        Map<String, Object> previousMonthSavingsPlan = consumptionService.getPreviousMonthSavingsPlan(memberIn);
+        model.addAttribute("previousMonthSavingsPlan", previousMonthSavingsPlan);
         
         return "/consumption/consumption_analysis";
     }
+    
+    @GetMapping("/getChatGptFeedbackForCanalysis")
+    @ResponseBody
+    public Map<String, String> getChatGptFeedbackForCanalysis() {
+        log.info("ConsumptionController getChatGptFeedbackForEfeedback() 호출");
+        Map<String, String> response = new HashMap<>();
+        String chatGptResponse = "분석 결과가 없습니다.";
+
+        try {
+            String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (memberId == null || memberId.isEmpty()) {
+                response.put("error", "로그인 정보가 없습니다.");
+                return response;
+            }
+
+            Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+            if (memberIn == null) {
+                response.put("error", "회원 정보를 찾을 수 없습니다.");
+                return response;
+            }
+            LocalDate today = LocalDate.now();
+            int year = today.getYear();
+            int month = today.getMonthValue();
+
+            Map<String, Object> storedFeedbacks = consumptionService.getAllFeedback(memberIn, month, year);
+            String storedCategoryFeedback = (String) storedFeedbacks.getOrDefault("categoryGptFeedback", "저장된 카테고리 피드백이 없습니다.");
+            String storedMonthlyFeedback = (String) storedFeedbacks.getOrDefault("monthlyGptFeedback", "저장된 월간 피드백이 없습니다.");
+
+            List<Map<String, Object>> currentMonthCategoryExpenses = consumptionService.getCategoryExpenseByMemberId(memberIn); 
+            
+            Map<String, Integer> aggregatedCategoryExpenses = currentMonthCategoryExpenses.stream()
+                .filter(e -> e.get("category_name") != null && e.get("total_expense") instanceof Number)
+                .collect(Collectors.toMap(
+                    e -> (String) e.get("category_name"),
+                    e -> ((Number) e.get("total_expense")).intValue(),
+                    Integer::sum
+                ));
+
+            int totalExpense = aggregatedCategoryExpenses.values().stream().mapToInt(Integer::intValue).sum();
+            
+            StringBuilder promptBuilder = new StringBuilder();
+            
+            promptBuilder.append("나는 이번 달에 지출이 다음과 같아:\n");
+            if (aggregatedCategoryExpenses.isEmpty()) {
+                promptBuilder.append("이번 달 지출 내역이 아직 없어.\n");
+            } else {
+                for (Map.Entry<String, Integer> entry : aggregatedCategoryExpenses.entrySet()) {
+                    promptBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("원\n");
+                }
+                promptBuilder.append("총 지출: ").append(totalExpense).append("원\n\n");
+            }
+            
+            promptBuilder.append("이전 분석받은 피드백은 다음과 같아:\n");
+            promptBuilder.append("- 카테고리별 과거 피드백: ").append(storedCategoryFeedback).append("\n");
+            promptBuilder.append("- 월간 과거 피드백: ").append(storedMonthlyFeedback).append("\n\n");
+
+            promptBuilder.append("위의 이번 달 지출 내역과 이전 피드백을 종합하여, ");
+            promptBuilder.append("나의 전반적인 소비 패턴에 대한 새로운 분석과 앞으로의 소비 습관 개선을 위한 ");
+            promptBuilder.append("따뜻하고 격려적인 어조의 종합적인 AI 피드백을 제공해줘. ");
+            promptBuilder.append("답변은 400글자로 내외로 핵심 내용을 요약하고, 줄바꿈을 포함하여 가독성 있게 작성해줘.\n");
+
+            String prompt = promptBuilder.toString();
+            log.info("ChatGPT Prompt: " + prompt);
+
+            chatGptResponse = chatGPTClient.askChatGpt(prompt);
+            log.info("ChatGPT Response: " + chatGptResponse);
+
+            response.put("feedback", chatGptResponse);
+
+        } catch (Exception e) {
+            log.severe("ChatGPT 피드백 생성 중 오류 발생: " + e.getMessage());
+            response.put("error", "피드백을 생성하는 중 오류가 발생했습니다.");
+            response.put("feedback", "AI 피드백을 생성하는 데 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+        return response;
+    }
+    
+    
 }

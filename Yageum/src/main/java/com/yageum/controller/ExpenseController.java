@@ -87,8 +87,6 @@ public class ExpenseController {
 	@GetMapping("/detail")
 	public String detail(@RequestParam("id") int id, @RequestParam("date") String date, Model model) {
 		log.info("ExpenseController detail()");
-		ExpenseDTO expense = expenseService.getExpenseDetailById(id);
-	    model.addAttribute("expense", expense);
 	    model.addAttribute("date", date);
 
 		return "/cashbook/cashbook_detail";

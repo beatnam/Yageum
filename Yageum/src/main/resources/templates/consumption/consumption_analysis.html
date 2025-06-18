@@ -6,7 +6,7 @@
     <title>소비분석 종합결과</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="../css/c_analysis.css">
@@ -19,7 +19,6 @@
 	
 	<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
 <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
-
 
 
         <div class="main-wrapper">
@@ -70,63 +69,26 @@
                     </div>
 
                     <div class="insights-section">
-                        <h2 class="section-title">💡 주요 인사이트</h2>
-                        <div class="insight-item">
-                            <div class="insight-title">절약 성공</div>
-                            <div class="insight-text">이번 달 식비 지출이 목표 대비 15% 절약되었습니다.</div>
-                        </div>
-                        <div class="insight-item">
-                            <div class="insight-title">지출 패턴 변화</div>
-                            <div class="insight-text">온라인 쇼핑 비중이 전월 대비 25% 증가했습니다.</div>
-                        </div>
-                        <div class="insight-item">
-                            <div class="insight-title">추천 개선사항</div>
-                            <div class="insight-text">카페 지출을 월 50만원으로 제한하면 연간 120만원 절약 가능합니다.</div>
-                        </div>
+                        <h2 class="section-title">💡 소비 분석 종합 결과 및 주요 인사이트</h2>
+                        <div id="categoryAnalysisInsightsHidden" th:text="${categoryAnalysisInsights}" style="display: none;"></div>
+                        
+                        <div id="categoryAnalysisOutput" class="analysis-content">
+                            </div>
                     </div>
-                </div>
-
-                <div class="categories-section">
-                    <h2 class="section-title">🏷️ 카테고리별 지출 현황</h2>
-                    <div class="category-grid">
-                        <div class="category-item">
-                            <div class="category-icon">🍽️</div>
-                            <div class="category-name">식비</div>
-                            <div class="category-amount">₩680,000</div>
-                        </div>
-                        <div class="category-item">
-                            <div class="category-icon">🚗</div>
-                            <div class="category-name">교통비</div>
-                            <div class="category-amount">₩240,000</div>
-                        </div>
-                        <div class="category-item">
-                            <div class="category-icon">🛍️</div>
-                            <div class="category-name">쇼핑</div>
-                            <div class="category-amount">₩420,000</div>
-                        </div>
-                        <div class="category-item">
-                            <div class="category-icon">🎬</div>
-                            <div class="category-name">문화생활</div>
-                            <div class="category-amount">₩180,000</div>
-                        </div>
-                        <div class="category-item">
-                            <div class="category-icon">☕</div>
-                            <div class="category-name">카페</div>
-                            <div class="category-amount">₩320,000</div>
-                        </div>
-                        <div class="category-item">
-                            <div class="category-icon">💊</div>
-                            <div class="category-name">의료/건강</div>
-                            <div class="category-amount">₩110,000</div>
-                        </div>
                     </div>
-                </div>
 
-                <div class="footer">
-                    <p>📈 스마트한 소비 관리로 더 나은 미래를 만들어보세요</p>
-                    <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.7;">
-                        데이터 업데이트: 2024.12.31 | 분석 기간: 2024.12.01 - 2024.12.31
-                    </p>
+                <div class="ai-feedback-section">
+                    <h2 class="section-title">✨ AI 소비 분석 피드백</h2>
+                    <p class="section-description">월별 지출 및 카테고리별 지출 데이터를 기반으로 AI가 맞춤형 소비 피드백을 제공합니다.</p>
+                    
+                    <div class="feedback-status">
+                        <div id="feedbackLoading" style="display: none; color: #007bff; margin-top: 10px;">분석 중... 잠시만 기다려주세요.</div>
+                        <div id="feedbackError" style="display: none; color: red; margin-top: 10px;">피드백을 가져오는 데 실패했습니다. 다시 시도해주세요.</div>
+                    </div>
+
+                    <div class="ai-feedback-output" id="aiFeedbackOutput">
+                        <p style="color: #666; margin-top: 20px;">AI가 소비 데이터를 분석하여 맞춤형 피드백을 생성 중입니다.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -144,15 +106,7 @@
 	            this.style.transform = 'translateY(0) scale(1)';
 	        });
 	    });
-		
-	    document.querySelectorAll('.insight-item').forEach(item => {
-	        item.addEventListener('click', function() {
-	            this.style.backgroundColor = '#fdcb6e';
-	            setTimeout(() => {
-	                this.style.backgroundColor = '';
-	            }, 200);
-	        });
-	    });
+
 	    function logout() {
 	        if (confirm('로그아웃 하시겠습니까?')) {
 	           window.location.href = '/logout';
@@ -262,6 +216,69 @@
 	    window.addEventListener('load', function() {
 	        animateNumbers();
 	    });
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const markdownTextElement = document.getElementById('categoryAnalysisInsightsHidden');
+            if (markdownTextElement) {
+                const markdownText = markdownTextElement.textContent;
+                const htmlOutput = marked.parse(markdownText);
+                const outputElement = document.getElementById('categoryAnalysisOutput');
+                if (outputElement) {
+                    outputElement.innerHTML = htmlOutput;
+                }
+            }
+            fetchAiFeedback();
+        });
+
+        function fetchAiFeedback() {
+            const aiFeedbackOutput = document.getElementById('aiFeedbackOutput');
+            const feedbackLoading = document.getElementById('feedbackLoading');
+            const feedbackError = document.getElementById('feedbackError');
+
+            const csrfHeader = 'X-CSRF-TOKEN';
+            let csrfToken = /*[[${_csrf?.token}]]*/ ''; 
+            
+            if (!csrfToken || csrfToken === '') {
+                 const hiddenCsrfInput = document.querySelector('input[name="_csrf"]'); 
+                 if (hiddenCsrfInput) {
+                     csrfToken = hiddenCsrfInput.value;
+                 }
+            }
+            aiFeedbackOutput.innerHTML = '<p style="color: #666; margin-top: 20px;">AI가 소비 데이터를 분석하여 맞춤형 피드백을 생성 중입니다.</p>';
+            feedbackLoading.style.display = 'block'; 
+            feedbackError.style.display = 'none';    
+
+            $.ajax({
+                url: "/consumption/getChatGptFeedbackForCanalysis",
+                type: "GET",
+                beforeSend: function(xhr) {
+                    if (csrfHeader && csrfHeader !== '' && csrfToken && csrfToken !== '') {
+                        xhr.setRequestHeader(csrfHeader, csrfToken);
+                    } else {
+                        console.warn("CSRF token or header name is missing. Request might fail.");
+                    }
+                },
+                success: function(response) {
+                    feedbackLoading.style.display = 'none';
+                    if (response.error) {
+                        feedbackError.style.display = 'block'; 
+                        aiFeedbackOutput.innerHTML = '<p style="color: red; margin-top: 20px;">오류: ' + response.error + '</p>';
+                    } else if (response.feedback) {
+                        aiFeedbackOutput.innerHTML = marked.parse(response.feedback);
+                    } else {
+                        aiFeedbackOutput.innerHTML = '<p style="color: #666; margin-top: 20px;">AI 피드백을 받아오지 못했습니다.</p>';
+                    }
+                },
+                error: function(xhr, status, error) {
+                    feedbackLoading.style.display = 'none'; 
+                    feedbackError.style.display = 'block';   
+                    console.error("AJAX Error:", status, error, xhr.responseText);
+                    aiFeedbackOutput.innerHTML = '<p style="color: red; margin-top: 20px;">피드백을 가져오는 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>';
+                }
+            });
+        }
     </script>
 </body>
 </html>
