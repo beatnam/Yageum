@@ -14,3 +14,9 @@ function confirmWithdraw() {
 			window.history.back();
 		}
 	}
+	
+	function logout() {
+			if (confirm('로그아웃 하시겠습니까?')) {
+				window.location.href = '/logout';
+			}
+		}

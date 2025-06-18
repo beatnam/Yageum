@@ -58,10 +58,13 @@
 		    return `${year}-${month}-${day}`;
 		}
 		
-		
-			
-        function logout() {
-            if(confirm('로그아웃 하시겠습니까?')) {
-                window.location.href = '/logout';
-            }
-        }
+	
+
+			function logout() {
+				if (confirm('로그아웃 하시겠습니까?')) {
+					window.location.href = '/logout';
+				}
+			}
+
+
+	
