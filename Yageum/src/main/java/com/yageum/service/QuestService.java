@@ -37,4 +37,9 @@ public class QuestService {
 		return questMapper.listQuest(memberIn);
 	}
 
+	public List<Map<Object, Object>> myQuest(int memberIn) {
+		// TODO Auto-generated method stub
+		return questMapper.myQuest(memberIn);
+	}
+
 }

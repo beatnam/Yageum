@@ -2,156 +2,98 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <meta charset="UTF-8">
-    <title>야금야금 - 나의 퀘스트</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<title>야금야금 - 나의 퀘스트</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
-        rel="stylesheet">
-	
-    <!--
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
+		rel="stylesheet">
+
+	<!--
 		<link rel="stylesheet" href="css/common.css">
 	-->
 	<link rel="stylesheet" href="../css/common.css">
-    <link rel="stylesheet" href="../css/cashbook_quest.css">
+	<link rel="stylesheet" href="../css/cashbook_quest.css">
 </head>
 
 <body>
 	<!-- 헤더 -->
-	 <div th:replace="fragments/header :: header"></div>
+	<div th:replace="fragments/header :: header"></div>
 
-	
-	
 
-    <!-- 사이드바 + 본문 -->
-    <div class="app-container">
-       		<div th:replace="fragments/sidebar :: sidebar"></div>
 
-        <main class="content">
-            <div class="content-header">
-                <h2>나의 퀘스트</h2>
-                <p>가계부를 이용하며 달성할 수 있는 퀘스트들입니다</p>
-            </div>
 
-            <div class="content-body">
-                <table class="quest-table">
-                    <thead>
-                        <tr>
-                            <th class="quest-header" colspan="5">퀘스트 목록</th>
-                        </tr>
-                        <tr class="quest-subheader">
-                            <th>퀘스트 번호</th>
-                            <th>퀘스트 내용</th>
-                            <th>보상 포인트</th>
-                            <th>기간</th>
-                            <th>상태</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="quest-item">
-                            <td>1</td>
-                            <td>
-                                <div class="quest-name">이번 달 편의점 이용 7만원만 사용</div>
-                                <div class="quest-description">편의점 지출을 7만원 이하로 관리하여 절약 습관을 기르세요</div>
-                            </td>
-                            <td class="quest-reward">1000</td>
-                            <td class="quest-period">2025.06.01 ~ 2025.06.30</td>
-                            <td class="quest-status">
-                                <span class="status-badge status-completed">완료</span>
-                            </td>
-                        </tr>
-                        <tr class="quest-item">
-                            <td>2</td>
-                            <td>
-                                <div class="quest-name">이번 달 외식비 12만원만 사용</div>
-                                <div class="quest-description">외식 지출을 12만원 이하로 제한하여 건강한 식습관을 만들어보세요</div>
-                            </td>
-                            <td class="quest-reward">1500</td>
-                            <td class="quest-period">2025.06.01 ~ 2025.06.30</td>
-                            <td class="quest-status">
-                                <span class="status-badge status-active">진행중</span>
-                            </td>
-                        </tr>
-                        <tr class="quest-item">
-                            <td>3</td>
-                            <td>
-                                <div class="quest-name">일주일 연속 가계부 작성하기</div>
-                                <div class="quest-description">7일 연속으로 가계부를 작성하여 꾸준한 기록 습관을 만드세요</div>
-                            </td>
-                            <td class="quest-reward">800</td>
-                            <td class="quest-period">2025.06.08 ~ 2025.06.14</td>
-                            <td class="quest-status">
-                                <span class="status-badge status-active">진행중</span>
-                            </td>
-                        </tr>
-                        <tr class="quest-item">
-                            <td>4</td>
-                            <td>
-                                <div class="quest-name">한 달 교통비 5만원 이하로 사용</div>
-                                <div class="quest-description">대중교통과 택시비를 합쳐 5만원 이하로 사용해보세요</div>
-                            </td>
-                            <td class="quest-reward">1200</td>
-                            <td class="quest-period">2025.06.01 ~ 2025.06.30</td>
-                            <td class="quest-status">
-                                <span class="status-badge status-active">진행중</span>
-                            </td>
-                        </tr>
-                        <tr class="quest-item">
-                            <td>5</td>
-                            <td>
-                                <div class="quest-name">카페 이용 월 3만원 이하 달성</div>
-                                <div class="quest-description">카페 및 음료 구매를 3만원 이하로 제한해보세요</div>
-                            </td>
-                            <td class="quest-reward">900</td>
-                            <td class="quest-period">2025.06.01 ~ 2025.06.30</td>
-                            <td class="quest-status">
-                                <span class="status-badge status-active">진행중</span>
-                            </td>
-                        </tr>
-                        <tr class="quest-item">
-                            <td>6</td>
-                            <td>
-                                <div class="quest-name">용돈 기입 15일 연속 달성</div>
-                                <div class="quest-description">15일 연속으로 용돈 사용 내역을 꼼꼼히 기록해보세요</div>
-                            </td>
-                            <td class="quest-reward">2000</td>
-                            <td class="quest-period">2025.06.01 ~ 2025.06.15</td>
-                            <td class="quest-status">
-                                <span class="status-badge status-active">진행중</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+	<!-- 사이드바 + 본문 -->
+	<div class="app-container">
+		<div th:replace="fragments/sidebar :: sidebar"></div>
 
-                <div class="progress-indicator">
-                    <p style="margin-bottom: 10px; color: #4E342E; font-weight: bold;">전체 퀘스트 진행률</p>
-                    <div class="progress-dot active"></div>
-                    <div class="progress-dot"></div>
-                    <div class="progress-dot"></div>
-                    <div class="progress-dot"></div>
-                    <div class="progress-dot"></div>
-                    <div class="progress-dot"></div>
-                    <p style="margin-top: 10px; color: #7f8c8d; font-size: 14px;">1 / 6 완료</p>
-                </div>
-            </div>
-        </main>
-    </div>
+		<main class="content">
+			<div class="content-header">
+				<h2>나의 퀘스트</h2>
+				<p>가계부를 이용하며 달성할 수 있는 퀘스트들입니다</p>
+			</div>
+
+			<div class="content-body">
+				<table class="quest-table">
+					<thead>
+						<tr>
+							<th class="quest-header" colspan="5">퀘스트 목록</th>
+						</tr>
+						<tr class="quest-subheader">
+							<th>퀘스트 번호</th>
+							<th>퀘스트 내용</th>
+							<th>퀘스트 타입</th>
+							<th>보상 포인트</th>
+							<th>기간</th>
+							<th>상태</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="quest-item" th:each="quest : ${myQuest}">
+							<td th:text="${quest['quest_in']}"></td>
+							<td
+								class="quest-name" th:text="${quest['quest_name']}">
+							</td>
+							<td class="quest-type-name" th:text="${quest['quest_type_name']}"></td>
+							<td class="quest-reward" th:text="${quest['reward_value']}"></td>
+							<td class="quest-period" th:text="${quest['start_date']} + ' ~ ' + ${quest['end_date']}">
+								</td>
+							<td class="quest-status" th:text="${quest['qp_name']}">
+								
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="progress-indicator">
+					<p style="margin-bottom: 10px; color: #4E342E; font-weight: bold;">전체 퀘스트 진행률</p>
+					<div class="progress-dot active"></div>
+					<div class="progress-dot"></div>
+					<div class="progress-dot"></div>
+					<div class="progress-dot"></div>
+					<div class="progress-dot"></div>
+					<div class="progress-dot"></div>
+					<p style="margin-top: 10px; color: #7f8c8d; font-size: 14px;">1 / 6 완료</p>
+				</div>
+			</div>
+		</main>
+	</div>
 
 	<!--	푸터-->
-				<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="fragments/footer :: footer"></div>
 
-    <script>
-      
-        function logout() {
-            if (confirm('로그아웃 하시겠습니까?')) {
-                window.location.href = '/logout';
-            }
-        }
-    </script>
+	<script>
+
+		function logout() {
+			if (confirm('로그아웃 하시겠습니까?')) {
+				window.location.href = '/logout';
+			}
+		}
+	</script>
 
 </body>
 

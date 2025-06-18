@@ -18,4 +18,6 @@ public interface QuestMapper {
 
 	List<Map<Object, Object>> listQuest(int memberIn);
 
+	List<Map<Object, Object>> myQuest(int memberIn);
+
 }
