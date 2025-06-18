@@ -2,6 +2,7 @@ package com.yageum.service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -96,7 +97,7 @@ public class ConsumptionService {
         Map<String, Object> feedbackSummary = new HashMap<>();
         feedbackSummary.put("lastTotal", lastTotal);
         feedbackSummary.put("categoryExpenses", categoryExpenses);
-        feedbackSummary.put("consumptionTrend", consumptionTrend);
+    	feedbackSummary.put("consumptionTrend", consumptionTrend);
         feedbackSummary.put("recommendations", recommendations);
 
         return feedbackSummary;
@@ -203,12 +204,6 @@ public class ConsumptionService {
 	public int budgetLastMons(Integer memberIn) {
 		log.info("ConsumptionService budgetLastMons() 호출: memberIn=" + memberIn);
 		return savingsPlanMapper.budgetLastMons(memberIn);
-	}
-	
-	public void updateMonthlyIncome(SavingsPlanDTO savingsPlanDTO) {
-		log.info("ConsumptionService updateMonthlyIncome() 호출: savingsPlanDTO=" + savingsPlanDTO);
-		
-		savingsPlanMapper.updateMonthlyIncome(savingsPlanDTO);
 	}
 
 	public int planChack(Integer memberIn) {
@@ -485,5 +480,59 @@ public class ConsumptionService {
 		
 		return savingsPlanMapper.getAllFeedback(memberIn, month, year);
 	}
+
+    // 이미 AI 피드백이 존재하는지 확인하는 메소드 구현
+	public boolean hasExistingFeedback(Integer memberIn, int year, int monthValue) {
+		log.info("ConsumptionService hasExistingFeedback()");
+		int count = savingsPlanMapper.countAiFeedbackByMemberInAndMonth(memberIn, year, monthValue);
+		return count > 0;
+	}
+	
+	public boolean hasExistingBudFeedback(Integer memberIn) {
+	    log.info("ConsumptionService hasExistingBudFeedback() 호출: memberIn={}" + memberIn);
+	    LocalDate today = LocalDate.now();
+	    int year = today.getYear();
+	    int month = today.getMonthValue();
+	    int count = savingsPlanMapper.countBudFeedbackByMemberInAndMonth(memberIn, year, month);
+	    return count > 0;
+	}
+	
+    // 이 메소드는 특정 월의 예산 계획이 존재하는지 확인합니다.
+    public boolean hasSavingsPlanForMonth(Integer memberIn, LocalDate startOfMonth, LocalDate endOfMonth) {
+        log.info("ConsumptionService hasSavingsPlanForMonth() 호출: memberIn={}, startOfMonth={}, endOfMonth={}" + memberIn + startOfMonth + endOfMonth);
+        return savingsPlanMapper.hasSavingsPlanForMonth(memberIn, startOfMonth, endOfMonth);
+    }
+
+    // 이 메소드는 현재 월의 예산 계획이 존재하는지 확인합니다.
+    public boolean hasSavingsPlanForCurrentMonth(Integer memberIn) {
+        LocalDate now = LocalDate.now();
+        LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
+        return savingsPlanMapper.hasSavingsPlanForMonth(memberIn, startOfMonth, endOfMonth);
+    }
+    
+    // 저축 계획 저장 또는 업데이트 (프론트에서 넘어온 날짜 사용)
+    public boolean saveOrUpdateSavingsPlan(Integer memberIn, Map<String, Object> budgetData) {
+        String saveName = (String) budgetData.get("saveName");
+        Integer saveAmount = (Integer) budgetData.get("saveAmount");
+
+        LocalDate saveCreatedDate = LocalDate.parse((String) budgetData.get("saveCreatedDate"));
+        LocalDate saveTargetDate = LocalDate.parse((String) budgetData.get("saveTargetDate"));
+
+        boolean exists = savingsPlanMapper.hasSavingsPlanForMonth(memberIn, saveCreatedDate, saveTargetDate);
+
+        int result;
+        if (exists) {
+            result = savingsPlanMapper.updateSavingsPlan(
+                    memberIn, saveName, saveCreatedDate, saveTargetDate, saveAmount,
+                    saveCreatedDate, saveTargetDate
+            );
+        } else {
+            result = savingsPlanMapper.insertSavingsPlan(
+                    memberIn, saveName, saveCreatedDate, saveTargetDate, saveAmount
+            );
+        }
+        return result > 0;
+    }
     
 }

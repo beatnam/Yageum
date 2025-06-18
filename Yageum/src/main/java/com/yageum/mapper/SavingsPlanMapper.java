@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.yageum.domain.SavingsPlanDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,13 @@ public interface SavingsPlanMapper {
     // 멤버의 모든 절약 목표 가져오기
     List<Map<String, Object>> getAllSavingsPlansByMemberIn(Integer memberIn);
 
-	void updateMonthlyIncome(SavingsPlanDTO savingsPlanDTO);
+    int updateSavingsPlan(@Param("memberIn") Integer memberIn,
+            @Param("saveName") String saveName,
+            @Param("saveCreatedDate") LocalDate saveCreatedDate,
+            @Param("saveTargetDate") LocalDate saveTargetDate,
+            @Param("saveAmount") Integer saveAmount,
+            @Param("startOfMonth") LocalDate startOfMonth,
+            @Param("endOfMonth") LocalDate endOfMonth);
 
 	int planChack(@Param("memberIn") Integer memberIn);
 
@@ -36,5 +43,19 @@ public interface SavingsPlanMapper {
 	void processAicFeedback(@Param("memberIn") Integer memberIn, @Param("budFeedback") String budFeedback);
 
 	Map<String, Object> getAllFeedback(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
+
+	int countAiFeedbackByMemberInAndMonth(@Param("memberIn") Integer memberIn, @Param("year") int year, @Param("month") int month);
+	
+	int countBudFeedbackByMemberInAndMonth(@Param("memberIn") Integer memberIn, @Param("year") int year, @Param("month") int month);
+	
+    boolean hasSavingsPlanForMonth(@Param("memberIn") Integer memberIn,
+            @Param("startOfMonth") LocalDate startOfMonth,
+            @Param("endOfMonth") LocalDate endOfMonth);
+    
+    int insertSavingsPlan(@Param("memberIn") Integer memberIn,
+            @Param("saveName") String saveName,
+            @Param("saveCreatedDate") LocalDate saveCreatedDate,
+            @Param("saveTargetDate") LocalDate saveTargetDate,
+            @Param("saveAmount") Integer saveAmount);
 	
 }

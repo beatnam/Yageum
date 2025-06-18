@@ -58,10 +58,38 @@
         LIMIT 1
     </select>
     
-    <insert id="updateMonthlyIncome">
-    	    INSERT INTO savings_plan (member_in, save_name, save_created_date, save_target_date, save_amount) 
-            VALUES (#{memberId}, #{saveName}, #{saveCreatedDate}, #{saveTargetDate}, #{saveAmount})
+    <insert id="insertSavingsPlan">
+        INSERT INTO savings_plan (
+            member_in,
+            save_name,
+            save_created_date,
+            save_target_date,
+            save_amount
+        ) VALUES (
+            #{memberIn},
+            #{saveName},
+            #{saveCreatedDate},
+            #{saveTargetDate},
+            #{saveAmount}
+        )
     </insert>
+    
+    <select id="hasSavingsPlanForMonth" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM savings_plan
+        WHERE member_in = #{memberIn}
+        AND save_created_date BETWEEN #{startOfMonth} AND #{endOfMonth}
+    </select>
+
+    <update id="updateSavingsPlan">
+        UPDATE savings_plan
+        SET
+            save_name = #{saveName},
+            save_target_date = #{saveTargetDate},
+            save_amount = #{saveAmount}
+        WHERE
+            member_in = #{memberIn}
+            AND save_created_date BETWEEN #{startOfMonth} AND #{endOfMonth}
+    </update>
     
     <select id="planChack" resultType="Integer">
 		SELECT EXISTS(
@@ -109,5 +137,24 @@
 		AND EXTRACT(MONTH FROM save_created_date) = #{month}
 		AND EXTRACT(YEAR FROM save_created_date) = #{year}
 	</select>
+	
+	<select id="countAiFeedbackByMemberInAndMonth" resultType="int">
+        SELECT COUNT(*)
+        FROM savings_plan
+        WHERE member_in = #{memberIn}
+          AND save_feedback IS NOT NULL
+          AND YEAR(save_created_date) = #{year}
+          AND MONTH(save_created_date) = #{month}
+    </select>
+    
+    <select id="countBudFeedbackByMemberInAndMonth" resultType="int">
+        SELECT COUNT(*)
+        FROM savings_plan
+        WHERE member_in = #{memberIn}
+          AND bud_feedback IS NOT NULL
+          AND bud_feedback != ''
+          AND YEAR(save_created_date) = #{year}
+          AND MONTH(save_created_date) = #{month}
+    </select>
 
     </mapper>

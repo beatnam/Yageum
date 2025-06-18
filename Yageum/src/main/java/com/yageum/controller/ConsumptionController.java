@@ -469,15 +469,74 @@ public class ConsumptionController {
         return "/consumption/budget_planner";
     }
     
+    @GetMapping("/hasSavingsPlanForMonth")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> hasSavingsPlanForMonth(
+            @RequestParam("month") int month,
+            @RequestParam("year") int year,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Integer memberIn = consumptionService.getMemberInByMemberId(userDetails.getUsername());
+        if (memberIn == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        try {
+            LocalDate date = LocalDate.of(year, month, 1);
+            LocalDate startOfMonth = date.with(TemporalAdjusters.firstDayOfMonth());
+            LocalDate endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
+
+            boolean exists = consumptionService.hasSavingsPlanForMonth(memberIn, startOfMonth, endOfMonth);
+            
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("exists", exists);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.info("hasSavingsPlanForMonth API 오류: {}" + e.getMessage() + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @GetMapping("/hasSavingsPlanForCurrentMonth")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> hasSavingsPlanForCurrentMonth(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Integer memberIn = consumptionService.getMemberInByMemberId(userDetails.getUsername());
+        if (memberIn == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        try {
+            boolean exists = consumptionService.hasSavingsPlanForCurrentMonth(memberIn);
+            
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("exists", exists);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.info("hasSavingsPlanForCurrentMonth API 오류: {}" + e.getMessage() + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/bplannerPro")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> bplannerPro(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody Map<String, Object> payload,
-            SavingsPlanDTO savingsPlanDTO
+            @RequestBody Map<String, Object> budgetData
     ) {
         Map<String, Object> response = new HashMap<>();
-        log.info("ConsumptionController bplannerPro() 호출 - 총 수입 저장 요청");
+        log.info("ConsumptionController bplannerPro() 호출 - 예산 저장/업데이트 요청");
 
         try {
             if (userDetails == null) {
@@ -493,42 +552,25 @@ public class ConsumptionController {
                 response.put("message", "회원 고유 번호를 찾을 수 없습니다.");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            Integer totalIncome = (Integer) payload.get("totalIncome");
-            String saveName = (String) payload.get("save_name");
 
-            if (totalIncome == null) {
-                response.put("success", false);
-                response.put("message", "총 수입 값이 누락되었습니다.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
-            LocalDate today = LocalDate.now();
-            LocalDate firstDayOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
-            LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
-            int chackPlan = consumptionService.planChack(memberIn);
+            boolean success = consumptionService.saveOrUpdateSavingsPlan(memberIn, budgetData);
 
-            if (chackPlan == 0) {
-                savingsPlanDTO.setMemberId(memberIn);
-                savingsPlanDTO.setSaveName(saveName);
-                savingsPlanDTO.setSaveAmount(totalIncome);
-                savingsPlanDTO.setSaveCreatedDate(firstDayOfMonth);
-                savingsPlanDTO.setSaveTargetDate(lastDayOfMonth);
-                consumptionService.updateMonthlyIncome(savingsPlanDTO); 
-
-                log.info("회원 ID {}의 총 수입 {} 저장 성공" + memberIn + totalIncome);
+            if (success) {
+                log.info("회원 ID {}의 예산 저장/업데이트 성공" + memberIn);
                 response.put("success", true);
-                response.put("message", "예산이 성공적으로 저장되었습니다.");
+                response.put("message", "예산이 성공적으로 저장/업데이트 되었습니다.");
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                log.info("회원 ID {}의 이번 달 예산은 이미 저장되어 있습니다." + memberIn);
+                log.info("회원 ID {}의 예산 저장/업데이트 실패" + memberIn);
                 response.put("success", false);
-                response.put("message", "이번 달 예산이 이미 저장되어 있습니다.");
-                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                response.put("message", "예산 저장/업데이트에 실패했습니다.");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
         } catch (Exception e) {
-            log.info("bplannerPro 예산 저장 중 서버 오류 발생:" + e);
+            log.info("예산 저장/업데이트 중 오류 발생: {}" + e.getMessage() + e);
             response.put("success", false);
-            response.put("message", "예산 저장 중 서버 내부 오류가 발생했습니다: " + e.getMessage());
+            response.put("message", "예산 저장/업데이트 중 서버 오류가 발생했습니다.");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -548,51 +590,87 @@ public class ConsumptionController {
     @PostMapping("/efeedset")
     @ResponseBody
     public Map<String, Object> efeedset(@AuthenticationPrincipal UserDetails userDetails,
-            							@RequestBody Map<String, Object> payload) {
-        log.info("ConsumptionController efeedset()");
+                                        @RequestBody Map<String, Object> payload) {
+        log.info("ConsumptionController efeedset() 호출됨");
     	String memberId = userDetails.getUsername();
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
         String aiFeedback = (String) payload.get("feedbackContent");
-        int checkPlan = consumptionService.planChack(memberIn);
-        if(checkPlan == 1) {
-	        log.info("수신된 AI 피드백 내용: {}" + aiFeedback);
-	        consumptionService.processAiFeedback(memberIn, aiFeedback);
 
-	        Map<String, Object> response = new HashMap<>();
-	        response.put("success", true);
-	        response.put("message", "AI 피드백 처리 및 목표 생성이 성공적으로 완료되었습니다.");
-	        return response;
-	    } else {
-	        Map<String, Object> response = new HashMap<>();
-	        response.put("success", false);
-	        response.put("message", "회원 " + memberId + "님의 이번달 계획이 없습니다. 예산 설정을 하세요.");
-	        return response;
-	    }
+        // 1. 이번 달 계획이 있는지 확인 (기존 로직 유지)
+        int checkPlan = consumptionService.planChack(memberIn);
+        if(checkPlan != 1) { // 계획이 없는 경우
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "회원 " + memberId + "님의 이번달 계획이 없습니다. 예산 설정을 하세요.");
+            return response;
+        }
+
+        // 2. 이미 AI 피드백이 저장되어 있는지 확인
+        boolean hasExistingFeedback = consumptionService.hasExistingFeedback(memberIn, LocalDate.now().getYear(), LocalDate.now().getMonthValue());
+
+        if (hasExistingFeedback) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "이미 저장된 피드백이 있습니다.");
+            return response;
+        }
+
+        // 3. 모든 검사를 통과하면 AI 피드백 처리 및 저장
+        log.info("수신된 AI 피드백 내용: {}" + aiFeedback);
+        consumptionService.processAiFeedback(memberIn, aiFeedback);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "AI 피드백 처리 및 목표 생성이 성공적으로 완료되었습니다.");
+        return response;
     }
     
     @PostMapping("/cfeedset")
     @ResponseBody
     public Map<String, Object> cfeedset(@AuthenticationPrincipal UserDetails userDetails,
-            							@RequestBody Map<String, Object> payload) {
-        log.info("ConsumptionController efeedset()");
-    	String memberId = userDetails.getUsername();
+                                        @RequestBody Map<String, Object> payload) {
+        log.info("ConsumptionController cfeedset() 호출됨");
+        String memberId = userDetails.getUsername();
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
         String aiFeedback = (String) payload.get("feedbackContent");
-        int checkPlan = consumptionService.planChack(memberIn);
-        if(checkPlan == 1) {
-	        log.info("수신된 AI 피드백 내용: {}" + aiFeedback);
-	        consumptionService.processAicFeedback(memberIn, aiFeedback);
 
-	        Map<String, Object> response = new HashMap<>();
-	        response.put("success", true);
-	        response.put("message", "AI 피드백 처리 및 목표 생성이 성공적으로 완료되었습니다.");
-	        return response;
-	    } else {
-	        Map<String, Object> response = new HashMap<>();
-	        response.put("success", false);
-	        response.put("message", "회원 " + memberId + "님의 이번달 계획이 없습니다. 예산 설정을 하세요.");
-	        return response;
-	    }
+        // 1. 이번 달 계획이 있는지 확인 (기존 로직 유지)
+        int checkPlan = consumptionService.planChack(memberIn);
+        if (checkPlan != 1) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "회원 " + memberId + "님의 이번달 계획이 없습니다. 예산 설정을 하세요.");
+            return response;
+        }
+        log.info("수신된 종합 분석 피드백 내용 (bud_feedback): {}" + aiFeedback);
+        consumptionService.processAicFeedback(memberIn, aiFeedback);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "종합 분석 피드백 처리 및 목표 생성이 성공적으로 완료되었습니다.");
+        return response;
+    }
+    
+    @GetMapping("/hasBudFeedback")
+    @ResponseBody
+    public Map<String, Object> hasBudFeedback(@AuthenticationPrincipal UserDetails userDetails) {
+        log.info("ConsumptionController hasBudFeedback() 호출됨");
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // 이번 달의 bud_feedback 존재 여부를 확인하는 서비스 메소드 호출
+            boolean exists = consumptionService.hasExistingBudFeedback(memberIn);
+            response.put("exists", exists);
+            response.put("success", true);
+            log.info("bud_feedback 존재 여부 확인: {}" + exists);
+        } catch (Exception e) {
+            log.info("bud_feedback 존재 여부 확인 중 오류 발생: {}" + e.getMessage());
+            response.put("success", false);
+            response.put("error", "피드백 존재 여부 확인 중 서버 오류가 발생했습니다.");
+        }
+        return response;
     }
     
     @GetMapping("/canalysis")

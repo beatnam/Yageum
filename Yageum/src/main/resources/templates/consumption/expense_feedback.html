@@ -167,7 +167,7 @@
         });
     }
 
-    // --- 여기부터 generateNewGoals 함수가 수정됩니다 ---
+    // --- generateNewGoals 함수가 수정된 부분 시작 ---
     async function generateNewGoals(event) {
         const btn = event.target;
         btn.textContent = '전반적인 분석 중...';
@@ -177,6 +177,7 @@
         let aiFeedback = "";
 
         if (feedbackElement && feedbackElement.querySelector('p')) {
+            // p 태그 안의 텍스트만 가져오도록 수정 (HTML 태그 제거)
             aiFeedback = feedbackElement.querySelector('p').innerText;
         } else {
             console.warn("chatGptFeedbackContent 또는 그 안의 p 태그를 찾을 수 없습니다. 빈 문자열로 처리합니다.");
@@ -207,17 +208,30 @@
 
             if (result.success) {
                 alert(result.message);
-                btn.textContent = '전반적으로 분석하기';
-                btn.disabled = false;
-                window.location.href = '/consumption/eanalysis';
+                window.location.href = '/consumption/eanalysis'; // 성공 시 즉시 이동
             } else {
-                alert("피드백 저장 실패: " + result.message);
-                btn.textContent = '전반적으로 분석하기';
-                btn.disabled = false;
-                if (result.message.includes("계획이 없습니다")) {
+                if (result.message && result.message.includes("이미 저장된 피드백이 있습니다")) {
+                    if (confirm("이미 저장된 피드백이 있습니다. 저장하시겠습니까? (예를 누르면 다음 페이지로 이동합니다)")) {
+                        // '예'를 누른 경우: 현재 요청으로는 덮어쓰기 로직이 없으므로, 그냥 다음 페이지로 이동
+                        alert("기존 피드백을 유지하고 다음 페이지로 이동합니다.");
+                        window.location.href = '/consumption/eanalysis';
+                    } else {
+                        // '아니오'를 누른 경우: 다음 페이지로 이동
+                        alert("피드백 저장을 취소하고 다음 페이지로 이동합니다.");
+                        window.location.href = '/consumption/eanalysis';
+                    }
+                } else if (result.message && result.message.includes("계획이 없습니다")) {
                      if (confirm(result.message + "\n예산 설정 페이지로 이동하시겠습니까?")) {
                          window.location.href = '/consumption/bplanner';
+                     } else {
+                         // 예산 설정 페이지로 이동하지 않을 경우, 버튼 상태를 되돌림
+                         btn.textContent = '전반적으로 분석하기';
+                         btn.disabled = false;
                      }
+                } else {
+                    alert("피드백 저장 실패: " + result.message);
+                    btn.textContent = '전반적으로 분석하기';
+                    btn.disabled = false;
                 }
             }
 
@@ -228,6 +242,7 @@
             btn.disabled = false;
         }
     }
+    // --- generateNewGoals 함수가 수정된 부분 끝 ---
 
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');
@@ -273,6 +288,7 @@
             const data = await response.json();
 
             if (data.feedback) {
+                // marked.js가 없으므로 replace(/\n/g, '<br>')를 사용하여 줄바꿈 처리
                 feedbackContentDiv.innerHTML = '<p>' + data.feedback.replace(/\n/g, '<br>') + '</p>';
                 const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
                 if (goalStatusDiv) {

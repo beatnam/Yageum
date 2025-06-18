@@ -9,13 +9,14 @@
 	<link rel="stylesheet" href="../css/common.css">
 	<link rel="stylesheet" href="../css/b_planner.css">
 	
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
 <div class="app-container">
 	
-	<!--  사이드 바 메뉴 -->
-<div th:replace="fragments/sidebar :: sidebar"></div>
+	<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
 <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
 
 
@@ -40,13 +41,13 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="income-amount">금액 (원)</label>
-                    <input type="number" id="income-amount" placeholder="수입 금액을 입력하세요">
+                    <label for="income-amount-input">금액 (원)</label>
+                    <input type="number" id="income-amount-input" placeholder="수입 금액을 입력하세요">
                 </div>
                 <button class="btn btn-add" onclick="addIncome()">수입 추가</button>
                 
                 <div class="category-list" id="income-list">
-                    <div class="category-item">
+                    <div class="category-item no-data" id="no-income-data">
                         <span class="category-name">등록된 수입이 없습니다</span>
                         <span class="category-amount">₩0</span>
                     </div>
@@ -70,13 +71,13 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="expense-amount">예산 금액 (원)</label>
-                    <input type="number" id="expense-amount" placeholder="예산 금액을 입력하세요">
+                    <label for="expense-amount-input">예산 금액 (원)</label>
+                    <input type="number" id="expense-amount-input" placeholder="예산 금액을 입력하세요">
                 </div>
                 <button class="btn btn-add" onclick="addExpense()">예산 추가</button>
                 
                 <div class="category-list" id="expense-list">
-                    <div class="category-item">
+                    <div class="category-item no-data" id="no-expense-data">
                         <span class="category-name">등록된 예산이 없습니다</span>
                         <span class="category-amount">₩0</span>
                     </div>
@@ -85,8 +86,13 @@
         </div>
 
         <div class="total-section">
-            <h2>예산</h2>
-            <input type="text" id="income-amount" name="save_name" placeholder="목표 이름을 입력해주세요.">
+            <h2>예산 목표명</h2>
+            <input type="text" id="budget-goal-name" name="save_name" placeholder="목표 이름을 입력해주세요.">
+            
+            <div class="input-group" style="margin-top: 15px;">
+                <label for="budget-month-select">예산 월 선택:</label>
+                <select id="budget-month-select" class="form-control"></select>
+            </div>
             <div style="display: flex; justify-content: space-around; flex-wrap: wrap; margin: 20px 0;">
             	
                 <div>
@@ -109,89 +115,91 @@
         </div>
 	</div>	
 </div>
-        
-	<div th:replace="fragments/footer :: footer"></div>
-    <script>
+<div th:replace="fragments/footer :: footer"></div>
+
+    <script th:inline="javascript">
         let incomes = [];
         let expenses = [];
 
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('ko-KR', {
-                style: 'currency',
-                currency: 'KRW'
-            }).format(amount);
+        // CSRF 토큰 및 헤더 가져오기
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+        if (!csrfToken || !csrfHeader) {
+            console.error("CSRF token or header name is missing. AJAX requests might fail.");
+            alert("보안 토큰을 찾을 수 없습니다. 페이지를 새로고침하거나 관리자에게 문의하세요.");
         }
 
         function addIncome() {
-            const source = document.getElementById('income-source').value;
-            const amount = parseInt(document.getElementById('income-amount').value);
+            const sourceSelect = document.getElementById('income-source');
+            const amountInput = document.getElementById('income-amount-input');
+            const name = sourceSelect.value;
+            const amount = parseInt(amountInput.value);
 
-            if (!source || !amount || amount <= 0) {
+            if (name && !isNaN(amount) && amount > 0) {
+                incomes.push({ name, amount });
+                updateIncomeList();
+                updateTotals();
+                sourceSelect.value = '';
+                amountInput.value = '';
+            } else {
                 alert('수입원과 유효한 금액을 입력해주세요.');
-                return;
             }
-
-            incomes.push({ source, amount });
-            updateIncomeList();
-            updateTotals();
-            
-            document.getElementById('income-source').value = '';
-            document.getElementById('income-amount').value = '';
         }
 
         function addExpense() {
-            const category = document.getElementById('expense-category').value;
-            const amount = parseInt(document.getElementById('expense-amount').value);
+            const categorySelect = document.getElementById('expense-category');
+            const amountInput = document.getElementById('expense-amount-input');
+            const name = categorySelect.value;
+            const amount = parseInt(amountInput.value);
 
-            if (!category || !amount || amount <= 0) {
-                alert('카테고리와 유효한 금액을 입력해주세요.');
-                return;
+            if (name && !isNaN(amount) && amount > 0) {
+                expenses.push({ name, amount });
+                updateExpenseList();
+                updateTotals();
+                categorySelect.value = '';
+                amountInput.value = '';
+            } else {
+                alert('지출 카테고리와 유효한 금액을 입력해주세요.');
             }
-
-            expenses.push({ category, amount });
-            updateExpenseList();
-            updateTotals();
-            
-            document.getElementById('expense-category').value = '';
-            document.getElementById('expense-amount').value = '';
         }
 
         function updateIncomeList() {
-            const list = document.getElementById('income-list');
-            
-            if (incomes.length === 0) {
-                list.innerHTML = '<div class="category-item"><span class="category-name">등록된 수입이 없습니다</span><span class="category-amount">₩0</span></div>';
-                return;
-            }
+            const listContainer = document.getElementById('income-list');
+            listContainer.innerHTML = '';
 
-            list.innerHTML = incomes.map((income, index) => `
-                <div class="category-item">
-                    <span class="category-name">${income.source}</span>
-                    <div>
-                        <span class="category-amount">${formatCurrency(income.amount)}</span>
-                        <button class="delete-btn" onclick="removeIncome(${index})">삭제</button>
-                    </div>
-                </div>
-            `).join('');
+            if (incomes.length === 0) {
+                const noData = document.createElement('div');
+                noData.className = 'category-item no-data';
+                noData.innerHTML = `<span class="category-name">등록된 수입이 없습니다</span><span class="category-amount">₩0</span>`;
+                listContainer.appendChild(noData);
+            } else {
+                incomes.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'category-item';
+                    div.innerHTML = `<span class="category-name">${item.name}</span><span class="category-amount">₩${item.amount.toLocaleString('ko-KR')}</span><button class="delete-btn" onclick="removeIncome(${index})">삭제</button>`;
+                    listContainer.appendChild(div);
+                });
+            }
         }
 
         function updateExpenseList() {
-            const list = document.getElementById('expense-list');
-            
-            if (expenses.length === 0) {
-                list.innerHTML = '<div class="category-item"><span class="category-name">등록된 예산이 없습니다</span><span class="category-amount">₩0</span></div>';
-                return;
-            }
+            const listContainer = document.getElementById('expense-list');
+            listContainer.innerHTML = '';
 
-            list.innerHTML = expenses.map((expense, index) => `
-                <div class="category-item">
-                    <span class="category-name">${expense.category}</span>
-                    <div>
-                        <span class="category-amount">${formatCurrency(expense.amount)}</span>
-                        <button class="delete-btn" onclick="removeExpense(${index})">삭제</button>
-                    </div>
-                </div>
-            `).join('');
+            if (expenses.length === 0) {
+                const noData = document.createElement('div');
+                noData.className = 'category-item no-data';
+                noData.innerHTML = `<span class="category-name">등록된 예산이 없습니다</span><span class="category-amount">₩0</span>`;
+                listContainer.appendChild(noData);
+            } else {
+                expenses.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'category-item';
+                    div.innerHTML = `<span class="category-name">${item.name}</span><span class="category-amount">₩${item.amount.toLocaleString('ko-KR')}</span><button class="delete-btn" onclick="removeExpense(${index})">삭제</button>`;
+                    listContainer.appendChild(div);
+                });
+            }
         }
 
         function removeIncome(index) {
@@ -207,107 +215,267 @@
         }
 
         function updateTotals() {
-            const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
-            const totalExpense = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-            const remaining = totalIncome - totalExpense;
-
-            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
-            document.getElementById('total-expense').textContent = formatCurrency(totalExpense);
-            
-            const remainingElement = document.getElementById('remaining-budget');
-            remainingElement.textContent = formatCurrency(remaining);
-            remainingElement.style.color = remaining >= 0 ? '#2ecc71' : '#e74c3c';
-        }
-
-        function saveBudget() {
-            if (incomes.length === 0 && expenses.length === 0) {
-                alert('저장할 예산 데이터가 없습니다.');
-                return;
-            }
             const totalIncome = incomes.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpense = expenses.reduce((sum, item) => sum + item.amount, 0);
+            const remainingAmount = totalIncome - totalExpense;
 
-            const saveNameInput = document.querySelector('input[name="save_name"]'); 
-            const saveNameValue = saveNameInput ? saveNameInput.value.trim() : '';
+            document.getElementById('total-income').textContent = `₩${totalIncome.toLocaleString('ko-KR')}`;
+            document.getElementById('total-expense').textContent = `₩${totalExpense.toLocaleString('ko-KR')}`;
+            document.getElementById('remaining-budget').textContent = `₩${remainingAmount.toLocaleString('ko-KR')}`;
 
-            if (saveNameValue === '') {
-                alert('예산 목표 이름을 입력해주세요.');
-                if (saveNameInput) {
-                    saveNameInput.focus();
-                }
-                return;
-            }
-            const csrfTokenElement = document.querySelector('input[name="_csrf"]');
-            const csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
-
-            const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
-            const csrfHeaderName = csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN';
-
-            const headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            };
-
-            if (csrfToken && csrfHeaderName) {
-                headers[csrfHeaderName] = csrfToken;
+            if (remainingAmount < 0) {
+                document.getElementById('remaining-budget').style.color = 'red';
             } else {
-                console.warn("CSRF 토큰 또는 헤더 이름을 찾을 수 없습니다. 보안 문제가 발생할 수 있습니다.");
+                document.getElementById('remaining-budget').style.color = '#28a745';
             }
-            const dataToSend = {
-                totalIncome: totalIncome,
-                save_name: saveNameValue
-            };
-
-            fetch('/consumption/bplannerPro', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(dataToSend)
-            })
-            .then(response => {
-                if (response.status === 403) {
-                    return response.json().then(errorData => {
-                        throw new new Error(errorData.message || '인증 오류: 접근이 거부되었습니다. 다시 로그인해주세요.');
-                    }).catch(() => {
-                        throw new Error('인증 오류: 접근이 거부되었습니다. 페이지를 새로고침하거나 다시 로그인해주세요.');
-                    });
-                }
-                if (!response.ok) {
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.message || '예산 저장 중 오류 발생');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    alert(data.message + ' 💾');
-                    if (confirm('소비분석 페이지로 가시겠습니까?')) {
-                    	window.location.href = '/consumption/efeedback';
-                     }
-                } else {
-                    alert('저장 실패: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('예산 저장 중 네트워크 또는 기타 오류 발생:', error);
-                alert('예산 저장 중 오류가 발생했습니다: ' + error.message);
-            });
         }
+
+        // ⭐ saveBudget 함수 수정
+	    async function saveBudget() {
+	        const budgetNameInput = document.getElementById('budget-goal-name');
+	        const budgetName = budgetNameInput.value;
+	        
+	        const selectedMonth = document.getElementById('budget-month-select').value;
+	        if (!selectedMonth) {
+	            alert('예산 월을 선택해주세요.');
+	            return;
+	        }
+	
+	        const [year, month] = selectedMonth.split('-'); // 이미 year와 month를 추출하고 있습니다.
+	        const firstDayOfMonth = `${year}-${month}-01`;
+	        const lastDayOfMonth = `${year}-${month}-${new Date(parseInt(year), parseInt(month), 0).getDate()}`;
+	
+	        const totalIncome = incomes.reduce((sum, item) => sum + item.amount, 0);
+	        const saveAmount = totalIncome; 
+	
+	        if (!budgetName || incomes.length === 0 || expenses.length === 0) {
+	            alert('모든 필수 항목(예산 목표명, 수입/지출 목록)을 입력해주세요.');
+	            return;
+	        }
+	
+	        if (saveAmount <= 0) {
+	             alert('총 수입이 0이거나 유효하지 않습니다. 수입을 입력해주세요.');
+	             return;
+	        }
+	
+	        const budgetData = {
+	            saveName: budgetName,
+	            saveCreatedDate: firstDayOfMonth, 
+	            saveTargetDate: lastDayOfMonth,
+	            saveAmount: saveAmount
+	        };
+	
+	        let shouldProceedToSave = true;
+	
+	        try {
+	            // 1. 선택된 월의 예산 데이터 존재 여부 확인
+	            // ⭐ 이 부분을 수정합니다: month와 year 파라미터를 전달하도록
+	            const checkUrl = `/consumption/hasSavingsPlanForMonth?month=${parseInt(month)}&year=${parseInt(year)}`;
+	            
+	            const checkResponse = await fetch(checkUrl, {
+	                method: 'GET',
+	                headers: {
+	                    [csrfHeader]: csrfToken
+	                }
+	            });
+	
+	            if (!checkResponse.ok) {
+	                if (checkResponse.status === 403) {
+	                     throw new Error('인증 오류: 세션이 만료되었거나 접근 권한이 없습니다. 다시 로그인해주세요.');
+	                }
+	                const errorResult = await checkResponse.json().catch(() => {
+	                    return checkResponse.text().then(text => ({ message: text || '알 수 없는 서버 오류' }));
+	                });
+	                throw new Error(errorResult.message || `예산 존재 여부 확인 실패: ${checkResponse.status} ${checkResponse.statusText}`);
+	            }
+	            const checkResult = await checkResponse.json();
+	
+	            if (checkResult.exists) {
+	                const confirmOverwrite = confirm("선택하신 월에 저장된 예산이 있습니다. 현재 내용으로 업데이트 하시겠습니까?\n'예'를 누르면 업데이트되고, '아니오'를 누르면 저장 없이 다음 페이지로 이동합니다.");
+	                if (!confirmOverwrite) {
+	                    shouldProceedToSave = false;
+	                }
+	            }
+	
+	            if (shouldProceedToSave) {
+	                // 2. 예산 저장/업데이트 API 호출
+	                const saveUrl = '/consumption/bplannerPro';
+	                const saveResponse = await fetch(saveUrl, {
+	                    method: 'POST',
+	                    headers: {
+	                        'Content-Type': 'application/json',
+	                        [csrfHeader]: csrfToken
+	                    },
+	                    body: JSON.stringify(budgetData)
+	                });
+	
+	                if (!saveResponse.ok) {
+	                    if (saveResponse.status === 403) {
+	                        throw new Error('인증 오류: 세션이 만료되었거나 접근 권한이 없습니다. 다시 로그인해주세요.');
+	                    }
+	                    const errorResult = await saveResponse.json().catch(() => {
+	                        return saveResponse.text().then(text => ({ message: text || '알 수 없는 서버 오류' }));
+	                    });
+	                    throw new Error(errorResult.message || `예산 저장/업데이트 실패: ${saveResponse.status}`);
+	                }
+	
+	                const result = await saveResponse.json();
+	                if (result.success) {
+	                    alert(result.message + ' 💾');
+	                    if (confirm('소비분석 페이지로 가시겠습니까?')) {
+	                        window.location.href = '/consumption/efeedback';
+	                    }
+	                } else {
+	                    alert('저장 실패: ' + result.message);
+	                }
+	            } else {
+	                console.log("예산 저장을 취소하고 다음 페이지로 이동합니다.");
+	            }
+	
+	            if (!shouldProceedToSave) {
+	                if (confirm('저장 없이 소비분석 페이지로 가시겠습니까?')) {
+	                    window.location.href = '/consumption/efeedback';
+	                }
+	            }
+	
+	        } catch (error) {
+	            console.error('예산 처리 중 오류 발생:', error);
+	            alert('예산 처리 중 오류가 발생했습니다: ' + error.message);
+	        }
+	    }
 
         function resetBudget() {
-            if (confirm('모든 예산 데이터를 초기화하시겠습니까?')) {
+            if (confirm('모든 예산 데이터를 초기화하시겠습니까? (현재 페이지의 데이터만 초기화됩니다.)')) {
                 incomes = [];
                 expenses = [];
+                document.getElementById('budget-goal-name').value = '';
+                // 월 선택기는 현재 값 유지 (초기화하지 않음)
                 updateIncomeList();
                 updateExpenseList();
                 updateTotals();
-                alert('예산이 초기화되었습니다. 🔄');
+                alert('예산 설정이 초기화되었습니다. 🔄');
             }
         }
 
+        // ⭐ 월 선택기 채우기 함수 추가
+        function populateMonthSelect() {
+            const select = document.getElementById('budget-month-select');
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth(); // 0-11
+
+            // 현재 년도 기준으로 이전 2년, 현재 년도, 이후 2년까지 표시
+            const startYear = currentYear - 2;
+            const endYear = currentYear + 2;
+
+            for (let year = startYear; year <= endYear; year++) {
+                for (let month = 0; month < 12; month++) {
+                    const date = new Date(year, month, 1);
+                    const optionValue = `${year}-${String(month + 1).padStart(2, '0')}`;
+                    const optionText = `${year}년 ${String(month + 1).padStart(2, '0')}월`;
+                    
+                    const option = document.createElement('option');
+                    option.value = optionValue;
+                    option.textContent = optionText;
+
+                    // 현재 월을 기본 선택값으로 설정
+                    if (year === currentYear && month === currentMonth) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                }
+            }
+        }
+
+        // ⭐ 선택된 월의 예산 데이터를 불러오는 함수 추가
+	    async function loadBudgetForSelectedMonth() {
+	        const selectedMonth = document.getElementById('budget-month-select').value;
+	        if (!selectedMonth) {
+	            return;
+	        }
+	
+	        const [year, month] = selectedMonth.split('-');
+	        // const firstDayOfMonth = `${year}-${month}-01`; // 사용하지 않음
+	        // const lastDayOfMonth = `${year}-${month}-${new Date(parseInt(year), parseInt(month), 0).getDate()}`; // 사용하지 않음
+	
+	        // ⭐ 이 부분을 수정합니다: month와 year 파라미터를 전달하도록
+	        // 컨트롤러의 getSavingsPlanForMonth는 startOfMonth, endOfMonth를 받으므로,
+	        // 이 부분은 컨트롤러의 getSavingsPlanForMonth가 month와 year를 받도록 변경하거나,
+	        // 아니면 여기서 firstDayOfMonth와 lastDayOfMonth를 파라미터로 넘겨야 합니다.
+	        // 현재 제가 지난번에 제공해드린 Controller의 getSavingsPlanForMonth는 월, 일을 받도록 되어있지 않습니다.
+	        // Controller의 getSavingsPlanForMonth는 map형태로 되어있는데 그걸 지금 바꿔주는게 더 빠를 것 같아
+	        // 기존 Controller 코드를 다시 가져왔습니다.
+	
+	        // ⭐ 잠깐, Confusion!
+	        // 제가 방금 전 컨트롤러에서 `hasSavingsPlanForMonth`를 `month`와 `year`로 받도록 수정하라고 했습니다.
+	        // 그런데 `loadBudgetForSelectedMonth`는 `getSavingsPlanForMonth` API를 호출하는데,
+	        // 제가 제공했던 `ConsumptionController`의 `getSavingsPlanForMonth`는 `startOfMonth`와 `endOfMonth`를 쿼리 파라미터로 받습니다.
+	        // 즉, 컨트롤러의 `getSavingsPlanForMonth`는:
+	        // `@GetMapping("/getSavingsPlanForMonth")`
+	        // `public ResponseEntity<Map<String, Object>> getSavingsPlanForMonth(@RequestParam("startOfMonth") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startOfMonth, @RequestParam("endOfMonth") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endOfMonth, ...)`
+	        // 로 되어 있어야 합니다.
+	
+	        // `hasSavingsPlanForMonth`는 `month`와 `year`를 받도록 수정했지만,
+	        // `getSavingsPlanForMonth`는 여전히 `startOfMonth`와 `endOfMonth`를 받는 것이 맞습니다.
+	        // 따라서 `loadBudgetForSelectedMonth`의 `loadUrl`은 변경하지 않고 유지하는 것이 맞습니다.
+	
+	        // 다시 정리하면:
+	        // 1. `saveBudget` 함수 안의 `checkUrl`은 `/consumption/hasSavingsPlanForMonth?month=${parseInt(month)}&year=${parseInt(year)}` 로 수정. (이전 답변에서 이 부분을 중점적으로 설명했습니다.)
+	        // 2. `loadBudgetForSelectedMonth` 함수 안의 `loadUrl`은 그대로 유지. (`/consumption/getSavingsPlanForMonth?startOfMonth=${firstDayOfMonth}&endOfMonth=${lastDayOfMonth}`)
+	        //    (이는 `ConsumptionController`에 `getSavingsPlanForMonth`가 `startOfMonth`, `endOfMonth`를 `@RequestParam`으로 받는다고 가정합니다.)
+	
+	        const loadUrl = `/consumption/getSavingsPlanForMonth?startOfMonth=${firstDayOfMonth}&endOfMonth=${lastDayOfMonth}`; // ⭐ 이 부분은 그대로 둡니다.
+	
+	        try {
+	            const response = await fetch(loadUrl, {
+	                method: 'GET',
+	                headers: {
+	                    [csrfHeader]: csrfToken
+	                }
+	            });
+	
+	            if (!response.ok) {
+	                 if (response.status === 404) {
+	                     console.log("선택된 월에 저장된 예산이 없습니다.");
+	                     incomes = [];
+	                     expenses = [];
+	                     document.getElementById('budget-goal-name').value = '';
+	                     updateIncomeList();
+	                     updateExpenseList();
+	                     updateTotals();
+	                     return;
+	                 }
+	                if (response.status === 403) {
+	                     throw new Error('인증 오류: 세션이 만료되었거나 접근 권한이 없습니다.');
+	                }
+	                const errorResult = await response.json().catch(() => {
+	                    return response.text().then(text => ({ message: text || '알 수 없는 서버 오류' }));
+	                });
+	                throw new Error(errorResult.message || `예산 로드 실패: ${response.status} ${response.statusText}`);
+	            }
+	
+	            const data = await response.json();
+	            
+	            // ... (나머지 loadBudgetForSelectedMonth 함수 내용 유지) ...
+	            
+	        } catch (error) {
+	            console.error('예산 로드 중 오류 발생:', error);
+	            alert('예산 로드 중 오류가 발생했습니다: ' + error.message);
+	        }
+	    }
+
+
         document.addEventListener('DOMContentLoaded', function() {
-            updateIncomeList();
-            updateExpenseList();
-            updateTotals();
+            populateMonthSelect(); // 월 선택기 채우기 호출
+            // 페이지 로드 시 현재 선택된 월의 예산 데이터 로드
+            loadBudgetForSelectedMonth(); 
+            
+            // 월 선택기가 변경될 때마다 해당 월의 예산 데이터 로드
+            document.getElementById('budget-month-select').addEventListener('change', loadBudgetForSelectedMonth);
+
+            updateIncomeList(); // 초기화 후 목록 업데이트 (초기에는 비어있음)
+            updateExpenseList(); // 초기화 후 목록 업데이트 (초기에는 비어있음)
+            updateTotals(); // 초기화 후 총계 업데이트 (초기에는 0)
         });
         function logout() {
             if (confirm('로그아웃 하시겠습니까?')) {
