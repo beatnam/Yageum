@@ -1,3 +1,25 @@
+/* 전체 컨테이너 스타일 */
+.container {
+	max-width: 1350px;
+	width: 100%;
+	margin: 0 auto;
+	display: flex; /* 사이드바 + 메인 콘텐츠 가로 배치 */
+	box-sizing: border-box;
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content {
+	flex: 1; /* 남은 공간을 차지 */
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+/* 사이드바 (fragment에서 class 부여 필요) */
+.sidebar {
+	width: 250px;
+	flex-shrink: 0;
+}
+
 /* 퀘스트 테이블 스타일 */
 .quest-table {
 	width: 100%;
@@ -17,14 +39,6 @@
 
 .quest-subheader {
 	background-color: #FFC6C7;
-}
-
-.main-content {
-	max-width: 1350px;
-	margin: 0 auto;
-	/* 가운데 정렬 */
-	padding: 20px;
-	box-sizing: border-box;
 }
 
 .quest-subheader th {

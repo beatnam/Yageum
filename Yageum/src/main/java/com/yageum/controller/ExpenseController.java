@@ -2,6 +2,7 @@ package com.yageum.controller;
 
 import java.beans.PropertyEditorSupport;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -87,14 +88,33 @@ public class ExpenseController {
 	@GetMapping("/detail")
 	public String detail(@RequestParam("id") int id, @RequestParam("date") String date, Model model) {
 		log.info("ExpenseController detail()");
+
+		ExpenseDTO expense = expenseService.getExpenseDetailById(id);
+		
+		log.info("조회 요청 id = {}", id);
+		log.info("결과 expense = {}", expense);
+		
+	    model.addAttribute("expense", expense);
+
 	    model.addAttribute("date", date);
 
 		return "/cashbook/cashbook_detail";
 	}
 
 	@GetMapping("/update")
-	public String update() {
+	public String update(@RequestParam("id") int id, @RequestParam("date") String date, Model model) {
 		log.info("ExpenseController update()");
+		
+		log.info("조회 요청 id = {}", id);
+	    ExpenseDTO expense = expenseService.getExpenseDetailById(id);
+	    log.info("결과 expense = {}", expense);
+	    log.info("accountIn: {}", expense.getAccountIn());
+	    log.info("methodIn: {}", expense.getMethodIn());
+	    
+		List<CategoryMainDTO> mainList = expenseService.getAllMainCategories();
+	    model.addAttribute("mainList", mainList);
+		model.addAttribute("expense", expense);
+		model.addAttribute("date", date);
 
 		return "/cashbook/cashbook_update";
 	}
@@ -171,9 +191,11 @@ public class ExpenseController {
 	    } else if (methodIn == 4) { // 계좌면 acccountIn에 들어가게 됨
 	        expense.setAccountIn(Integer.parseInt(method2));
 	    }
+	    
+	    LocalDate inputDate = expense.getExpenseDate();
 
 	    expenseService.saveExpense(expense);
-	    return "redirect:/cashbook/main"; 
+	    return "redirect:/cashbook/list?date=" + inputDate; 
 	}
 	//가계부 수기 입력 로직 끝나는 부분=================================
 
