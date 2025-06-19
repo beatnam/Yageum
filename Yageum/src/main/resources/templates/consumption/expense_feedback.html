@@ -3,16 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>카테고리 소비분석</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 	<link rel="stylesheet" href="../css/e_feedback.css">
 	<link rel="stylesheet" href="../css/common.css">
 	
 </head>
 <body>
+
+<div id="budgetAlertModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>예산 설정이 필요합니다</h2>
+        <p>원활한 소비 분석을 위해 예산을 설정해주세요.</p>
+        <button class="btn" onclick="redirectToBudgetSetting()">예산 설정하기</button>
+    </div>
+</div>
+
+
 <div th:replace="fragments/header :: header"></div>
 <div class="app-container">
 	
@@ -50,191 +64,14 @@
                 <p>AI가 현재 소비 패턴을 분석하여 개인 맞춤 피드백을 생성 중입니다... <span class="loading-spinner"></span></p>
             </div>
         </div>
-        <div class="recommendations">
-            <h2>맞춤형 개선 제안</h2>
-            <div class="recommendation-list">
-                <div class="recommendation-item" th:each="rec : ${efeedbackData.recommendations}">
-                    <div class="recommendation-title" th:text="${rec.title}"></div>
-                    <div class="recommendation-desc" th:text="${rec.description}"></div>
-                </div>
-            </div>
-        </div>
 
         <div class="progress-section">
-            <h2>힘내!</h2>
-            <div class="progress-grid">
-                <div class="progress-item" th:each="prog : ${efeedbackData.progress}">
-                    <div class="progress-label">
-                        <span>절약률</span>
-                        <span th:text="${prog.progressText}"></span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" th:style="'width: ' + ${prog.progressPercentage} + '%'"></div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn" onclick="generateNewGoals()">전반적으로 분석하기</button>
+            <button class="btn" onclick="generateNewGoals(event)">전반적으로 분석하기</button>
         </div>
     </div>
 </div>
 	<div th:replace="fragments/footer :: footer"></div>
+<script src="../js/expense_feedback.js" defer></script>
 
-<script th:inline="javascript">
-    function createProgressChart() {
-        
-        console.log("createProgressChart 함수가 호출되었습니다. (이 함수 내부에 차트 로직을 구현해야 합니다.)");
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        animateScore();
-        animateProgressBars();
-        createProgressChart();
-        animateCards();
-        
-        fetchChatGptFeedback();
-    });
-
-    function animateScore() {
-        const scoreElement = document.getElementById('overallScore');
-        const targetScore = parseInt(scoreElement.innerText, 10);
-        if (isNaN(targetScore)) {
-            console.warn("overallScore가 유효한 숫자가 아닙니다. 애니메이션을 건너뜀.");
-            scoreElement.textContent = "0";
-            return;
-        }
-
-        let currentScore = 0;
-        const increment = targetScore / 50;
-
-        const timer = setInterval(() => {
-            currentScore += increment;
-            if (currentScore >= targetScore) {
-                currentScore = targetScore;
-                clearInterval(timer);
-            }
-            scoreElement.textContent = Math.round(currentScore);
-        }, 50);
-    }
-
-    function animateProgressBars() {
-        const progressBars = document.querySelectorAll('.progress-fill');
-        progressBars.forEach((bar, index) => {
-            const initialWidth = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.transition = 'width 2s ease-in-out';
-                bar.style.width = initialWidth;
-            }, 100 + (index * 200));
-        });
-    }
-
-    function animateCards() {
-        const cards = document.querySelectorAll('.feedback-card');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-
-            setTimeout(() => {
-                card.style.transition = 'all 0.6s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 150);
-        });
-    }
-
-    function generateNewGoals() {
-        const btn = event.target;
-        btn.textContent = '전반적인 분석 중...';
-        btn.disabled = true;
-
-        setTimeout(() => {
-            alert('새로운 개인 맞춤형 목표가 생성되었습니다!\n\n1. 카페 이용 월 15회로 제한\n2. 온라인 쇼핑 위시리스트 활용\n3. 고정비 5% 절약 도전');
-            btn.textContent = '전반적으로 분석하기';
-            btn.disabled = false;
-
-            window.location.href = '/consumption/eanalysis';
-        }, 2000);
-    }
-
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ffd700, #ffb347);
-            color: #8b4513;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-            z-index: 1000;
-            font-weight: bold;
-            animation: slideIn 0.3s ease;
-        `;
-
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    }
-
-    setInterval(() => {
-        const insights = [
-            "💡 팁: 이번 주 식비가 예산을 초과했어요!",
-            "🎯 목표까지 67,000원 더 절약하면 달성!",
-            "📊 지난 달 대비 교통비 15% 절약 중!"
-        ];
-        const randomInsight = insights[Math.floor(Math.random() * insights.length)];
-        showNotification(randomInsight);
-    }, 30000);
-
-    async function fetchChatGptFeedback() {
-        const feedbackContentDiv = document.getElementById('chatGptFeedbackContent');
-        feedbackContentDiv.innerHTML = '<p>AI가 현재 소비 패턴을 분석하여 개인 맞춤 피드백을 생성 중입니다... <span class="loading-spinner"></span></p>';
-
-        try {
-            const response = await fetch('/consumption/getChatGptFeedbackForEfeedback');
-            const data = await response.json();
-
-            if (data.feedback) {
-                feedbackContentDiv.innerHTML = '<p>' + data.feedback + '</p>';
-                const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
-                if (goalStatusDiv) {
-                     goalStatusDiv.textContent = '✔️ 분석 완료';
-                     goalStatusDiv.classList.remove('status-warning');
-                     goalStatusDiv.classList.add('status-success');
-                }
-            } else if (data.error) {
-                feedbackContentDiv.innerHTML = '<p style="color: red;">오류: ' + data.error + '</p>';
-                const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
-                if (goalStatusDiv) {
-                     goalStatusDiv.textContent = '❌ 오류 발생';
-                     goalStatusDiv.classList.remove('status-warning');
-                     goalStatusDiv.classList.add('status-danger');
-                }
-            } else {
-                feedbackContentDiv.innerHTML = '<p>피드백을 가져오는 데 실패했습니다.</p>';
-                 const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
-                if (goalStatusDiv) {
-                     goalStatusDiv.textContent = '⚠️ 실패';
-                     goalStatusDiv.classList.remove('status-warning');
-                     goalStatusDiv.classList.add('status-warning');
-                }
-            }
-        } catch (error) {
-            console.error('ChatGPT 피드백을 가져오는 중 오류 발생:', error);
-            feedbackContentDiv.innerHTML = '<p style="color: red;">피드백 요청 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>';
-            const goalStatusDiv = feedbackContentDiv.previousElementSibling.querySelector('.goal-status');
-            if (goalStatusDiv) {
-                goalStatusDiv.textContent = '❌ 네트워크 오류';
-                goalStatusDiv.classList.remove('status-warning');
-                goalStatusDiv.classList.add('status-danger');
-            }
-        }
-    }
-</script>
 </body>
 </html>

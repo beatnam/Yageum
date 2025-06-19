@@ -9,7 +9,7 @@
 					<span class="welcome-msg" sec:authorize="isAuthenticated()">
 
 						<a href="/mypage/update"><span th:text="${session.memberName}"></span></a>
-							<span>님 안녕하세요!</span>
+						<span>님 안녕하세요!</span>
 
 						<button class="btn-logout" onclick="logout()">로그아웃</button>
 					</span>
@@ -19,8 +19,10 @@
 				<ul class="nav-menu">
 					<li><a href="/cashbook/main">가계부</a></li>
 					<li><a href="/consumption/efeedback">소비 분석</a></li>
+					<li><a href="/quest/list">퀘스트 목록</a></li>
 				</ul>
 			</nav>
 		</div>
 	</header>
 </div>
+

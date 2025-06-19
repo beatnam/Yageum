@@ -19,10 +19,6 @@
             transition: transform 0.3s ease;
         }
 
-        .budget-header:hover {
-            transform: translateY(-5px);
-        }
-
         .budget-header h1 {
             color: white;
             font-size: 2.5rem;
@@ -232,12 +228,38 @@
             }
         }
 
-        .pulse-animation {
-            animation: pulse 2s infinite;
-        }
-
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+        
+        #budget-goal-name {
+		    width: 100%; /* 부모 요소에 맞춰 너비 조절 */
+		    max-width: 250px; /* 이미지처럼 너무 넓지 않게 최대 너비 설정 (조절 가능) */
+		    padding: 10px 15px; /* 내부 여백 (위아래, 좌우) */
+		    margin: 10px auto; /* 위아래 여백, 좌우 자동 마진으로 중앙 정렬 */
+		    display: block; /* margin: auto가 작동하도록 블록 요소로 만듭니다. */
+		    border: 1px solid #ccc; /* 얇고 연한 회색 테두리 */
+		    border-radius: 8px; /* 둥근 모서리 */
+		    text-align: center; /* 텍스트 중앙 정렬 */
+		    font-size: 1em; /* 글자 크기 (기본 크기 또는 원하는 크기로 조절) */
+		    color: #333; /* 입력 텍스트 색상 */
+		    background-color: #fff; /* 배경색 흰색 */
+		    box-sizing: border-box; /* 패딩과 보더가 너비에 포함되도록 */
+		    outline: none; /* 포커스 시 기본 아웃라인 제거 */
+		    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 약간의 그림자 효과로 입체감 */
+		}
+		
+		/* 플레이스홀더 텍스트 스타일 */
+		#budget-goal-name::placeholder {
+		    color: #999; /* 플레이스홀더 텍스트 색상 (이미지처럼 연하게) */
+		    font-size: 0.95em; /* 플레이스홀더 글자 크기 (조절 가능) */
+		}
+		
+		/* 포커스 시 스타일 (선택 사항, 사용자 경험 향상) */
+		#budget-goal-name:focus {
+		    border-color: #f7b731; /* 포커스 시 테두리 색상 변경 (주황색 계열) */
+		    box-shadow: 0 0 0 3px rgba(247, 183, 49, 0.3); /* 포커스 시 그림자 효과 */
+		}
+        

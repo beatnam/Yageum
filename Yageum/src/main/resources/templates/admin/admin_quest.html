@@ -1,135 +1,135 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	 <link rel="stylesheet" href="../css/admin_common.css">
-	 <link rel="stylesheet" href="../css/admin_header.css">
-    <title>퀘스트 관리</title>
-   
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/admin_common.css">
+	<link rel="stylesheet" href="../css/admin_header.css">
+	<title>퀘스트 관리</title>
+
 </head>
+
 <body>
 	<div th:replace="fragments/admin_header :: header"></div>
-    <div class="container">
-        <!-- 사이드바 -->
-        <div class="sidebar">
-            <h2>관리자 페이지</h2>
-            
-            <div class="menu-item">
-               <a href="/admin/user" class="menu-link">사용자 관리</a>
-            </div>
-            
+	<div class="container">
+		<!-- 사이드바 -->
+		<div class="sidebar">
+			<h2>관리자 페이지</h2>
+
 			<div class="menu-item">
-			      <a href="/admin/state" class="menu-link">통계 / 리포트</a>
+				<a href="/admin/user" class="menu-link">사용자 관리</a>
 			</div>
-            
-            <div class="menu-item">
-                <a href="#" class="menu-link active" onclick="toggleSubmenu(event)">사이트 설정</a>
-                <div class="submenu show" id="siteSettingsSubmenu">
-                    <div class="submenu-item">
-                        <a href="/admin/quest" class="submenu-link active">퀘스트 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="/admin/item" class="submenu-link">구매항목 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="/admin/category" class="submenu-link">카테고리 관리</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a href="/admin/noticfication" class="submenu-link">공지사항 관리</a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- 메인 콘텐츠 -->
-        <div class="main-content">
-            <div class="main_header">
-                <h1>퀘스트 목록</h1>
-                <button class="add-btn" onclick="addQuest()">추가하기</button>
-            </div>
+			<div class="menu-item">
+				<a href="/admin/state" class="menu-link">통계 / 리포트</a>
+			</div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>퀘스트 번호</th>
-                            <th>퀘스트 내용</th>
-                            <th>유형</th>
-                            <th>목표</th>
-                            <th>보상</th>
-                            <th>기간</th>
-                            <th>관리</th>
-                        </tr>
-                    </thead>
-                    <tbody id="questTableBody">
-						
-					
-						
-                        <tr>
-                            <td>1</td>
-                            <td>이번 달 퀘스트 지출 줄이기</td>
-                            <td>식비 / 편의점</td>
-                            <td>50000원</td>
-                            <td>300 포인트</td>
-                            <td>2025-06-01 ~ 2025-06-30</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editQuest(1)">변경</button>
-                                <button class="action-btn delete" onclick="deleteQuest(1)">삭제</button>
-                            </td>
-                        </tr>
-                       
-                    </tbody>
-                </table>
-            </div>
+			<div class="menu-item">
+				<a href="#" class="menu-link active" onclick="toggleSubmenu(event)">사이트 설정</a>
+				<div class="submenu show" id="siteSettingsSubmenu">
+					<div class="submenu-item">
+						<a href="/admin/quest" class="submenu-link active">퀘스트 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/item" class="submenu-link">구매항목 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/category" class="submenu-link">카테고리 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/noticfication" class="submenu-link">공지사항 관리</a>
+					</div>
+				</div>
+			</div>
+		</div>
 
-            <div class="pagination">
-                <span>이전</span>
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <span>다음</span>
-            </div>
-        </div>
-    </div>
+		<!-- 메인 콘텐츠 -->
+		<div class="main-content">
+			<div class="main_header">
+				<h1>퀘스트 목록</h1>
+				<button class="add-btn" onclick="addQuest()">추가하기</button>
+			</div>
 
-    <script>
-        // 사이트 설정 하위 메뉴 토글
-        function toggleSubmenu(event) {
-            event.preventDefault();
-            const submenu = document.getElementById('siteSettingsSubmenu');
-            submenu.classList.toggle('show');
-        }
-        // 퀘스트 추가 기능
-        function addQuest() {
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>퀘스트 번호</th>
+							<th>퀘스트 내용</th>
+							<th>유형</th>
+							<th>목표</th>
+							<th>보상</th>
+							<th>기간</th>
+							<th>관리</th>
+						</tr>
+					</thead>
+					<tbody id="questTableBody">
+
+
+						<tr th:each="quest : ${questList}">
+							<td th:text="${quest['quest_in']}"></td>
+							<td th:text="${quest['quest_name']}"></td>
+							<td th:text="${quest['quest_type_name']}"></td>
+							<td th:text="${quest['goal_value']}">원</td>
+							<td th:text="${quest['reward_value']}">포인트</td>
+							<td th:text="${quest['start_date']} + ' ~ ' + ${quest['end_date']}">기간</td>
+							<td>
+								<button class="action-btn edit"
+									th:onclick="'editQuest(' + '\'' + ${quest['quest_in']} + '\'' + ')'">변경</button>
+								<button class="action-btn delete"
+									th:onclick="'deleteQuest(' + '\'' + ${quest['quest_in']} + '\'' + ')'">삭제</button>
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+
+			<div class="pagination">
+				<span>이전</span>
+				<a href="#">1</a>
+				<a href="#">2</a>
+				<a href="#">3</a>
+				<a href="#">4</a>
+				<a href="#">5</a>
+				<span>다음</span>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 사이트 설정 하위 메뉴 토글
+		function toggleSubmenu(event) {
+			event.preventDefault();
+			const submenu = document.getElementById('siteSettingsSubmenu');
+			submenu.classList.toggle('show');
+		}
+		// 퀘스트 추가 기능
+		function addQuest() {
 			window.open("/admin/quest_gener", "popup", "width=670,height=740");
 
-        }
+		}
+		// 퀘스트 변경 기능
+		function editQuest(id) {
+			window.open("/admin/quest_update?questIn=" + encodeURIComponent(id), "popup", "width=670,height=740");
+		}
 
-        // 퀘스트 변경 기능
-        function editQuest(id) {
-           
-			
-			window.open("/admin/quest_update", "popup", "width=670,height=740");
-            // 실제로는 퀘스트 변경 페이지로 이동하거나 모달을 띄움
-        }
-
-        // 퀘스트 삭제 기능
-        function deleteQuest(id) {
-            if (confirm('정말로 이 퀘스트를 삭제하시겠습니까?')) {
-                alert('퀘스트 ID ' + id + '가 삭제되었습니다.');
-                // 실제로는 서버에 삭제 요청을 보냄
-            }
-        }
+		// 퀘스트 삭제 기능
+		function deleteQuest(id) {
+		    if (confirm('정말로 이 퀘스트를 삭제하시겠습니까?')) {
+		        alert('퀘스트가 삭제되었습니다.');
+		        location.href = "/admin/quest_delete?questIn=" + encodeURIComponent(id);
+		    }
+		}
 
 		// 로그아웃 기능
 		function logout() {
-		       if (confirm('로그아웃 하시겠습니까?')) {
-		              window.location.href = '/logout';
-		       }
-		 }
-    </script>
+			if (confirm('로그아웃 하시겠습니까?')) {
+				window.location.href = '/logout';
+			}
+		}
+	</script>
 </body>
+
 </html>

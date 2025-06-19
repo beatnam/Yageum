@@ -5,7 +5,9 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -17,13 +19,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.ExpenseDTO;
 import com.yageum.domain.MemberDTO;
 import com.yageum.entity.Card;
 import com.yageum.entity.Expense;
 import com.yageum.entity.Member;
+import com.yageum.repository.MemberRepository;
 import com.yageum.service.ExpenseService;
 import com.yageum.service.MemberService;
 
@@ -40,6 +45,7 @@ public class ExpenseController {
 	
 	private final ExpenseService expenseService;
 	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 	
 	@GetMapping("/main")
 	public String main() {
@@ -50,15 +56,38 @@ public class ExpenseController {
 	}
 
 	@GetMapping("/list")
-	public String list() {
-		log.info("ExpenseController list()");
+	public String list(@RequestParam("date") String date, Model model) {
+	    log.info("ExpenseController list() - date: {}", date);
+
+	    // 로그인된 사용자 ID 가져오기 (Spring Security)
+	    String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+	    Member member = memberRepository.findByMemberId(memberId);
+
+	    int memberIn = member.getMemberIn();
+
+	    // 서비스 호출
+	    List<Expense> expenses = expenseService.findByDate(memberIn, date);
+	    int incomeTotal = expenseService.getDailyTotal(memberIn, date, 0);
+	    int expenseTotal = expenseService.getDailyTotal(memberIn, date, 1);
+	    int balance = incomeTotal - expenseTotal;
+
+	    // 모델에 담기
+	    model.addAttribute("expenses", expenses);
+	    model.addAttribute("incomeTotal", incomeTotal);
+	    model.addAttribute("expenseTotal", expenseTotal);
+	    model.addAttribute("balance", balance);
+	    
+	    log.info("조회된 수입합계: " + incomeTotal);
+	    log.info("조회된 지출합계: " + expenseTotal);
+	    log.info("전체 리스트: {}", expenses);
 
 		return "/cashbook/cashbook_list";
 	}
 
 	@GetMapping("/detail")
-	public String detail() {
+	public String detail(@RequestParam("id") int id, @RequestParam("date") String date, Model model) {
 		log.info("ExpenseController detail()");
+	    model.addAttribute("date", date);
 
 		return "/cashbook/cashbook_detail";
 	}
@@ -70,7 +99,7 @@ public class ExpenseController {
 		return "/cashbook/cashbook_update";
 	}
 
-	//가계부 수기 입력 로직 =================================
+	//가계부 수기 입력 로직 시작 하는 부분=================================
 	@GetMapping("/insert")
 	public String insert(Model model) {
 		log.info("ExpenseController insert()");
@@ -80,13 +109,14 @@ public class ExpenseController {
 		return "/cashbook/cashbook_insert";
 	}
 	
-	//카테고리 대분류 - 소분류 매칭
+		//카테고리 대분류 - 소분류 매칭
 	@GetMapping("/category/{cmIn}")
 	@ResponseBody
     public List<CategorySubDTO> getSubCategories(@PathVariable("cmIn") int cmIn) {
         return expenseService.getSubCategoriesByCmIn(cmIn);  
     }
 	
+		//카드 목록 가져오기 (신용 / 체크)
 	@GetMapping("/cards/byMethod/{methodIn}")
 	@ResponseBody
 	public List<CardDTO> getCardsByMethod(@PathVariable("methodIn") int methodIn, Principal principal) {
@@ -97,10 +127,18 @@ public class ExpenseController {
 	    return expenseService.findCardListByMethodAndMember(methodIn, member.getMemberIn());
 	}
 	 
+		//계좌 목록 가져오기
+	@GetMapping("/accounts")
+	@ResponseBody
+	public List<BankAccountDTO> getAccounts(Principal principal) {
+	    String loginId = principal.getName();
+	    Member member = memberService.findByMemberId(loginId).orElseThrow();
+	    return expenseService.findAccountListByMember(member.getMemberIn());
+	}
 	
+	// expenseSum 커스텀 변환기 등록 (,를 빼줌)
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
-	    // expenseSum 커스텀 변환기 등록
 	    binder.registerCustomEditor(Integer.class, "expenseSum", new PropertyEditorSupport() {
 	        @Override
 	        public void setAsText(String text) {
@@ -111,9 +149,9 @@ public class ExpenseController {
 	    });
 	}
 	
-	
 	@PostMapping("/insertPro")
-	public String insertPro(Expense expense, @RequestParam("expenseSum") String rawSum,  @RequestParam("method_in") int methodIn, @RequestParam(value = "method2", required = false) String method2, Principal principal) {
+	public String insertPro(Expense expense, @RequestParam("expenseSum") String rawSum,  @RequestParam("method_in") int methodIn,  @RequestParam("cs_in") int csIn, 
+							@RequestParam(value = "method2", required = false) String method2, Principal principal) {
 	    log.info("ExpenseController insertPro()");
 	    log.info("입력된 값: " + expense.toString());
 
@@ -124,21 +162,20 @@ public class ExpenseController {
 	    String loginId = principal.getName(); 
 	    Member member = memberService.findByMemberId(loginId).orElseThrow();
 	    expense.setMemberIn(member.getMemberIn());
-	    
-	    
+	    expense.setCsIn(csIn);
 	    expense.setMethodIn(methodIn);
 
 	    // 카드 or 계좌라면 method2 세팅
-	    if (methodIn == 1 || methodIn == 2) { // 신용 or 체크
+	    if (methodIn == 1 || methodIn == 2) { // 신용 or 체크이면 cardIn에 들어가게 됨
 	        expense.setCardIn(Integer.parseInt(method2));
-	    } else if (methodIn == 4) { // 계좌
+	    } else if (methodIn == 4) { // 계좌면 acccountIn에 들어가게 됨
 	        expense.setAccountIn(Integer.parseInt(method2));
 	    }
 
 	    expenseService.saveExpense(expense);
 	    return "redirect:/cashbook/main"; 
 	}
-	//가계부 수기 입력 로직 =================================
+	//가계부 수기 입력 로직 끝나는 부분=================================
 
 	@GetMapping("/search")
 	public String search() {

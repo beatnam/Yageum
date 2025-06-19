@@ -72,5 +72,27 @@
 	      AND EXTRACT(YEAR FROM expense_date) = #{year}
 	      AND expense_type = 1
 	</select>
+	
+    <select id="getCategoryExpensesData" resultType="map">
+        SELECT c.cs_name AS categoryName, SUM(e.expense_sum) AS amount
+        FROM expense e JOIN category_sub c ON e.cs_in = c.cs_in
+        WHERE
+            e.member_in = #{memberIn}
+            AND EXTRACT(MONTH FROM e.expense_date) = #{month}
+            AND EXTRACT(YEAR FROM e.expense_date) = #{year}
+            AND e.expense_type = 1
+        GROUP BY c.cs_name
+        ORDER BY amount DESC;
+    </select>
+    
+    <select id="thisMonthCount" resultType="int">
+    	select count(expense_type)
+		from expense
+		where member_in = #{memberIn}
+		AND EXTRACT(MONTH FROM expense_date) = #{month}
+		AND EXTRACT(YEAR FROM expense_date) = #{year}
+		AND expense_type = 1;
+    </select>
+    
 
 </mapper>

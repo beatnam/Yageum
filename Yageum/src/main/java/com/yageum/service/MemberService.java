@@ -119,7 +119,10 @@ public class MemberService {
 	public Member find(String memberId) {
 		return memberRepository.findByMemberId(memberId);
 	}
-
+	public void updateDate(MemberDTO memberDTO2) {
+		memberMapper.updateDate(memberDTO2);
+		
+	}
 	//관리자 페이지 사용자 권한 부여----------------------------
 	
 }

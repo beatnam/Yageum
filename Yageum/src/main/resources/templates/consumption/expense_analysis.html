@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>가계부 소비분석 및 피드백</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 	<link rel="stylesheet" href="../css/e_analysis.css">
 	<link rel="stylesheet" href="../css/common.css">
+	
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
@@ -19,241 +23,107 @@
 <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
 
     <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">💳</div>
-                <div class="stat-label">이번달 달 총 지출</div>
-                <div class="stat-value" id="totalExpense">&#8361;<span th:text="${#numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-label">하루 평균 지출</div>
-                <div class="stat-value" id="averageDailyExpense">&#8361;<span th:text="${#numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-label">남은 일수</div>
-                <div class="stat-value" id="daysLeft" th:text="${daysLeft + '일'}">0일</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💰</div>
-                <div class="stat-label">남은 예산</div>
-                <div class="stat-value" id="remainingBudget">&#8361;<span th:text="${#numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT')}">0</span></div>
-            </div>
-        </div>
-
-        <div class="chart-section">
-            <h2>월별 지출 추이</h2>
-            <div class="chart-container">
-                <canvas id="monthlyExpenseChart"></canvas>
-            </div>
-        </div>
+	    <div class="stats-grid">
+	        <div class="stat-card">
+	            <div class="stat-icon">💳</div>
+	            <div class="stat-label">이번달 달 총 지출</div>
+	            <div class="stat-value" id="totalExpense">
+	                &#8361;<span th:text="${totalExpense != null ? #numbers.formatDecimal(totalExpense, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">📊</div>
+	            <div class="stat-label">하루 평균 지출</div>
+	            <div class="stat-value" id="averageDailyExpense">
+	                &#8361;<span th:text="${averageDailyExpense != null ? #numbers.formatDecimal(averageDailyExpense, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">⏳</div>
+	            <div class="stat-label">남은 일수</div>
+	            <div class="stat-value" id="daysLeft" th:text="${daysLeft != null ? daysLeft + '일' : '데이터 없음'}">0일</div>
+	        </div>
+	        <div class="stat-card">
+	            <div class="stat-icon">💰</div>
+	            <div class="stat-label">남은 예산</div>
+	            <div class="stat-value" id="remainingBudget">
+	                &#8361;<span th:text="${remainingBudget != null ? #numbers.formatDecimal(remainingBudget, 0, 'COMMA', 0, 'POINT') : '데이터 없음'}">0</span>
+	            </div>
+	        </div>
+	    </div>
+	
+	    <div class="chart-section">
+	        <h2>월별 지출 추이</h2>
+	        <div class="chart-container">
+	            <canvas id="monthlyExpenseChart"></canvas>
+	        </div>
+	    </div>
 
         <div class="feedback-section">
             <h2>ChatGPT의 소비 피드백</h2>
             <div id="chatGptFeedbackArea">
                 <p>피드백을 로드 중입니다...</p> </div>
         </div>
-        <div class="savings-goal-section">
-            <h2>📊 지난달 절약 목표</h2>
-            <div th:if="${savingsPlan != null and not #maps.isEmpty(savingsPlan)}" class="goal-details-card">
-                <div class="goal-item">
-                    <span class="goal-label">목표:</span>
-                    <span class="goal-value" th:text="${savingsPlan['save_name'] ?: '설정되지 않음'}">목표명</span>
-                </div>
-                <div class="goal-item">
-                    <span class="goal-label">목표 금액:</span>
-                    <span class="goal-value" th:text="${'₩' + #numbers.formatInteger(savingsPlan['save_amount'] ?: 0, 0, 'COMMA')}">₩0</span>
-                </div>
-                <div class="goal-item">
-                    <span class="goal-label">시작일:</span>
-                    <span class="goal-value" th:text="${savingsPlan['save_created_date'] != null ? #temporals.format(savingsPlan['save_created_date'], 'yyyy-MM-dd') : '미정'}">YYYY-MM-DD</span>
-                </div>
-                <div class="goal-item">
-                    <span class="goal-label">목표 달성일:</span>
-                    <span class="goal-value" th:text="${savingsPlan['save_target_date'] != null ? #temporals.format(savingsPlan['save_target_date'], 'yyyy-MM-dd') : '미정'}">YYYY-MM-DD</span>
-                </div>
-                <div class="goal-item">
-                    <span class="goal-label">지난달 저축가능 금액:</span>
-                    <span class="goal-value" th:text="${'₩' + #numbers.formatInteger(previousMonthSavableAmount, 0, 'COMMA')}">₩0</span>
-                </div>
-                <div class="progress-bar-container">
-				    <div class="progress-bar-label">예산 사용률:</div> <div class="progress-bar-bg">
-				        <div class="progress-bar-fill"
-				             th:style="'width:' + ${#numbers.formatDecimal(budgetUsageProgress, 0, 0)} + '%'">
-				            <span th:text="${#numbers.formatDecimal(budgetUsageProgress, 0, 0)} + '%'">0%</span>
+		<div class="savings-goal-section">
+		    <h2>📊 지난달 절약 목표</h2>
+		
+		    <div th:if="${savingsPlan != null and not #maps.isEmpty(savingsPlan)}" class="goal-details-card">
+		        <div class="goal-item">
+		            <span class="goal-label">목표:</span>
+		            <span class="goal-value" th:text="${savingsPlan['save_name'] ?: '미설정'}">목표명</span>
+		        </div>
+		        <div class="goal-item">
+		            <span class="goal-label">목표 금액:</span>
+		            <span class="goal-value" th:text="${'₩' + #numbers.formatInteger(savingsPlan['save_amount'] ?: 0, 0, 'COMMA')}">₩0</span>
+		        </div>
+		        <div class="goal-item">
+		            <span class="goal-label">시작일:</span>
+		            <span class="goal-value" th:text="${savingsPlan['save_created_date'] != null ? #temporals.format(savingsPlan['save_created_date'], 'yyyy-MM-dd') : '데이터 없음'}">YYYY-MM-DD</span>
+		        </div>
+		        <div class="goal-item">
+		            <span class="goal-label">목표 달성일:</span>
+		            <span class="goal-value" th:text="${savingsPlan['save_target_date'] != null ? #temporals.format(savingsPlan['save_target_date'], 'yyyy-MM-dd') : '데이터 없음'}">YYYY-MM-DD</span>
+		        </div>
+		        <div class="goal-item">
+		            <span class="goal-label">지난달 저축가능 금액:</span>
+		            <span class="goal-value" th:text="${previousMonthSavableAmount != null and previousMonthSavableAmount > 0 ? '₩' + #numbers.formatInteger(previousMonthSavableAmount, 0, 'COMMA') : '지난 달의 데이터가 없습니다.'}">₩0</span>
+		        </div>
+		
+				<div class="budget-usage-section" th:if="${previousMonthBudgetUsageProgress != null and previousMonthBudgetUsageProgress >= 0}">
+				    <h3 class="section-title">예산 사용률</h3> <div class="progress-bar-container"> <div class="progress-bar-bg">
+				            <div class="progress-bar-fill"
+				                 th:style="'width:' + ${#numbers.formatDecimal(previousMonthBudgetUsageProgress, 0, 0)} + '%'">
+				                <span th:text="${#numbers.formatDecimal(previousMonthBudgetUsageProgress, 0, 0)} + '%'">0%</span>
+				            </div>
 				        </div>
 				    </div>
 				</div>
-            </div>
-        
-        <div class="savings-plan-section" th:if="${savingsPlan == null or #maps.isEmpty(savingsPlan)}">
-            <p>설정된 절약 목표가 없습니다. 새로운 예산을 설정해 보세요!</p>
-            <button class="btn" onclick="move()">새로운 예산 생성하기</button>
-        </div>
-        <div class="savings-plan-section" th:if="${savingsPlan != null}">
-            <p>설정된 절약 목표가 있습니다. 종합분석으로 확실하게!</p>
-            <button class="btn" onclick="move1()">종합분석 화면으로 가기</button>
-        </div>
+		    </div>
+		
+		    <div class="savings-plan-section" th:if="${savingsPlan == null or #maps.isEmpty(savingsPlan)}">
+		        <p>지난달의 절약 목표 데이터가 없습니다. 새로운 예산을 설정하거나 이전 데이터를 확인해 보세요!</p>
+		        <button class="btn" onclick="move()">새로운 예산 생성하기</button>
+		    </div>
+		
+		    <div class="savings-plan-section" th:if="${savingsPlan != null and not #maps.isEmpty(savingsPlan)}">
+		        <p>설정된 절약 목표가 있습니다. 종합분석으로 확실하게!</p>
+		        <button class="btn" id="moveToCanalysisBtn">종합분석 화면으로 가기</button>
+		    </div>
+		</div>
 	</div>
 </div>
-</div>
 	<div th:replace="fragments/footer :: footer"></div>
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    document.addEventListener("DOMContentLoaded", function () {
-        // Thymeleaf에서 JSON 문자열로 전달된 데이터를 JavaScript 객체로 파싱
-        const monthlyExpensesLabels = /*[[${monthlyExpensesLabels}]]*/ [];
-        const monthlyExpensesValues = /*[[${monthlyExpensesValues}]]*/ [];
+	
+    <script th:inline="javascript">
+        const monthlyLabelsFromThymeleaf = /*[[${monthlyExpensesLabelsJson}]]*/ '[]';
+        const monthlyValuesFromThymeleaf = /*[[${monthlyExpensesValuesJson}]]*/ '[]';
+        window.chartData = {
+            labels: monthlyLabelsFromThymeleaf,
+            values: monthlyValuesFromThymeleaf
+        };
+    </script>
+<script src="../js/expense_analysis.js"></script>
 
-        // 월별 지출 추이 그래프
-        const ctx = document.getElementById('monthlyExpenseChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: monthlyExpensesLabels, // 이제 실제 JavaScript 배열입니다.
-                datasets: [{
-                    label: '월별 총 지출 (원)',
-                    data: monthlyExpensesValues, // 이제 실제 JavaScript 배열입니다.
-                    backgroundColor: 'rgba(255, 215, 0, 0.2)',
-                    borderColor: '#FFD700',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '₩' + value.toLocaleString();
-                            }
-                        }
-                    },
-                    x: { // x축도 명시적으로 설정하여 날짜/월별 레이블이 올바르게 표시되도록 합니다.
-                        // type: 'category' 또는 기본 설정 (auto)을 사용합니다.
-                        // 필요에 따라 'time' 타입을 사용하려면 Chart.js adapter가 필요합니다.
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.dataset.label + ': ₩' + context.parsed.y.toLocaleString();
-                            }
-                        }
-                    }
-                }
-            }
-        });
 
-        // 카드 hover 효과 (기존 코드 유지)
-        const statCards = document.querySelectorAll('.stat-card');
-        statCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
-            });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // --- ChatGPT 피드백 로드 로직 (자동 실행) ---
-        const feedbackArea = document.getElementById('chatGptFeedbackArea'); // <-- 이 부분 수정
-        const csrfToken = document.querySelector('input[name="_csrf"]')?.value; // CSRF 토큰 가져오기 (POST 요청 시 필요)
-
-        if (!csrfToken) {
-            feedbackArea.innerHTML = '<p style="color: red;">오류: CSRF 토큰을 찾을 수 없습니다.</p>';
-            console.error("CSRF token not found.");
-            return;
-        }
-
-        // 페이지 로드 시 자동으로 피드백을 가져오는 함수
-        function loadFeedbackAutomatically() {
-            feedbackArea.innerHTML = '<p>피드백을 로드 중입니다...</p>'; // 로딩 메시지
-
-            // 모든 지표를 기본적으로 선택된 것으로 간주하고 프롬프트에 포함
-            // 백엔드의 `getChatGptFeedbackForEfeedback` 메서드가 이 리스트를 받을 것입니다.
-            const selectedMetrics = [
-                "totalExpense",
-                "averageDailyExpense",
-                "daysLeft",
-                "remainingBudget"
-            ];
-            // 만약 카테고리별 지출 피드백도 항상 포함하고 싶다면, 백엔드 로직에서 항상 포함하도록 하거나,
-            // 여기에 'categoryExpenses' 같은 값도 추가하고 백엔드에서 처리하도록 구현할 수 있습니다.
-
-            fetch('/consumption/getChatGptFeedbackForEanalysis', { // 요청 주소를 명확히 지정
-                method: 'POST', // POST 요청
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken // CSRF 토큰 헤더에 포함
-                },
-                // 선택된 지표 목록을 JSON 배열로 전송
-                body: JSON.stringify({ selectedMetrics: selectedMetrics })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // 응답이 성공(200번대)이 아니면 오류 처리
-                    throw new Error('네트워크 응답이 올바르지 않습니다: ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.feedback) {
-                    // 줄바꿈 문자를 <br> 태그로 변환하여 HTML에 올바르게 표시
-                    feedbackArea.innerHTML = '<p>' + data.feedback.replace(/\n/g, '<br>') + '</p>';
-                } else if (data && data.error) { // 백엔드에서 에러 메시지를 보낼 경우
-                    feedbackArea.innerHTML = '<p style="color: red;">오류: ' + data.error + '</p>';
-                } else {
-                    feedbackArea.innerHTML = '<p>피드백을 가져오지 못했습니다.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('ChatGPT 피드백을 가져오는 중 오류 발생:', error);
-                feedbackArea.innerHTML = '<p style="color: red;">피드백 로드 중 오류가 발생했습니다: ' + error.message + '</p>';
-            });
-        }
-
-        // 페이지 로드 완료 시 피드백 자동 호출
-        loadFeedbackAutomatically();
-
-        // 기존의 move 함수들 (예산 설정, 종합 분석 화면 이동)은 그대로 유지
-        function move() {
-            const btn = event.target;
-            btn.textContent = '예산 설정으로 가는 중...';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                btn.textContent = '새로운 예산 생성하기';
-                btn.disabled = false;
-
-                window.location.href = '/consumption/bplanner';
-            }, 2000);
-        }
-        
-        function move1() {
-            const btn = event.target;
-            btn.textContent = '종합 분석하는 중...';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                btn.textContent = '종합분석 화면으로 가기';
-                btn.disabled = false;
-
-                window.location.href = '/consumption/canalysis';
-            }, 2000);
-        }
-    });
-    /*]]>*/
-</script>
 </body>
 </html>

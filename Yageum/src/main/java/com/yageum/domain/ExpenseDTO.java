@@ -23,4 +23,11 @@ public class ExpenseDTO {
     private boolean expenseType;
     private int methodIn;
 
+    private String methodType;
+    private String cardName;
+    private String accountName;
+    private String bankName;
+    
+    private String csName;
+    private String cmName;
 }

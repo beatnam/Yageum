@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://mybatis.org/mybatis-3/getting-started.html
+src/main/resources/mapper폴더/MemberMapper.xml파일 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yageum.mapper.QuestMapper">
+
+	<select id="searchMemberIn" resultType="java.lang.Integer">
+		select member_in
+		from member
+		where member_id = #{memberId}
+
+	</select>
+
+	<insert id="acceptQuest">
+		insert into quest_state
+		values(#{memberIn}, #{questIn}, #{qpIn}, #{qsSuccessDate},
+		#{rewardDate})
+
+	</insert>
+
+	<select id="listQuest" resultType="map">
+		select quest_in, quest_name, quest_type_name,
+		goal_value, reward_value, start_date, end_date, is_valid
+		from quest q
+		join quest_type t
+		on q.quest_type_in = t.quest_type_in
+		where quest_in not in (select quest_in from quest_state where member_in
+		= #{memberIn})
+	</select>
+
+	<select id="myQuest" resultType="map">
+		select q.quest_in, quest_name, quest_type_name, qp_name,
+		reward_value, start_date, end_date
+		from quest q
+		join quest_type t
+		on q.quest_type_in = t.quest_type_in
+		join quest_state s
+		on s.quest_in = q.quest_in
+		join quest_progress p
+		on s.qp_in = p.qp_in
+
+		where s.quest_in in (select s.quest_in from quest_state where s.member_in =
+		#{memberIn})
+	</select>
+</mapper>

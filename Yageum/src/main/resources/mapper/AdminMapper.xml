@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://mybatis.org/mybatis-3/getting-started.html
+src/main/resources/mapper폴더/MemberMapper.xml파일 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yageum.mapper.AdminMapper">
+
+	<select id="showCategoryMain" resultType="com.yageum.domain.CategoryMainDTO">
+		select *
+		from category_main
+
+	</select>
+
+	<select id="subCategorySelect" resultType="com.yageum.domain.CategorySubDTO">
+		select *
+		from category_sub
+		where cm_in= #{cmIn}
+	</select>
+
+	<insert id="insertQuest" parameterType="com.yageum.domain.QuestDTO">
+		insert into quest(quest_name, quest_type_in, cm_in, cs_in, goal_value,
+		reward_value, start_date, end_date, is_valid)
+		values(#{questName},
+		#{questTypeIn},#{cmIn},#{csIn},#{goalValue},#{rewardValue},#{startDate},
+		#{endDate}, #{isValid})
+	</insert>
+
+	<select id="listQuest" resultType="map">
+		select quest_in, quest_name, quest_type_name,
+		goal_value, reward_value, start_date, end_date, is_valid
+		from quest q
+		join quest_type t
+		on q.quest_type_in = t.quest_type_in
+	</select>
+
+	<select id="questDetail" resultType="com.yageum.domain.QuestDTO">
+		select *
+		from quest
+		where quest_in = #{questIn}
+	</select>
+	
+	<update id = "updateQuest"  parameterType="com.yageum.domain.QuestDTO">
+		update quest
+		set quest_name = #{questName} , quest_type_in = #{questTypeIn}, cm_in = #{cmIn}, cs_in = #{csIn},
+		    goal_value = #{goalValue}, reward_value = #{rewardValue}, start_date = #{startDate},
+		    end_date = #{endDate} 
+		where quest_in = #{questIn}	
+	</update>
+
+	<delete id = "deleteQuest" parameterType="com.yageum.domain.QuestDTO">
+		delete from quest
+		where quest_in = #{questIn}
+	
+	</delete>
+	
+	
+	<update id = "changeQuestValid">
+		update quest
+		set is_valid = false
+		where end_date &lt; (select CURDATE())
+	
+	</update>
+</mapper>

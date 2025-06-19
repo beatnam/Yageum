@@ -40,6 +40,7 @@ public class ConsumptionController {
 
     private final ConsumptionService consumptionService;
     private final ChatGPTClient chatGPTClient;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/efeedback")
     public String efeedback(Model model) {
@@ -203,9 +204,10 @@ public class ConsumptionController {
 
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
         if (memberIn == null) {
-            log.warning("Member not found for memberId: " + memberId);
+            log.info("Member not found for memberId: " + memberId);
             return "redirect:/error";
         }
+
         // 1. 이번 달 기준 데이터 (Current Month Data)
 
         // 이번 달 총 지출
@@ -227,12 +229,13 @@ public class ConsumptionController {
         int remainingBudget = currentMonthBudget - totalExpense;
         model.addAttribute("remainingBudget", remainingBudget);
 
-        // 예산 사용률 (이번 달 기준)
-        double budgetUsageProgress = 0.0;
+        // 예산 사용률 (이번 달 기준) - 변수명 변경: currentMonthBudgetUsageProgress
+        double currentMonthBudgetUsageProgress = 0.0;
         if (currentMonthBudget != 0) {
-            budgetUsageProgress = (totalExpense * 100.0) / currentMonthBudget;
+            currentMonthBudgetUsageProgress = (totalExpense * 100.0) / currentMonthBudget;
         }
-        model.addAttribute("budgetUsageProgress", budgetUsageProgress);
+        model.addAttribute("currentMonthBudgetUsageProgress", Math.max(0.0, currentMonthBudgetUsageProgress));
+
 
         // 월별 지출 추이 그래프 데이터 (현재 연도 데이터)
         List<Map<String, Object>> monthlyExpensesData = consumptionService.getMonthlyExpensesForCurrentYear(memberIn);
@@ -246,21 +249,39 @@ public class ConsumptionController {
 
         if (!monthlyExpensesData.isEmpty()) {
             monthlyExpensesData.forEach(entry -> {
-                int monthValue = (int) entry.get("month");
+                int monthValue = ((Number) entry.get("month")).intValue();
                 int totalExpenseAmount = ((Number) entry.get("totalExpense")).intValue();
 
                 monthlyExpensesLabels.add(monthValue + "월");
                 monthlyExpensesValues.add(totalExpenseAmount);
             });
         }
+        
+        try {
+            // ObjectMapper를 사용하여 리스트를 JSON 문자열로 변환
+            String labelsJson = objectMapper.writeValueAsString(monthlyExpensesLabels);
+            String valuesJson = objectMapper.writeValueAsString(monthlyExpensesValues);
 
-        model.addAttribute("monthlyExpensesLabels", monthlyExpensesLabels);
-        model.addAttribute("monthlyExpensesValues", monthlyExpensesValues);
+            // 변환된 JSON 문자열을 HTML에서 찾는 이름으로 모델에 추가
+            model.addAttribute("monthlyExpensesLabelsJson", labelsJson);
+            model.addAttribute("monthlyExpensesValuesJson", valuesJson);
+
+        } catch (Exception e) {
+            log.info("월별 지출 추이 JSON 변환 중 오류 발생: " + e.getMessage() + e);
+            // 오류 발생 시 빈 JSON 배열 문자열이라도 넘겨주어 클라이언트에서 파싱 오류 방지
+            model.addAttribute("monthlyExpensesLabelsJson", "[]");
+            model.addAttribute("monthlyExpensesValuesJson", "[]");
+        }
 
         // 2. 지난 달 기준 데이터 (Previous Month Data)
 
         // 지난달 절약 목표 정보 가져오기
         Map<String, Object> previousMonthSavingsPlan = consumptionService.getPreviousMonthSavingsPlan(memberIn);
+
+        if (previousMonthSavingsPlan != null && previousMonthSavingsPlan.isEmpty()) {
+            previousMonthSavingsPlan = null;
+            log.info("previousMonthSavingsPlan was an empty map, setting to null for Thymeleaf processing.");
+        }
 
         if (previousMonthSavingsPlan != null) {
             if (previousMonthSavingsPlan.get("save_created_date") instanceof java.sql.Date) {
@@ -272,10 +293,17 @@ public class ConsumptionController {
         }
         model.addAttribute("savingsPlan", previousMonthSavingsPlan);
 
-
         //지난달 저축가능 금액
-        int previousMonthSavableAmount = consumptionService.getPreviousMonthRemainingBudget(memberIn);
+        Integer previousMonthSavableAmount = consumptionService.getPreviousMonthRemainingBudget(memberIn);
+        if (previousMonthSavableAmount == null) {
+            previousMonthSavableAmount = 0;
+            log.info("previousMonthSavableAmount was null, setting to 0.");
+        }
         model.addAttribute("previousMonthSavableAmount", previousMonthSavableAmount);
+
+        //지난달 예산 사용률
+        double previousMonthBudgetUsageProgress = consumptionService.getPreviousMonthBudgetUsageProgress(memberIn);
+        model.addAttribute("previousMonthBudgetUsageProgress", previousMonthBudgetUsageProgress);
 
 
         return "/consumption/expense_analysis";
@@ -327,7 +355,7 @@ public class ConsumptionController {
                     promptBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("원\n");
                 }
                 promptBuilder.append("총 지출: ").append(totalExpense).append("원\n\n");
-                promptBuilder.append("이 지출 내역을 바탕으로 따뜻한 어조로 카테고리별로 분석하고, 장단점과 함께 피드백을 해줘. 그리고 전반적인 소비 패턴에 대한 의견도 줘. 그리고 300글자 내로 답해줘.");
+                promptBuilder.append("이 지출 내역을 바탕으로 따뜻한 어조로 카테고리별로 분석하고, 장단점과 함께 피드백을 해줘. 그리고 전반적인 소비 패턴에 대한 의견도 줘. 답변은 최대 300글자 내로 줄바꿈을 포함하여 가독성 있게 작성해줘.\\n\\n");
             }
 
             String prompt = promptBuilder.toString();
@@ -455,15 +483,74 @@ public class ConsumptionController {
         return "/consumption/budget_planner";
     }
     
+    @GetMapping("/hasSavingsPlanForMonth")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> hasSavingsPlanForMonth(
+            @RequestParam("month") int month,
+            @RequestParam("year") int year,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Integer memberIn = consumptionService.getMemberInByMemberId(userDetails.getUsername());
+        if (memberIn == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        try {
+            LocalDate date = LocalDate.of(year, month, 1);
+            LocalDate startOfMonth = date.with(TemporalAdjusters.firstDayOfMonth());
+            LocalDate endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
+
+            boolean exists = consumptionService.hasSavingsPlanForMonth(memberIn, startOfMonth, endOfMonth);
+            
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("exists", exists);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.info("hasSavingsPlanForMonth API 오류: {}" + e.getMessage() + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @GetMapping("/hasSavingsPlanForCurrentMonth")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> hasSavingsPlanForCurrentMonth(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Integer memberIn = consumptionService.getMemberInByMemberId(userDetails.getUsername());
+        if (memberIn == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        try {
+            boolean exists = consumptionService.hasSavingsPlanForCurrentMonth(memberIn);
+            
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("exists", exists);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.info("hasSavingsPlanForCurrentMonth API 오류: {}" + e.getMessage() + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/bplannerPro")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> bplannerPro(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody Map<String, Object> payload,
-            SavingsPlanDTO savingsPlanDTO
+            @RequestBody Map<String, Object> budgetData
     ) {
         Map<String, Object> response = new HashMap<>();
-        log.info("ConsumptionController bplannerPro() 호출 - 총 수입 저장 요청");
+        log.info("ConsumptionController bplannerPro() 호출 - 예산 저장/업데이트 요청");
 
         try {
             if (userDetails == null) {
@@ -479,52 +566,253 @@ public class ConsumptionController {
                 response.put("message", "회원 고유 번호를 찾을 수 없습니다.");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            Integer totalIncome = (Integer) payload.get("totalIncome");
-            String saveName = (String) payload.get("save_name");
 
-            if (totalIncome == null) {
-                response.put("success", false);
-                response.put("message", "총 수입 값이 누락되었습니다.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
-            LocalDate today = LocalDate.now();
-            LocalDate firstDayOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
-            LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
-            int chackPlan = consumptionService.planChack(memberIn);
+            boolean success = consumptionService.saveOrUpdateSavingsPlan(memberIn, budgetData);
 
-            if (chackPlan == 0) {
-                savingsPlanDTO.setMemberId(memberIn);
-                savingsPlanDTO.setSaveName(saveName);
-                savingsPlanDTO.setSaveAmount(totalIncome);
-                savingsPlanDTO.setSaveCreatedDate(firstDayOfMonth);
-                savingsPlanDTO.setSaveTargetDate(lastDayOfMonth);
-                consumptionService.updateMonthlyIncome(savingsPlanDTO); 
-
-                log.info("회원 ID {}의 총 수입 {} 저장 성공" + memberIn + totalIncome);
+            if (success) {
+                log.info("회원 ID {}의 예산 저장/업데이트 성공" + memberIn);
                 response.put("success", true);
-                response.put("message", "예산이 성공적으로 저장되었습니다.");
+                response.put("message", "예산이 성공적으로 저장/업데이트 되었습니다.");
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                log.info("회원 ID {}의 이번 달 예산은 이미 저장되어 있습니다." + memberIn);
+                log.info("회원 ID {}의 예산 저장/업데이트 실패" + memberIn);
                 response.put("success", false);
-                response.put("message", "이번 달 예산이 이미 저장되어 있습니다.");
-                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                response.put("message", "예산 저장/업데이트에 실패했습니다.");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
         } catch (Exception e) {
-            log.info("bplannerPro 예산 저장 중 서버 오류 발생:" + e);
+            log.info("예산 저장/업데이트 중 오류 발생: {}" + e.getMessage() + e);
             response.put("success", false);
-            response.put("message", "예산 저장 중 서버 내부 오류가 발생했습니다: " + e.getMessage());
+            response.put("message", "예산 저장/업데이트 중 서버 오류가 발생했습니다.");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping("/checkPlan")
+    @ResponseBody
+    public int checkPlan(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    	log.info("ConsumptionController canalysis()");
+    	String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        
+        int chackPlan = consumptionService.planChack(memberIn);
+        
+    	return chackPlan;
+    }
+    
+    @PostMapping("/efeedset")
+    @ResponseBody
+    public Map<String, Object> efeedset(@AuthenticationPrincipal UserDetails userDetails,
+                                        @RequestBody Map<String, Object> payload) {
+        log.info("ConsumptionController efeedset() 호출됨");
+    	String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        String aiFeedback = (String) payload.get("feedbackContent");
 
+        // 1. 이번 달 계획이 있는지 확인 (기존 로직 유지)
+        int checkPlan = consumptionService.planChack(memberIn);
+        if(checkPlan != 1) { // 계획이 없는 경우
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "회원 " + memberId + "님의 이번달 계획이 없습니다. 예산 설정을 하세요.");
+            return response;
+        }
+
+        // 2. 이미 AI 피드백이 저장되어 있는지 확인
+        boolean hasExistingFeedback = consumptionService.hasExistingFeedback(memberIn, LocalDate.now().getYear(), LocalDate.now().getMonthValue());
+
+        if (hasExistingFeedback) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "이미 저장된 피드백이 있습니다.");
+            return response;
+        }
+
+        // 3. 모든 검사를 통과하면 AI 피드백 처리 및 저장
+        log.info("수신된 AI 피드백 내용: {}" + aiFeedback);
+        consumptionService.processAiFeedback(memberIn, aiFeedback);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "AI 피드백 처리 및 목표 생성이 성공적으로 완료되었습니다.");
+        return response;
+    }
+    
+    @PostMapping("/cfeedset")
+    @ResponseBody
+    public Map<String, Object> cfeedset(@AuthenticationPrincipal UserDetails userDetails,
+                                        @RequestBody Map<String, Object> payload) {
+        log.info("ConsumptionController cfeedset() 호출됨");
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+        String aiFeedback = (String) payload.get("feedbackContent");
+
+        // 1. 이번 달 계획이 있는지 확인 (기존 로직 유지)
+        int checkPlan = consumptionService.planChack(memberIn);
+        if (checkPlan != 1) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "회원 " + memberId + "님의 이번달 계획이 없습니다. 예산 설정을 하세요.");
+            return response;
+        }
+        log.info("수신된 종합 분석 피드백 내용 (bud_feedback): {}" + aiFeedback);
+        consumptionService.processAicFeedback(memberIn, aiFeedback);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "종합 분석 피드백 처리 및 목표 생성이 성공적으로 완료되었습니다.");
+        return response;
+    }
+    
+    @GetMapping("/hasBudFeedback")
+    @ResponseBody
+    public Map<String, Object> hasBudFeedback(@AuthenticationPrincipal UserDetails userDetails) {
+        log.info("ConsumptionController hasBudFeedback() 호출됨");
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // 이번 달의 bud_feedback 존재 여부를 확인하는 서비스 메소드 호출
+            boolean exists = consumptionService.hasExistingBudFeedback(memberIn);
+            response.put("exists", exists);
+            response.put("success", true);
+            log.info("bud_feedback 존재 여부 확인: {}" + exists);
+        } catch (Exception e) {
+            log.info("bud_feedback 존재 여부 확인 중 오류 발생: {}" + e.getMessage());
+            response.put("success", false);
+            response.put("error", "피드백 존재 여부 확인 중 서버 오류가 발생했습니다.");
+        }
+        return response;
+    }
+    
     @GetMapping("/canalysis")
     public String canalysis(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        log.info("ConsumptionController canalysis() 호출");
+        log.info("ConsumptionController canalysis()");
         String memberId = userDetails.getUsername();
         Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
         
+        // 이달의 총지출액(이번 달 총 지출)
+        int totalExpense = consumptionService.getTotalExpenseForCurrentMonth(memberIn);
+        model.addAttribute("totalExpense", totalExpense);
+
+        LocalDate today = LocalDate.now();
+        int totalDaysInMonth = today.lengthOfMonth();
+        int currentDayOfMonth = today.getDayOfMonth();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+        int daysLeft = totalDaysInMonth - currentDayOfMonth;
+        
+        // 일별 지출액(일평균 지출)
+        double averageDailyExpense = (currentDayOfMonth > 0) ? (double) totalExpense / currentDayOfMonth : 0;
+        model.addAttribute("averageDailyExpense", (int) Math.round(averageDailyExpense));
+        model.addAttribute("daysLeft", daysLeft);
+        
+        // 이번달 지출 횟수(총 거래 건수)
+        int countThisMonth = consumptionService.thisMonthCount(memberIn);
+        model.addAttribute("countThisMonth", countThisMonth);
+        
+        // 이번달 남은 금액(이번 달 남은 금액)
+        int currentMonthBudget = consumptionService.getBudgetForCurrentMonth(memberIn);
+        int remainingBudget = currentMonthBudget - totalExpense;
+        model.addAttribute("remainingBudget", remainingBudget);
+        
+        // 이번 달 카테고리별 지출 데이터 (차트용)
+        List<Map<String, Object>> categoryExpenses = consumptionService.getCategoryExpensesForChart(memberIn, month, year);
+        log.info("categoryExpenses : " + categoryExpenses);
+        model.addAttribute("categoryExpenses", categoryExpenses);
+
+        // 1. 카테고리별 지출 분석 인사이트 (텍스트)
+        String categoryAnalysisInsights = consumptionService.analyzeCategoryExpenses(categoryExpenses);
+        model.addAttribute("categoryAnalysisInsights", categoryAnalysisInsights);
+
+        // 2. 지난달 소비 수준 분석
+        Map<String, Object> lastMonthAnalysis = consumptionService.getLastMonthExpenseAnalysis(memberIn);
+        model.addAttribute("lastMonthAnalysis", lastMonthAnalysis);
+
+        // 3. 지난달 절약 목표 정보
+        Map<String, Object> previousMonthSavingsPlan = consumptionService.getPreviousMonthSavingsPlan(memberIn);
+        model.addAttribute("previousMonthSavingsPlan", previousMonthSavingsPlan);
+        
         return "/consumption/consumption_analysis";
     }
+    
+    @GetMapping("/getChatGptFeedbackForCanalysis")
+    @ResponseBody
+    public Map<String, String> getChatGptFeedbackForCanalysis() {
+        log.info("ConsumptionController getChatGptFeedbackForEfeedback() 호출");
+        Map<String, String> response = new HashMap<>();
+        String chatGptResponse = "분석 결과가 없습니다.";
+
+        try {
+            String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (memberId == null || memberId.isEmpty()) {
+                response.put("error", "로그인 정보가 없습니다.");
+                return response;
+            }
+
+            Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+            if (memberIn == null) {
+                response.put("error", "회원 정보를 찾을 수 없습니다.");
+                return response;
+            }
+            LocalDate today = LocalDate.now();
+            int year = today.getYear();
+            int month = today.getMonthValue();
+
+            Map<String, Object> storedFeedbacks = consumptionService.getAllFeedback(memberIn, month, year);
+            String storedCategoryFeedback = (String) storedFeedbacks.getOrDefault("categoryGptFeedback", "저장된 카테고리 피드백이 없습니다.");
+            String storedMonthlyFeedback = (String) storedFeedbacks.getOrDefault("monthlyGptFeedback", "저장된 월간 피드백이 없습니다.");
+
+            List<Map<String, Object>> currentMonthCategoryExpenses = consumptionService.getCategoryExpenseByMemberId(memberIn); 
+            
+            Map<String, Integer> aggregatedCategoryExpenses = currentMonthCategoryExpenses.stream()
+                .filter(e -> e.get("category_name") != null && e.get("total_expense") instanceof Number)
+                .collect(Collectors.toMap(
+                    e -> (String) e.get("category_name"),
+                    e -> ((Number) e.get("total_expense")).intValue(),
+                    Integer::sum
+                ));
+
+            int totalExpense = aggregatedCategoryExpenses.values().stream().mapToInt(Integer::intValue).sum();
+            
+            StringBuilder promptBuilder = new StringBuilder();
+            
+            promptBuilder.append("나는 이번 달에 지출이 다음과 같아:\n");
+            if (aggregatedCategoryExpenses.isEmpty()) {
+                promptBuilder.append("이번 달 지출 내역이 아직 없어.\n");
+            } else {
+                for (Map.Entry<String, Integer> entry : aggregatedCategoryExpenses.entrySet()) {
+                    promptBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("원\n");
+                }
+                promptBuilder.append("총 지출: ").append(totalExpense).append("원\n\n");
+            }
+            
+            promptBuilder.append("이전 분석받은 피드백은 다음과 같아:\n");
+            promptBuilder.append("- 카테고리별 과거 피드백: ").append(storedCategoryFeedback).append("\n");
+            promptBuilder.append("- 월간 과거 피드백: ").append(storedMonthlyFeedback).append("\n\n");
+
+            promptBuilder.append("위의 이번 달 지출 내역과 이전 피드백을 종합하여, ");
+            promptBuilder.append("나의 전반적인 소비 패턴에 대한 새로운 분석과 앞으로의 소비 습관 개선을 위한 ");
+            promptBuilder.append("따뜻하고 격려적인 어조의 종합적인 AI 피드백을 제공해줘. ");
+            promptBuilder.append("답변은 400글자로 내외로 핵심 내용을 요약하고, 줄바꿈을 포함하여 가독성 있게 작성해줘.\n");
+
+            String prompt = promptBuilder.toString();
+            log.info("ChatGPT Prompt: " + prompt);
+
+            chatGptResponse = chatGPTClient.askChatGpt(prompt);
+            log.info("ChatGPT Response: " + chatGptResponse);
+
+            response.put("feedback", chatGptResponse);
+
+        } catch (Exception e) {
+            log.severe("ChatGPT 피드백 생성 중 오류 발생: " + e.getMessage());
+            response.put("error", "피드백을 생성하는 중 오류가 발생했습니다.");
+            response.put("feedback", "AI 피드백을 생성하는 데 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+        return response;
+    }
+    
+    
 }
