@@ -57,5 +57,7 @@ public interface SavingsPlanMapper {
             @Param("saveCreatedDate") LocalDate saveCreatedDate,
             @Param("saveTargetDate") LocalDate saveTargetDate,
             @Param("saveAmount") Integer saveAmount);
+
+    Integer getSaveIn(@Param("memberIn")Integer memberIn,@Param("year") int year,@Param("month") int month);
 	
 }

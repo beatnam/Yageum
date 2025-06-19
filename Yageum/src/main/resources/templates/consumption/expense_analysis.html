@@ -21,7 +21,7 @@
 	
 	<div th:replace="fragments/c_sidebar :: c_sidebar"></div>
 <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
-
+<div class="main-wrapper">
     <div class="container">
 	    <div class="stats-grid">
 	        <div class="stat-card">
@@ -110,6 +110,7 @@
 		        <button class="btn" id="moveToCanalysisBtn">종합분석 화면으로 가기</button>
 		    </div>
 		</div>
+	</div>
 	</div>
 </div>
 	<div th:replace="fragments/footer :: footer"></div>

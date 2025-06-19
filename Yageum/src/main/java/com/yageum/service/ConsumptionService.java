@@ -2,18 +2,22 @@ package com.yageum.service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.yageum.domain.SavingsPlanDTO;
+import com.yageum.mapper.ConsumptionMapper;
 import com.yageum.mapper.ExpenseMapper;
 import com.yageum.mapper.SavingsPlanMapper;
 
@@ -29,6 +33,7 @@ public class ConsumptionService {
     
     private final ExpenseMapper expenseMapper;
     private final SavingsPlanMapper savingsPlanMapper;
+    private final ConsumptionMapper consumptionMapper;
 
     // member_id(String)를 사용하여 member_in(int) 조회
     public Integer getMemberInByMemberId(String memberId) {
@@ -533,6 +538,112 @@ public class ConsumptionService {
             );
         }
         return result > 0;
+    }
+    
+    public Optional<Map<String, Object>> getConsumptionByMemberAndMonth(int memberIn, LocalDate conMonth) {
+        return consumptionMapper.findConsumptionByMemberAndMonth(memberIn, conMonth);
+    }
+
+    @Transactional
+    public void saveNewOrUpdateAiFeedback(int memberIn, Integer saveIn, LocalDate conMonth, String feedbackContent, int totalExpense) {
+        Optional<Map<String, Object>> existingConsumptionOpt = consumptionMapper.findConsumptionByMemberAndMonth(memberIn, conMonth);
+
+        if (existingConsumptionOpt.isPresent()) {
+            consumptionMapper.updateAiFeedback(memberIn, conMonth, feedbackContent);
+        } else {
+            Map<String, Object> params = new HashMap<>();
+            params.put("memberIn", memberIn);
+            params.put("conMonth", conMonth);
+            params.put("saveIn", saveIn);
+            params.put("feedbackContent", feedbackContent);
+            params.put("conTotal", totalExpense);
+
+            consumptionMapper.insertConsumption(params);
+        }
+    }
+
+	public Integer getSaveIn(Integer memberIn, int year, int month) {
+		
+		return savingsPlanMapper.getSaveIn(memberIn, year, month);
+	}
+	
+    public List<Map<String, Object>> getConsumptionFeedbacksByMemberIn(Integer memberIn) {
+        log.info("ConsumptionService getConsumptionFeedbacksByMemberIn() 호출: memberIn={}"+ memberIn);
+
+        if (memberIn == null) {
+            log.info("getConsumptionFeedbacksByMemberIn: memberIn이 null입니다. 빈 리스트 반환.");
+            return Collections.emptyList();
+        }
+
+        List<Map<String, Object>> feedbacks = consumptionMapper.getConsumptionFeedbacksByMemberIn(memberIn);
+
+        if (feedbacks == null || feedbacks.isEmpty()) {
+            log.info("memberIn={}에 대한 피드백 데이터가 없습니다."+ memberIn);
+            return Collections.emptyList();
+        }
+        for (Map<String, Object> feedback : feedbacks) {
+            Object conMonthObj = feedback.get("conMonth");
+            LocalDate conMonth;
+
+            if (conMonthObj instanceof LocalDate) {
+                conMonth = (LocalDate) conMonthObj;
+            } else if (conMonthObj instanceof String) {
+                conMonth = LocalDate.parse((String) conMonthObj, DateTimeFormatter.ISO_LOCAL_DATE);
+            } else {
+                conMonth = LocalDate.now();
+            }
+
+            int year = conMonth.getYear();
+            int month = conMonth.getMonthValue();
+
+            List<Map<String, Object>> monthlyExpenses = expenseMapper.getCategoryExpenseByMonth(memberIn, month, year);
+
+            Map<String, Integer> categoriesMap = new LinkedHashMap<>();
+            for (Map<String, Object> expense : monthlyExpenses) {
+                String category = (String) expense.get("category_name");
+                Object amountObj = expense.get("total_expense");
+                int amount = 0;
+                if (amountObj instanceof Number) {
+                    amount = ((Number) amountObj).intValue();
+                }
+
+                if (category != null) {
+                    categoriesMap.put(category, categoriesMap.getOrDefault(category, 0) + amount);
+                }
+            }
+            feedback.put("categories", categoriesMap);
+        }
+
+        feedbacks.sort(Comparator.comparing(feedback -> {
+            Object conMonthObj = ((Map<String, Object>) feedback).get("conMonth");
+            if (conMonthObj instanceof LocalDate) {
+                return (LocalDate) conMonthObj;
+            } else if (conMonthObj instanceof String) {
+                 return LocalDate.parse((String) conMonthObj, DateTimeFormatter.ISO_LOCAL_DATE);
+            }
+            return LocalDate.MIN;
+        }, Comparator.reverseOrder()));
+
+        return feedbacks;
+    }
+
+    public boolean checkFeedbackOwnership(Integer conInId, Integer memberIn) {
+        log.info("ConsumptionService checkFeedbackOwnership() 호출: conInId={}, memberIn={}"+ conInId+ memberIn);
+        if (conInId == null || memberIn == null) {
+            return false;
+        }
+        return consumptionMapper.checkFeedbackOwnership(conInId, memberIn);
+    }
+
+    @Transactional
+    public boolean deleteConsumptionFeedback(Integer conInId) {
+        log.info("ConsumptionService deleteConsumptionFeedback() 호출: conInId={}"+ conInId);
+        if (conInId == null) {
+            log.info("deleteConsumptionFeedback: conInId가 null입니다. 삭제 실패.");
+            return false;
+        }
+        int deletedRows = consumptionMapper.deleteConsumptionFeedback(conInId);
+        return deletedRows > 0;
     }
     
 }

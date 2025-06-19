@@ -1,10 +1,18 @@
 @charset "UTF-8";
 
 		
+		.main-wrapper {
+		    flex-grow: 1;
+		    padding: 20px;
+		    box-sizing: border-box;
+		    background-color: #FFF9E5;
+		}
+		
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #FFF9E5;
         }
 		
         .budget-header {

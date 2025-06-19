@@ -1,0 +1,165 @@
+@charset "UTF-8";
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+.main-wrapper {
+    flex-grow: 1;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #FFF9E5;
+}
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: #fbf8ef; /* 변경: 더 밝은 배경색 */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* 변경: 그림자 조정 */
+}
+.header_list {
+    text-align: center;
+    background-color: #FFD44D;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #dee2e6; /* 변경: 더 연한 테두리 */
+    padding-bottom: 20px;
+    border-radius: 12px;
+}
+.header_list h1 {
+    color: #495057; /* 변경: 더 어두운 제목 색상 */
+    font-size: 2.2em;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* 추가: 텍스트 그림자 */
+}
+.header_list p {
+    color: #6c757d; /* 변경: 더 밝은 설명 색상 */
+    font-size: 1.1em;
+}
+.feedback-list-section {
+    margin-top: 30px;
+}
+.feedback-item {
+    background-color: #fff; /* 유지: 아이템 배경색 */
+    border: 1px solid #ced4da; /* 변경: 더 연한 테두리 */
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 변경: 그림자 조정 */
+    transition: all 0.3s ease;
+}
+.feedback-item:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* 변경: 호버 시 그림자 조정 */
+    transform: translateY(-2px);
+}
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.feedback-title {
+    font-size: 1.4em;
+    color: #343a40; /* 변경: 더 어두운 제목 색상 */
+    font-weight: bold;
+}
+.feedback-meta {
+    font-size: 0.95em;
+    color: #6c757d; /* 변경: 메타 정보 색상 */
+}
+.feedback-meta span {
+    margin-left: 15px;
+}
+.feedback-actions {
+    display: flex;
+    gap: 10px;
+}
+.feedback-actions button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+.feedback-actions .view-button {
+    background-color: #f3c93b; /* 변경: 파란색 */
+    color: white;
+}
+.feedback-actions .view-button:hover {
+    background-color: #dbb639; /* 변경: 더 진한 파란색 */
+}
+.feedback-actions .delete-button {
+    background-color: #FF8A80; /* 변경: 빨간색 */
+    color: white;
+}
+.feedback-actions .delete-button:hover {
+    background-color: #4E342E; /* 변경: 더 진한 빨간색 */
+}
+
+/* ⭐⭐⭐ 여기에 새로운/수정된 CSS가 적용됩니다 ⭐⭐⭐ */
+.feedback-content {
+    border-top: 1px dashed #e0e0e0;
+    padding-top: 15px;
+    margin-top: 15px;
+    font-size: 1em;
+    line-height: 1.6;
+    color: #212529; /* 변경: 텍스트 색상 */
+    display: none; /* 기본적으로 숨김 */
+}
+
+/* feedback-content.show가 활성화될 때 flex 레이아웃 적용 */
+.feedback-content.show {
+    display: flex; /* 자식 요소들을 가로로 정렬 */
+    align-items: flex-start; /* 세로 축 정렬 (상단에 맞춤) */
+    max-height: 600px;
+    gap: 20px; /* 차트와 텍스트 사이 간격 */
+    padding: 20px; /* 내부 여백 */
+    background-color: #f8f9fa; /* 변경: 밝은 배경색 */
+    border-radius: 5px; /* 모서리 둥글게 (선택 사항) */
+}
+
+/* 차트 캔버스 스타일 */
+.feedback-content canvas {
+    flex: 0 0 30%; /* 변경: 30:70 비율을 위해 flex 속성 변경 */
+    min-width: 300px; /* 차트가 너무 작아지지 않도록 최소 너비 설정 */
+    max-width: 30%; /* 변경: 최대 너비도 30%로 제한 */
+    height: auto; /* 높이 자동 조절 */
+    margin: 0; /* 기존 마진 제거 */
+    width: 100%; /* 부모 flex 아이템 너비에 맞춰 확장 */
+    box-sizing: border-box; /* 패딩, 보더 포함 너비 계산 */
+}
+
+/* 피드백 텍스트 스타일 */
+.feedback-content p {
+    flex: 1; /* 변경: 남은 공간을 모두 차지 (약 70%) */
+    min-width: 350px; /* 텍스트가 너무 작아지지 않도록 최소 너비 설정 */
+    max-width: 70%; /* 변경: 최대 너비 70% (필요시 조절) */
+    line-height: 1.8; /* 줄 간격 조절 */
+    color: #212529; /* 변경: 텍스트 색상 */
+    font-size: 1rem; /* 폰트 크기 */
+    margin: 0; /* 기본 마진 제거 */
+    white-space: pre-wrap; /* 줄바꿈 유지 */
+    padding-left: 10px; /* 차트와의 간격 확보 */
+    border-left: 1px solid #dee2e6; /* 추가: 차트와 텍스트 사이 구분선 (색상 변경) */
+}
+
+/* 모바일 화면 등 작은 화면 대응 */
+@media (max-width: 768px) {
+    .feedback-content.show {
+        flex-direction: column; /* 작은 화면에서는 세로로 다시 정렬 */
+        align-items: center; /* 가운데 정렬 */
+    }
+    .feedback-content canvas,
+    .feedback-content p {
+        flex: none; /* flex 속성 해제 */
+        width: 100%; /* 전체 너비 차지 */
+        max-width: 90%; /* 너비를 넓게 사용 */
+        min-width: unset; /* 최소 너비 제한 해제 */
+        padding-left: 0;
+        border-left: none;
+    }
+    .feedback-content canvas {
+        margin-bottom: 20px; /* 차트와 텍스트 사이에 여백 추가 */
+    }
+}

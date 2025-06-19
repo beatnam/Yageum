@@ -1,13 +1,16 @@
 package com.yageum.controller;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -17,12 +20,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.yageum.service.ConsumptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +38,7 @@ import com.yageum.service.ChatGPTClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j;
 
 @Controller
 @RequiredArgsConstructor
@@ -740,10 +748,11 @@ public class ConsumptionController {
     
     @GetMapping("/getChatGptFeedbackForCanalysis")
     @ResponseBody
-    public Map<String, String> getChatGptFeedbackForCanalysis() {
-        log.info("ConsumptionController getChatGptFeedbackForEfeedback() 호출");
-        Map<String, String> response = new HashMap<>();
+    public Map<String, Object> getChatGptFeedbackForCanalysis() { // Map<String, Object>로 반환 타입 변경
+        log.info("ConsumptionController getChatGptFeedbackForCanalysis() 호출");
+        Map<String, Object> response = new HashMap<>(); // Object 타입을 값으로 받을 수 있도록 변경
         String chatGptResponse = "분석 결과가 없습니다.";
+        boolean hasExistingFeedback = false; // 새로운 변수 초기화
 
         try {
             String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -760,6 +769,18 @@ public class ConsumptionController {
             LocalDate today = LocalDate.now();
             int year = today.getYear();
             int month = today.getMonthValue();
+            LocalDate conMonthDate = YearMonth.now().atDay(1); // 해당 월의 첫째 날
+
+            // ★★★★ 기존 피드백 존재 여부 확인 로직 추가 ★★★★
+            Optional<Map<String, Object>> existingConsumptionOpt = consumptionService.getConsumptionByMemberAndMonth(memberIn, conMonthDate);
+            if (existingConsumptionOpt.isPresent()) {
+                Object feedbackObj = existingConsumptionOpt.get().get("con_feedback");
+                if (feedbackObj instanceof String) {
+                    String existingFeedbackContent = (String) feedbackObj;
+                    hasExistingFeedback = (existingFeedbackContent != null && !existingFeedbackContent.trim().isEmpty());
+                }
+            }
+            response.put("hasExistingFeedback", hasExistingFeedback); // 클라이언트에 전송
 
             Map<String, Object> storedFeedbacks = consumptionService.getAllFeedback(memberIn, month, year);
             String storedCategoryFeedback = (String) storedFeedbacks.getOrDefault("categoryGptFeedback", "저장된 카테고리 피드백이 없습니다.");
@@ -796,7 +817,7 @@ public class ConsumptionController {
             promptBuilder.append("위의 이번 달 지출 내역과 이전 피드백을 종합하여, ");
             promptBuilder.append("나의 전반적인 소비 패턴에 대한 새로운 분석과 앞으로의 소비 습관 개선을 위한 ");
             promptBuilder.append("따뜻하고 격려적인 어조의 종합적인 AI 피드백을 제공해줘. ");
-            promptBuilder.append("답변은 400글자로 내외로 핵심 내용을 요약하고, 줄바꿈을 포함하여 가독성 있게 작성해줘.\n");
+            promptBuilder.append("답변은 200글자로 내외로 핵심 내용을 요약하고, 줄바꿈을 포함하여 가독성 있게 작성해줘.\n");
 
             String prompt = promptBuilder.toString();
             log.info("ChatGPT Prompt: " + prompt);
@@ -813,6 +834,152 @@ public class ConsumptionController {
         }
         return response;
     }
+
+    @PostMapping("/saveAiFeedback")
+    @ResponseBody
+    public ResponseEntity<?> saveAiFeedback(@RequestBody Map<String, Object> payload, @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails.getUsername() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        String feedbackContent = (String) payload.get("feedback");
+        Boolean isUpdate = (Boolean) payload.get("isUpdate");
+
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+
+        YearMonth currentYearMonth = YearMonth.now();
+        LocalDate conMonthDate = currentYearMonth.atDay(1);
+        LocalDate today = LocalDate.now();
+	    int year = today.getYear();
+	    int month = today.getMonthValue();
+	    Integer saveIn = consumptionService.getSaveIn(memberIn, year, month);
+	    int totalExpense = consumptionService.getTotalExpenseForCurrentMonth(memberIn);
+        if (feedbackContent == null || feedbackContent.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "피드백 내용이 없습니다."));
+        }
+
+        try {
+            consumptionService.saveNewOrUpdateAiFeedback(memberIn, saveIn, conMonthDate, feedbackContent, totalExpense);
+            
+            String message = (isUpdate != null && isUpdate) ? "AI 피드백이 성공적으로 업데이트되었습니다." : "AI 피드백이 성공적으로 저장되었습니다.";
+            return ResponseEntity.ok().body(Map.of("message", message));
+
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "사용자 ID 형식이 올바르지 않습니다."));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "AI 피드백 저장/업데이트 중 오류가 발생했습니다: " + e.getMessage()));
+        }
+    }
     
+    // 소비 분석 피드백 리스트 페이지
+    @GetMapping("/consumptionList")
+    public String consumptionList(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        log.info("ConsumptionController consumptionList() 호출됨.");
+
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+
+        List<Map<String, Object>> feedbackList = Collections.emptyList();
+
+        if (memberIn != null) {
+            feedbackList = consumptionService.getConsumptionFeedbacksByMemberIn(memberIn);
+        } else {
+            log.info("memberId: {} 에 해당하는 member_in을 찾을 수 없습니다. 빈 피드백 리스트를 반환합니다."+ memberId);
+        }
+
+        model.addAttribute("feedbackList", feedbackList);
+        return "/consumption/consumption_list";
+    }
+    
+    
+    @GetMapping("/categoryExpenses")
+    @ResponseBody
+    public Map<String, Integer> getCategoryExpenses(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(name = "month") int month,
+            @RequestParam(name = "year") int year) {
+
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+
+        if (memberIn == null) {
+            log.info("MemberIn not found for memberId: {}" + memberId);
+            return Collections.emptyMap();
+        }
+
+        List<Map<String, Object>> rawCategoryExpenses =
+                consumptionService.getCategoryExpensesForChart(memberIn, month, year);
+        log.info("카테고리 이름 및 값이 가져와지나? " + rawCategoryExpenses);
+        Map<String, Integer> categoryExpensesMap = new HashMap<>();
+        if (rawCategoryExpenses != null) {
+            for (Map<String, Object> entry : rawCategoryExpenses) {
+                String categoryName = (String) entry.get("categoryName");
+                Object totalAmountObj = entry.get("amount");
+                log.info("카테고리 이름 및 값이 가져와지나? " +categoryName + totalAmountObj);
+
+                if (categoryName != null && totalAmountObj != null) {
+                    try {
+                        int totalAmount = 0;
+                        if (totalAmountObj instanceof Number) {
+                            totalAmount = ((Number) totalAmountObj).intValue();
+                        } else if (totalAmountObj instanceof String) {
+                            totalAmount = Integer.parseInt((String) totalAmountObj);
+                        } else {
+                            log.info("Unknown type for totalAmount: {}. Value: {}"+ totalAmountObj.getClass().getName()+ totalAmountObj);
+                            continue;
+                        }
+                        categoryExpensesMap.put(categoryName, totalAmount);
+                    } catch (NumberFormatException e) {
+                        log.info("Failed to parse totalAmount to int for entry: {} - {}"+ entry+ e.getMessage());
+                    } catch (Exception e) {
+                        log.info("Error processing category expense entry: {} - {}"+ entry+ e.getMessage());
+                    }
+                } else {
+                    log.info("Skipping entry due to null categoryName or totalAmount: {}"+ entry);
+                }
+            }
+        }
+
+        log.info("API 호출: memberIn={}, month={}, year={} - Category Expenses: {}"+ memberIn+ month+ year+ categoryExpensesMap);
+        return categoryExpensesMap;
+    }
+    
+    @DeleteMapping("/feedback/{conInId}")
+    @ResponseBody
+    public ResponseEntity<String> deleteConsumptionFeedback(@PathVariable("conInId") Integer conInId,
+                                            @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("ConsumptionController deleteConsumptionFeedback() - conInId: {}"+ conInId);
+
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+
+        if (memberIn == null) {
+            log.info("삭제 시도 - memberId: {} 에 해당하는 member_in을 찾을 수 없습니다."+ memberId);
+            return new ResponseEntity<>("{\"status\": \"error\", \"message\": \"사용자 정보를 찾을 수 없습니다.\"}", HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean hasPermission = consumptionService.checkFeedbackOwnership(conInId, memberIn);
+        if (!hasPermission) {
+            log.info("삭제 권한 없음 - conInId: {}, memberIn: {}"+ conInId+ memberIn);
+            return new ResponseEntity<>("{\"status\": \"error\", \"message\": \"삭제 권한이 없습니다.\"}", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            boolean isDeleted = consumptionService.deleteConsumptionFeedback(conInId);
+
+            if (isDeleted) {
+                log.info("피드백 성공적으로 삭제됨 - conInId: {}"+ conInId);
+                return new ResponseEntity<>("{\"status\": \"success\", \"message\": \"피드백이 성공적으로 삭제되었습니다.\"}", HttpStatus.OK);
+            } else {
+                log.info("피드백 삭제 실패 - conInId: {}"+ conInId);
+                return new ResponseEntity<>("{\"status\": \"error\", \"message\": \"피드백 삭제에 실패했습니다.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            log.info("피드백 삭제 중 예외 발생 - conInId: {}"+ conInId+ e);
+            return new ResponseEntity<>("{\"status\": \"error\", \"message\": \"서버 오류로 인해 삭제에 실패했습니다.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
 }

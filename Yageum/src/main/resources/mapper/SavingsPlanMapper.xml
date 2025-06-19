@@ -156,5 +156,16 @@
           AND YEAR(save_created_date) = #{year}
           AND MONTH(save_created_date) = #{month}
     </select>
-
+	
+    <select id="getSaveIn" parameterType="map" resultType="java.lang.Integer">
+    	SELECT save_in
+        FROM savings_plan
+        WHERE member_in = #{memberIn}
+            AND YEAR(save_target_date) = #{year}
+            AND MONTH(save_target_date) = #{month}
+        ORDER BY save_created_date DESC, save_in DESC
+        LIMIT 1
+    </select>
+	
+	
     </mapper>

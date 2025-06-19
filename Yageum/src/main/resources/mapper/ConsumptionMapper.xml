@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yageum.mapper.ConsumptionMapper">
+	
+	<select id="getConsumptionFeedbacksByMemberIn" resultType="java.util.HashMap">
+        SELECT
+            con_in AS conIn,
+            member_in AS memberIn,
+            save_in AS saveIn,
+            con_result AS conResult,
+            DATE_FORMAT(con_month, '%Y-%m-%d') AS conMonth,
+            con_total AS conTotal  FROM consumption
+        WHERE member_in = #{memberIn}
+        ORDER BY con_month DESC, con_in DESC 
+    </select>
+
+    <select id="findConsumptionByMemberAndMonth" resultType="map">
+        SELECT
+            con_in,
+            member_in,
+            save_in,
+            con_result,
+            con_month,
+            con_total
+        FROM
+            consumption
+        WHERE
+            member_in = #{memberIn}
+            AND con_month = #{conMonth}
+    </select>
+
+    <update id="updateAiFeedback">
+        UPDATE consumption
+        SET
+            con_result = #{feedbackContent}
+        WHERE
+            member_in = #{memberIn}
+            AND con_month = #{conMonth}
+    </update>
+
+    <insert id="insertConsumption">
+        INSERT INTO consumption (
+            member_in,
+            save_in,
+            con_result, con_month,
+            con_total
+        ) VALUES (
+            #{memberIn},
+            #{saveIn},
+            #{feedbackContent}, #{conMonth},
+            #{conTotal}
+        )
+    </insert>
+
+    <update id="updateOnlyAiFeedbackIfNull">
+        UPDATE consumption
+        SET
+            con_result = #{feedbackContent} WHERE
+            member_in = #{memberIn}
+            AND con_month = #{conMonth}
+            AND (con_result IS NULL OR con_result = '')
+     </update>
+     
+    <delete id="deleteConsumptionFeedback" parameterType="int">
+        DELETE FROM consumption  WHERE con_in = #{conInId}
+    </delete>
+
+    <select id="checkFeedbackOwnership" parameterType="map" resultType="boolean">
+        SELECT COUNT(*) > 0  
+        FROM consumption      WHERE con_in = #{conInId} AND member_in = #{memberIn}
+    </select>
+
+</mapper>
