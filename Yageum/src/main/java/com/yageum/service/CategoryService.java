@@ -103,6 +103,16 @@ public class CategoryService {
 	}
 
 
+	public void delete1(CategoryMain cateFound) {
+		
+		categoryMainRepository.delete(cateFound);
+		
+	}
+	public void delete2(CategorySub cateFound) {
+		categorySubRepository.delete(cateFound);
+	}
+
+
 
 
 
