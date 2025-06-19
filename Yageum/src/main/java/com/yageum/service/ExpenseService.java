@@ -21,6 +21,7 @@ import com.yageum.entity.Card;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
 import com.yageum.entity.Expense;
+import com.yageum.mapper.CashbookMapper;
 import com.yageum.repository.BankAccountRepository;
 import com.yageum.repository.CardRepository;
 import com.yageum.repository.CategoryMainRepository;
@@ -43,7 +44,7 @@ public class ExpenseService {
 	 private final CategorySubRepository categorySubRepository;
 	 private final CardRepository cardRepository;
 	 private final BankAccountRepository bankAccountRepository;
-	// private final CashbookMapper cashbookMapper;
+	 private final CashbookMapper cashbookMapper;
 
 	    public void saveExpense(Expense expense) {
 	        expenseRepository.save(expense);
@@ -159,8 +160,8 @@ public class ExpenseService {
 		}
 
 		public ExpenseDTO getExpenseDetailById(int id) {
-			return null;
-			//return cashbookMapper.selectExpenseDetail(id);
+
+			return cashbookMapper.selectExpenseDetail(id); 
 		}
 	
 	    
