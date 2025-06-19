@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.yageum.domain.MemberDTO;
+import com.yageum.entity.CategoryMain;
 import com.yageum.entity.Member;
 import com.yageum.mapper.MemberMapper;
 import com.yageum.repository.MemberRepository;
@@ -118,7 +119,6 @@ public class MemberService {
 	public Member find(String memberId) {
 		return memberRepository.findByMemberId(memberId);
 	}
-
 	public void updateDate(MemberDTO memberDTO2) {
 		memberMapper.updateDate(memberDTO2);
 		

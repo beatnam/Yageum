@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/category_update.css">
+	<script src="../js/jquery-3.6.0.js"></script>
+	    <title>카테고리 변경</title>
+</head>
+<body>
+    <div class="popup-overlay">
+        <div class="user-detail-container">
+            <div class="form-header">
+                <button class="close-btn" onclick="closePopup()">&times;</button>
+                <h2>카테고리 변경</h2>
+            </div>
+            
+            <div class="form-content">
+                <form id="categoryEditForm">
+					<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
+                    <table class="form-table">
+                        <tr>
+                            <td>분류<span class="required">*</span></td>
+                            <td>
+                                <select class="form-select" id="categoryType" required onchange="toggleParentCategory()">
+                                    <option value="">분류를 선택하세요</option>
+                                    <option value="minor" th:selected="${cateSub ne null}">소분류</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="parentCategoryRow" style="display: none;">
+                            <td>상위 분류<span class="required">*</span></td>
+                            <td>
+											<!--대분류 카테고리 넘어가는 값 parentCategory(cmIn)-->
+                                <select class="form-select" id="parentCategory" name="parentCategory">
+									<div th:each="cateMain : ${cateMain}">
+										<option th:value="${cateMain.cmIn}" th:text="${cateMain.cmName}" th:selected="${cateMain.cmIn eq cateSub.cmIn}"></option>
+									</div>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+										<!--소분류 카테고리 넘어가는 값 categoryName(csName)-->
+                            <td>이름<span class="required">*</span></td>
+                            <td>
+                                <input type="hidden" name="categoryNum" th:value="${cateSub.csIn}">
+                                <input type="text" class="form-input" id="categoryName" name="categoryName" th:value="${cateSub.csName}"required>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary"id="formBtn" href="#">변경하기</button>
+                <button type="button" class="btn btn-secondary" onclick="closePopup()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+		   // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지 로드 시 현재 선택된 분류 타입에 따라 상위 분류 행 표시/숨김
+            toggleParentCategory();
+        });
+
+        function toggleParentCategory() {
+            const categoryType = document.getElementById('categoryType').value;
+            const parentRow = document.getElementById('parentCategoryRow');
+            const parentSelect = document.getElementById('parentCategory');
+            
+            if (categoryType === 'minor') {
+                parentRow.style.display = 'table-row';
+                parentSelect.required = true;
+            } else {
+                parentRow.style.display = 'none';
+                parentSelect.required = false;
+                parentSelect.value = '';
+            }
+        }
+		/* 필요없을지도 모르는 코드
+        // 기존 카테고리 데이터 로드
+        function loadCategoryData(categoryData) {
+            if (!categoryData) return;
+            
+            // 분류 타입 설정
+            document.getElementById('categoryType').value = categoryData.type;
+            document.getElementById('categoryName').value = categoryData.name || '';
+            
+            // 분류 타입에 따라 상위 분류 행 표시/숨김
+            toggleParentCategory();
+            
+            // 소분류인 경우 상위 분류 설정
+            if (categoryData.type === 'minor' && categoryData.parentId) {
+                document.getElementById('parentCategory').value = categoryData.parentId;
+            }
+        }
+		*/
+		
+		//전송 버튼 제어 구문
+		$('#formBtn').click(function(){
+			alert("전송");				
+			const formData = $('#categoryEditForm').serialize();
+			$.post('/admin/category_updatePro2', formData, function(response){	
+				window.opener.location.reload();
+				alert("소분류 카테고리가 변경 되었습니다");
+				window.close();
+		
+			}).fail(function(){
+				alert('전송 오류가 발생 했습니다');
+			
+			});//ajax
+	
+			
+		});
+        function closePopup() {
+			if (confirm('사용자 상세보기를 닫으시겠습니까?')) {
+              		 window.close();
+			 }
+        }
+        
+        // 엔터키로 폼 제출
+        document.getElementById('categoryName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updateCategory();
+            }
+        });
+        
+        // ESC 키로 팝업 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePopup();
+            }
+        });
+        
+       
+    </script>
+</body>
+</html>

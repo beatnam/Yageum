@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.QuestDTO;
+import com.yageum.entity.CategoryMain;
+import com.yageum.entity.CategorySub;
 import com.yageum.entity.Member;
+import com.yageum.repository.CategoryMainRepository;
+import com.yageum.service.CategoryService;
 import com.yageum.service.AdminService;
 import com.yageum.service.MemberService;
 
@@ -29,6 +33,9 @@ import lombok.extern.java.Log;
 public class AdminController {
 
 	private final MemberService memberService;
+	private final CategoryService categoryService;
+	private final CategoryMainRepository categoryMainRepository;
+	
 
 	private final AdminService adminService;
 
@@ -71,7 +78,7 @@ public class AdminController {
 	public void authority(Member member2) {
 		log.info("AdminController authority()");
 //		log.info("변경된 권한" + member2.getzMemberRole().toString());
-		Member member = memberService.find(member2.getMemberId());
+		Member member = memberService.find (member2.getMemberId());
 		member.setMemberRole(member2.getMemberRole());
 		log.info("member 값 " + member.toString());
 		
@@ -89,14 +96,141 @@ public class AdminController {
 
 	// 통계 / 리포트 페이지
 
+	
+	
+	
+	
+	
+	
+	
 	// 사이트 설정 - 카테고리 설정 페이지
 	@GetMapping("/category")
-	public String category() {
+	public String category(Model model) {
 		log.info("AdminController category()");
 
+		List<CategoryMain> categoryMain = categoryService.cateMFindAll();
+		List<CategorySub> categorySub = categoryService.cateSFindAll();
+		
+		
+		
+		model.addAttribute("cateMain", categoryMain);
+		model.addAttribute("cateSub", categorySub);
+		
+		
+		
 		return "/admin/admin_category";
 	}
 
+	
+	@GetMapping("/category_gener")
+	public String cateGener(Model model) {
+		log.info("AdminController categoryGerner()");
+
+		List<CategoryMain> categoryMain = categoryService.cateMFindAll();
+
+		
+		model.addAttribute("cateMain", categoryMain);
+		
+		return "/admin/category_gener";
+	}
+	@PostMapping("/category_generPro1")
+	@ResponseBody		//대분류 카테고리 생성하는 로직
+	public void cateGenerPro1(@RequestParam("categoryName") String cmName) {
+		log.info("AdminController cateGenerPro1()");
+		
+		categoryService.save(cmName);
+		
+	}
+	
+	
+	
+	
+	@PostMapping("/category_generPro2")
+	@ResponseBody		//소분류 카테고리 생성하는 로직
+	public void cateGenerPro2(@RequestParam("categoryName") String csName,
+								  @RequestParam("parentCategory") int cmIn) {
+		
+		log.info("AdminController cateGenerPro2()");
+		
+		
+		CategorySub categorySub = new CategorySub();
+		categorySub.setCmIn(cmIn);
+		categorySub.setCsName(csName);
+		
+		categoryService.save2(categorySub);
+		
+		
+	}
+	
+	
+	//대분류 페이지  / 변경
+
+	@GetMapping("/category_update1")
+	public String cateUpdate1(@RequestParam("cmIn")int cmIn, Model model) {
+		log.info("AdminController cateUpdate1()");
+		Optional<CategoryMain> categoryMain = categoryService.findById1(cmIn);
+		
+		
+		model.addAttribute("cateMain", categoryMain.get());
+		
+		return "/admin/category_update1";
+	}
+	
+	@PostMapping("/category_updatePro1")
+	@ResponseBody		//소분류 카테고리 생성하는 로직
+	public void cateUpdatePro1(@RequestParam("categoryNum") int cmIn,
+						@RequestParam("categoryName") String cmName) {
+		
+		log.info("AdminController cateUpdatePro1()");
+		
+		CategoryMain cateFound = categoryService.findById1(cmIn).orElseThrow(()
+				-> new UsernameNotFoundException("없는 카테고리")
+				);
+		
+		cateFound.setCmName(cmName);
+		
+		categoryService.update(cateFound);
+	
+		
+		
+	}
+	
+		//소분류 페이지  / 변경
+	@GetMapping("/category_update2")
+	public String cateUpdate2(@RequestParam("csIn") int csIn , Model model) {
+		log.info("AdminController cateUpdate2()");
+		
+		Optional<CategorySub> categorySub = categoryService.findById2(csIn);
+		log.info("대분류 카테고리 전부 가지고 오기");
+		List<CategoryMain> categoryMain = categoryMainRepository.findAll();
+		
+		model.addAttribute("cateSub", categorySub.get());
+		model.addAttribute("cateMain", categoryMain);
+
+		return "/admin/category_update2";
+	}
+	
+	
+	@PostMapping("/category_updatePro2")
+	@ResponseBody		//소분류 카테고리 생성하는 로직 	categoryNum
+	public void cateUpdatePro2(@RequestParam("parentCategory") int cmIn,
+						@RequestParam("categoryName") String csName, @RequestParam("categoryNum") int csIn) {
+		
+		log.info("AdminController cateUpdatePro2()");
+		
+		CategorySub cateFound = categoryService.findById2(csIn).orElseThrow(()
+				-> new UsernameNotFoundException("없는 카테고리")
+				);
+		
+		cateFound.setCsName(csName);
+		cateFound.setCmIn(cmIn);
+		
+		categoryService.update2(cateFound);
+		
+		
+	}
+	
+	
 	// 사이트 설정 - 카테고리 설정 페이지
 
 	// 사이트 설정 - 퀘스트 설정 페이지
@@ -156,7 +290,6 @@ public class AdminController {
 		System.out.println(questIn);
 		QuestDTO questDTO= adminService.questDetail(questIn);
 		List<CategoryMainDTO> categoryMainList = adminService.showCategoryMain();
-		
 		
 		model.addAttribute("quest", questDTO);
 		model.addAttribute("categoryMainList", categoryMainList);
