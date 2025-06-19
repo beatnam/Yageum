@@ -3,6 +3,7 @@ package com.yageum.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,7 +72,7 @@ public class AdminController {
 	public void authority(Member member2) {
 		log.info("AdminController authority()");
 //		log.info("변경된 권한" + member2.getzMemberRole().toString());
-		Member member = memberService.find(member2.getMemberId());
+		Member member = memberService.find (member2.getMemberId());
 		member.setMemberRole(member2.getMemberRole());
 		log.info("member 값 " + member.toString());
 		
@@ -142,6 +143,8 @@ public class AdminController {
 	}
 	
 	
+	
+	
 	@PostMapping("/category_generPro2")
 	@ResponseBody		//소분류 카테고리 생성하는 로직
 	public void cateGenerPro2(@RequestParam("categoryName") String csName,
@@ -160,6 +163,8 @@ public class AdminController {
 	}
 	
 	
+	//대분류 페이지  / 변경
+
 	@GetMapping("/category_update1")
 	public String cateUpdate1(@RequestParam("cmIn")int cmIn, Model model) {
 		log.info("AdminController cateUpdate1()");
@@ -173,36 +178,57 @@ public class AdminController {
 	
 	@PostMapping("/category_updatePro1")
 	@ResponseBody		//소분류 카테고리 생성하는 로직
-	public void cateUpdatePro1(CategoryMain categoryMain) {
+	public void cateUpdatePro1(@RequestParam("categoryNum") int cmIn,
+						@RequestParam("categoryName") String cmName) {
 		
 		log.info("AdminController cateUpdatePro1()");
 		
-		CategoryMain cateFound = categoryService.find(categoryMain.getCmIn());
+		CategoryMain cateFound = categoryService.findById1(cmIn).orElseThrow(()
+				-> new UsernameNotFoundException("없는 카테고리")
+				);
 		
+		cateFound.setCmName(cmName);
 		
-		
-		
+		categoryService.update(cateFound);
 	
 		
 		
 	}
 	
-	
+		//소분류 페이지  / 변경
 	@GetMapping("/category_update2")
-	public String cateUpdate2(@RequestParam("cmIn") int cmIn , Model model) {
+	public String cateUpdate2(@RequestParam("csIn") int csIn , Model model) {
 		log.info("AdminController cateUpdate2()");
 		
-		Optional<CategorySub> categorySub = categoryService.findById2(cmIn);
+		Optional<CategorySub> categorySub = categoryService.findById2(csIn);
+		log.info("대분류 카테고리 전부 가지고 오기");
 		List<CategoryMain> categoryMain = categoryMainRepository.findAll();
 		
-		model.addAttribute("cateSub", categorySub);
+		model.addAttribute("cateSub", categorySub.get());
 		model.addAttribute("cateMain", categoryMain);
 
 		return "/admin/category_update2";
 	}
 	
 	
-	
+	@PostMapping("/category_updatePro2")
+	@ResponseBody		//소분류 카테고리 생성하는 로직 	categoryNum
+	public void cateUpdatePro2(@RequestParam("parentCategory") int cmIn,
+						@RequestParam("categoryName") String csName, @RequestParam("categoryNum") int csIn) {
+		
+		log.info("AdminController cateUpdatePro2()");
+		
+		CategorySub cateFound = categoryService.findById2(csIn).orElseThrow(()
+				-> new UsernameNotFoundException("없는 카테고리")
+				);
+		
+		cateFound.setCsName(csName);
+		cateFound.setCmIn(cmIn);
+		
+		categoryService.update2(cateFound);
+		
+		
+	}
 	
 	
 	// 사이트 설정 - 카테고리 설정 페이지

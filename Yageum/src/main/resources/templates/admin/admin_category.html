@@ -63,14 +63,6 @@
 								<option th:value="${cateMain.cmIn}" th:text="${cateMain.cmName}"></option>
 							</div>
 						
-<!--						<option value="식비">식비</option>-->
-<!--						<option value="교통비">교통비</option>-->
-<!--						<option value="주거/통신">주거/통신</option>-->
-<!--						<option value="여가/문화">여가/문화</option>-->
-<!--						<option value="의료/건강">의료/건강</option>-->
-<!--						<option value="교육">교육</option>-->
-<!--						<option value="쇼핑">쇼핑</option>-->
-<!--						<option value="기타">기타</option>-->
 					</select>
 					<button class="filter-btn" onclick="resetFilter()">필터 초기화</button>
 				</div>
@@ -102,12 +94,12 @@
 							</div>
 							<!-- 소분류 카테고리들 -->
 							<div th:each="cateSub,state2 :${cateSub}">
-								<tr class="category-row" th:data-main-category="${cateSub.cmIn}">
+								<tr class="category-row"  th:data-main-category="${cateSub.cmIn}">
 									<td th:text="${state2.count + cateMain.size}"></td>
 									<td><span class="category-tag sub">소분류</span></td>
 									<td th:text="${cateSub.csName}"></td>
 									<td>
-										<button class="action-btn edit" th:onclick="categorySub([[${cateSub.cmIn}]])">변경</button>
+										<button class="action-btn edit" th:onclick="categorySub([[${cateSub.csIn}]])">변경</button>
 										<button class="action-btn delete" th:onclick="deleteCategory(${cateSub.csIn}]])">삭제</button>
 									</td>
 								</tr>
@@ -181,7 +173,7 @@
 			
 		}
 		function categorySub(id) {
-			const uri = "/admin/category_update2?cmIn=" + id;
+			const uri = "/admin/category_update2?csIn=" + id;
 			window.open(uri, "popup", "height=400, width=470" );
 			
 		}
@@ -198,8 +190,8 @@
 		function deleteCategory2(id) {
 						
 			if (confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {
-				alert('소분류 카테고리 Name ' + id + '가 삭제되었습니다.');
-				window.location.href="/admin/category_delete2?csName=" + id;
+				alert('소분류 카테고리 id ' + id + '가 삭제되었습니다.');
+				window.location.href="/admin/category_delete2?csIn=" + id;
 			}
 		}
 		// 카테고리 삭제 기능

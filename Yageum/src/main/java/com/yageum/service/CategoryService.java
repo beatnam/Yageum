@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
+import com.yageum.entity.Member;
 import com.yageum.repository.CategoryMainRepository;
 import com.yageum.repository.CategorySubRepository;
 
@@ -84,12 +85,24 @@ public class CategoryService {
 
 
 
+	public void update(CategoryMain cateFound) {
+		log.info("CategoryService update()");
 
-	public CategoryMain find(int cmIn) {
+		
+		categoryMainRepository.save(cateFound);
 		
 		
-		return categoryMainRepository.findById(cmIn);
 	}
+
+
+	public void update2(CategorySub cateFound) {
+		log.info("CategoryService update2()");
+
+		
+		categorySubRepository.save(cateFound);
+	}
+
+
 
 
 

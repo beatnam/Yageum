@@ -9,4 +9,6 @@ import com.yageum.entity.CategoryMain;
 
 
 public interface CategoryMainRepository extends JpaRepository<CategoryMain, Integer> {
+
+
 }
