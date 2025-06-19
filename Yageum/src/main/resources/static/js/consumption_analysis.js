@@ -146,35 +146,20 @@ function fetchAiFeedback() {
                 console.log("서버에서 에러 반환:", response.error);
                 feedbackError.style.display = 'block';
                 aiFeedbackOutput.innerHTML = '<p style="color: red; margin-top: 20px;">오류: ' + response.error + '</p>';
+                window.currentAiFeedback = null; // 오류 발생 시 저장할 피드백 초기화
+                window.hasExistingFeedback = false;
             } else if (response.feedback) {
-                console.log("피드백 내용 존재, confirm 창 표시 직전");
+                console.log("피드백 내용 존재, 화면에 표시");
                 aiFeedbackOutput.innerHTML = marked.parse(response.feedback);
                 
-                const feedbackToSave = response.feedback;
-
-                // ★★★★ confirm 대화 상자를 setTimeout으로 감싸는 부분 ★★★★
-                setTimeout(() => { 
-                    if (response.hasExistingFeedback) {
-                        if (confirm('이번 달에 이미 저장된 피드백이 있습니다. 업데이트하시겠습니까?')) {
-                            saveAiFeedbackToDatabase(feedbackToSave, csrfToken, true);
-                        } else {
-                            console.log('AI 피드백 저장을 취소했습니다.');
-                            alert('AI 피드백 저장이 취소되었습니다.');
-                        }
-                    } else {
-                        if (confirm('AI 소비 분석 피드백을 저장하시겠습니까?')) {
-                            saveAiFeedbackToDatabase(feedbackToSave, csrfToken, false);
-                        } else {
-                            console.log('AI 피드백 저장을 취소했습니다.');
-                            alert('AI 피드백 저장이 취소되었습니다.');
-                        }
-                    }
-                }, 0); // 0ms 지연
-                // ★★★★ setTimeout 끝 ★★★★
-
+                // 피드백 내용을 전역 변수에 저장하여 버튼 클릭 시 접근 가능하게 함
+                window.currentAiFeedback = response.feedback;
+                window.hasExistingFeedback = response.hasExistingFeedback; // 기존 피드백 여부도 저장
             } else {
                 console.log("피드백 없음, 에러도 아님");
                 aiFeedbackOutput.innerHTML = '<p style="color: #666; margin-top: 20px;">AI 피드백을 받아오지 못했습니다.</p>';
+                window.currentAiFeedback = null; // 피드백이 없으면 저장할 내용도 없음
+                window.hasExistingFeedback = false;
             }
         },
         error: function(xhr, status, error) {
@@ -182,6 +167,8 @@ function fetchAiFeedback() {
             feedbackLoading.style.display = 'none'; 
             feedbackError.style.display = 'block';   
             aiFeedbackOutput.innerHTML = '<p style="color: red; margin-top: 20px;">피드백을 가져오는 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>';
+            window.currentAiFeedback = null; // 에러 발생 시 저장할 피드백 초기화
+            window.hasExistingFeedback = false;
         }
     });
 }
@@ -239,7 +226,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     animateNumbers();
     createCategoryChart(categoryExpenses);
-    fetchAiFeedback(); // fetchAiFeedback 함수가 DOMContentLoaded 이벤트 리스너 내에서 호출되는지 확인합니다.
+    fetchAiFeedback(); // 페이지 로드 시 AI 피드백을 가져와서 화면에 표시
+
+    // AI 피드백 저장 버튼 클릭 이벤트 리스너 추가
+    const saveAiFeedbackBtn = document.getElementById('saveAiFeedbackBtn');
+    if (saveAiFeedbackBtn) {
+        saveAiFeedbackBtn.addEventListener('click', function() {
+            if (window.currentAiFeedback) { // 피드백 내용이 있는지 확인
+                const csrfToken = document.querySelector('input[name="_csrf"]')?.value || '';
+                if (window.hasExistingFeedback) {
+                    if (confirm('이번 달에 이미 저장된 피드백이 있습니다. 업데이트하시겠습니까?')) {
+                        saveAiFeedbackToDatabase(window.currentAiFeedback, csrfToken, true);
+                    } else {
+                        console.log('AI 피드백 저장을 취소했습니다.');
+                        alert('AI 피드백 저장이 취소되었습니다.');
+                    }
+                } else {
+                    if (confirm('AI 소비 분석 피드백을 저장하시겠습니까?')) {
+                        saveAiFeedbackToDatabase(window.currentAiFeedback, csrfToken, false);
+                    } else {
+                        console.log('AI 피드백 저장을 취소했습니다.');
+                        alert('AI 피드백 저장이 취소되었습니다.');
+                    }
+                }
+            } else {
+                alert('저장할 AI 피드백 내용이 없습니다. 먼저 피드백을 생성해주세요.');
+            }
+        });
+    }
 });
 
 function logout() {
