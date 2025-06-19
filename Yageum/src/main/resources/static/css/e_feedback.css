@@ -1,5 +1,30 @@
 @charset "UTF-8";
 
+		.Page-Small-header {
+		    /* 컨테이너 배경 및 모양 */
+		    background-color: #4E342E; /* 아주 연한 라벤더 블러시 색상 */
+		    border-radius: 20px; /* 모서리를 둥글게 */
+		    padding: 15px 25px; /* 내부 여백 */
+		    margin: 25px auto; /* 위아래 여백 및 가운데 정렬 */
+		    max-width: 600px; /* 최대 너비 설정 (선택 사항) */
+		    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* 부드럽고 입체적인 그림자 */
+		    text-align: center; /* 텍스트 가운데 정렬 */
+		    display: flex; /* 내부 p 태그 정렬을 위해 flex 사용 */
+		    justify-content: center; /* 가로 중앙 정렬 */
+		    align-items: center; /* 세로 중앙 정렬 */
+		}
+		
+		.Page-Small-header p {
+		    /* 텍스트 스타일 */
+		    font-size: 28px; /* 글자 크기 */
+		    color: #FFF9E5; /* 진한 보라색 (Blue Violet) */
+		    font-weight: bold; /* 글자 굵기 */
+		    letter-spacing: 1.5px; /* 글자 간격 살짝 넓게 */
+		    line-height: 1.4; /* 줄 간격 */
+		    margin: 0; /* p 태그의 기본 margin 제거 */
+		    padding: 0; /* p 태그의 기본 padding 제거 */
+		}
+
 		.main-wrapper {
 		    flex-grow: 1;
 		    padding: 20px;
