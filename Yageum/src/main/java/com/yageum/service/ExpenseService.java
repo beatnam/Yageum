@@ -43,6 +43,7 @@ public class ExpenseService {
 	 private final CategorySubRepository categorySubRepository;
 	 private final CardRepository cardRepository;
 	 private final BankAccountRepository bankAccountRepository;
+	// private final CashbookMapper cashbookMapper;
 
 	    public void saveExpense(Expense expense) {
 	        expenseRepository.save(expense);
@@ -157,6 +158,10 @@ public class ExpenseService {
 		    return expenseRepository.sumExpenseByDateAndType(memberIn, date, expenseType);
 		}
 
+		public ExpenseDTO getExpenseDetailById(int id) {
+			return null;
+			//return cashbookMapper.selectExpenseDetail(id);
+		}
 	
 	    
 	

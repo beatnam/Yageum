@@ -19,6 +19,7 @@ let selectedType = '';
 
 	    method2.innerHTML = '<option value="">상세 선택</option>';
 	    method2.disabled = true;
+		method2.removeAttribute("required"); 
 
 	    if (method1 === "1" || method1 === "2") {
 	        fetch(`/cashbook/cards/byMethod/${method1}`)
@@ -32,6 +33,7 @@ let selectedType = '';
 	                    method2.appendChild(option);
 	                });
 	                method2.disabled = false;
+					method2.setAttribute("required", "required");
 	            });
 	    }				else if (method1 === "4") { 
 			        fetch(`/cashbook/accounts`)
@@ -45,8 +47,13 @@ let selectedType = '';
 			                    method2.appendChild(option);
 			                });
 			                method2.disabled = false;
+							method2.setAttribute("required", "required");
 			            });
-			    }
+			    }					else if (method1 === "3") {
+					        // 현금: 선택 박스 숨기거나 그대로 비활성화 + required 제거
+					        method2.disabled = true;
+					        method2.removeAttribute("required");
+					    }
 	}
 
        // 에러 상태 제거
@@ -63,9 +70,16 @@ let selectedType = '';
            
            let isValid = true;
            
+		   const method1 = document.getElementById("method1").value;
+		   
            // 필수 필드 검증
-           const requiredFields = ['expenseSum', 'expenseType', 'expenseContent', 'method1', 'method2', 'cs_in'];
+           const requiredFields = ['expenseSum', 'expenseType', 'expenseContent', 'method1', 'cs_in'];
            
+		   // 카드, 계좌일때만 method2 검증함
+		   if (method1 === "1" || method1 === "2" || method1 === "4") {
+		          requiredFields.push('method2');
+		      }
+		   
            requiredFields.forEach(fieldName => {
                const field = document.getElementById(fieldName);
                const formGroup = field.closest('.form-group');

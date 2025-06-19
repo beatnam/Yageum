@@ -31,21 +31,24 @@ public class QuestController {
 
 	@GetMapping("/list")
 	public String listQuest(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-		
+
 		// 접속중인 userDetails에서 Id 찾아서 memberIn 검색 해오기
 		String memberId = userDetails.getUsername();
 		System.out.println(userDetails.getUsername());
 
 		int memberIn = questService.searchMemberIn(memberId);
-		
-		
-		
+
 		List<Map<Object, Object>> questList = questService.listQuest(memberIn);
 
 		System.out.println(questList);
 
 		model.addAttribute("questList", questList);
 		return "/quest/list";
+	}
+
+	@GetMapping("/item")
+	public String listItem() {
+		return "/quest/item";
 	}
 
 	@PostMapping("/acceptQuest")

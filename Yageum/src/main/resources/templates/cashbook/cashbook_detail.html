@@ -35,10 +35,10 @@
 					<!-- 금액 및 아이콘 -->
 					<div class="transaction-amount">
 					    <div class="transaction-icon" th:text="${expense.expenseType} ? '💸' : '💰'">💰</div>
-					    <span class="amount"
-					          th:classappend="${expense.expenseType} ? ' expense' : ' income'"
-					          th:text="${expense.expenseType ? '-' : '+'} + #numbers.formatInteger(expense.expenseSum, 3, 'COMMA')">
-					    </span>
+						<span class="amount"
+						      th:classappend="${expense.expenseType} ? ' expense' : ' income'"
+						      th:text="|${expense.expenseType ? '-' : '+'}${#numbers.formatInteger(expense.expenseSum, 3, 'COMMA')}|">
+						</span>
 					</div>
 
 					<!-- 거래 정보 -->
@@ -57,9 +57,12 @@
 					    </tr>
 					    <tr>
 					        <td><strong>수단</strong></td>
-					        <td class="right"
-					            th:text="${expense.methodType == '신용카드' ? expense.cardName : (expense.methodType == '계좌이체' ? expense.bankName + ' ' + expense.accountName : '현금')}">
-					        </td>
+							<td class="right"
+							    th:text="${expense.methodType == '현금' ? '현금' :
+							              (expense.methodType == '신용카드' or expense.methodType == '체크카드') ? expense.cardName :
+							              (expense.methodType == '계좌이체') ? expense.bankName + ' ' + expense.accountName :
+							              '알 수 없음'}">
+							</td>
 					    </tr>
 					    <tr>
 					        <td><strong>카테고리</strong></td>
@@ -89,56 +92,9 @@
 	<!--	푸터-->
 	<div th:replace="fragments/footer :: footer"></div>
 
-	<script>
-		function getDateFromURL() {
-				const params = new URLSearchParams(window.location.search);
-				return params.get("date");
-			}
-
-		function formatDateToKorean(dateStr) {
-			const [year, month, day] = dateStr.split("-");
-			return `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
-			}
-
-		document.addEventListener("DOMContentLoaded", function () {
-					const dateStr = getDateFromURL();
-					if (dateStr) {
-						const koreanDate = formatDateToKorean(dateStr);
-						const dateCell = document.getElementById("transactionDate");
-						if (dateCell) {
-							dateCell.textContent = koreanDate;
-						}
-					}
-				});
+	<script src="../js/cashbook_detail.js">
 
 		
-		
-		//수정하기 버튼 누르면 수정 페이지로 넘어감
-		document.querySelector(".btn-edit").addEventListener("click", function () {
-		    const params = new URLSearchParams(window.location.search);
-		    const id = params.get("id");
-		    const date = params.get("date");
-		    window.location.href = `/cashbook/update?id=${id}&date=${date}`;
-		});
-		
-		
-
-
-		function logout() {
-			if (confirm('로그아웃 하시겠습니까?')) {
-				window.location.href = '/logout';
-			}
-		}
-
-		function previousDay() {
-			// 이전 날짜로 이동하는 로직
-			console.log('이전 날짜로 이동');
-		}
-
-		function nextDay() {
-			// 다음 날짜로 이동하는 로직
-			console.log('다음 날짜로 이동');
-		}
 	</script>
 </body>
 
