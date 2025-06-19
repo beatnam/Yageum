@@ -133,6 +133,7 @@ public class AdminController {
 		
 		return "/admin/category_gener";
 	}
+	
 	@PostMapping("/category_generPro1")
 	@ResponseBody		//대분류 카테고리 생성하는 로직
 	public void cateGenerPro1(@RequestParam("categoryName") String cmName) {
@@ -161,6 +162,7 @@ public class AdminController {
 		
 		
 	}
+	
 	
 	
 	//대분류 페이지  / 변경
@@ -194,6 +196,20 @@ public class AdminController {
 		
 		
 	}
+	
+	@GetMapping("/category_delete1")
+	@ResponseBody	
+	public void cateDelete1(@RequestParam("cmIn") int cmIn) {
+		log.info("AdminController cateDelete1()");
+		
+		CategoryMain cateFound = categoryService.findById1(cmIn).orElseThrow(()
+				-> new UsernameNotFoundException("없는 카테고리")
+				);
+		
+		categoryService.delete1(cateFound);
+		
+	}
+	
 	
 		//소분류 페이지  / 변경
 	@GetMapping("/category_update2")
@@ -230,7 +246,18 @@ public class AdminController {
 		
 	}
 	
-	
+	@GetMapping("/category_delete2")
+	@ResponseBody	
+	public void cateDelete2(@RequestParam("csIn") int csIn) {
+		log.info("AdminController cateDelete2()");
+
+		CategorySub cateFound = categoryService.findById2(csIn).orElseThrow(()
+				-> new UsernameNotFoundException("없는 카테고리")
+				);
+		
+		categoryService.delete2(cateFound);
+		
+	}
 	// 사이트 설정 - 카테고리 설정 페이지
 
 	// 사이트 설정 - 퀘스트 설정 페이지
