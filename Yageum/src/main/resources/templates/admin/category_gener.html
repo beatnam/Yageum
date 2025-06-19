@@ -155,11 +155,12 @@
         }
         
         function closePopup() {
-            // 팝업 닫기 로직
-            alert("닫기")
-            // 실제 구현에서는 부모 창에서 이 팝업을 닫는 함수를 호출하거나
-            // window.close() 또는 display:none 처리
-        }
+			if(confirm('페이지를 닫으시겠습니까?')){
+				window.close();
+				
+			}
+			
+		}
         
         // 엔터키로 폼 제출
         document.getElementById('categoryName').addEventListener('keypress', function(e) {
