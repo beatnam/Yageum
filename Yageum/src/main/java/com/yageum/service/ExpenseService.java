@@ -161,7 +161,7 @@ public class ExpenseService {
 
 
 		public ExpenseDTO getExpenseDetailById(int id) {
-			return cashbookMapper.selectExpenseDetail(id);
+			return cashbookMapper.selectExpenseDetail(id); 
 		}
 	
 	    

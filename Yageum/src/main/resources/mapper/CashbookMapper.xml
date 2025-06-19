@@ -17,7 +17,7 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		left join card c on c.card_in = e.card_in 
 		left join bank_account ba on e.account_in = ba.account_in 
 		left join bank b on b.bank_in = ba.bank_in
-		where e.expense_in = #{id}
+		where e.expense_in = #{id} 
 	</select>
 	
 

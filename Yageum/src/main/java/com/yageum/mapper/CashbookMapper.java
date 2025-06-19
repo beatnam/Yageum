@@ -9,7 +9,7 @@ import com.yageum.domain.ExpenseDTO;
 @Repository
 public interface CashbookMapper {
 
-	ExpenseDTO selectExpenseDetail(int id);
+	ExpenseDTO selectExpenseDetail(int id); 
 
    
     
