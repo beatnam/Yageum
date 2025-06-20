@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="../css/admin_common.css">
 	<link rel="stylesheet" href="../css/admin_header.css">
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>구매항목 관리</title>
    
 </head>
@@ -60,13 +62,16 @@
                         </tr>
                     </thead>
                     <tbody id="itemTableBody">
-                        <tr>
-                            <td>1</td>
-                            <td>사탕</td>
-                            <td>10,000원</td>
-                            <td>
-                                <button class="action-btn edit" onclick="editItem(1)">변경</button>
-                                <button class="action-btn delete" onclick="deleteItem(1)">삭제</button>
+						<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
+                        <tr th:each="itemDTO, num : ${itemDTO}">
+                            <td th:text="${num.count}"></td>
+                            <td th:text="${itemDTO.itemName}"></td>
+                            <td th:text="${itemDTO.itemPrice} + 포인트"></td>
+                        <td>
+                                <button class="action-btn edit" 
+									th:onclick="editItem([[${itemDTO.itemIn}]])">변경</button>
+                                <button class="action-btn delete" 
+									th:onclick="deleteItem([[${itemDTO.itemIn}]])">삭제</button>
                             </td>
                         </tr>
                     </tbody>
@@ -95,21 +100,23 @@
 
         // 구매항목 추가 기능
         function addItem() {
-            alert('구매항목 추가 페이지로 이동합니다.');
-            // 실제로는 구매항목 추가 페이지로 이동하거나 모달을 띄움
+            var uri = "/admin/item_gener";
+			window.open(uri, "popup", "width=430, height=470");
         }
 
         // 구매항목 변경 기능
         function editItem(id) {
-            alert('구매항목 ID ' + id + ' 변경 페이지로 이동합니다.');
-            // 실제로는 구매항목 변경 페이지로 이동하거나 모달을 띄움
+			var uri = "/admin/item_update?itemIn=" + id;
+			window.open(uri, "popup", "width=430, height=470");
+			
         }
 
         // 구매항목 삭제 기능
         function deleteItem(id) {
             if (confirm('정말로 이 구매항목을 삭제하시겠습니까?')) {
-                alert('구매항목 ID ' + id + '가 삭제되었습니다.');
-                // 실제로는 서버에 삭제 요청을 보냄
+				location.href="/admin/item_delete?itemIn=" + id;
+				location.reload();
+				
             }
         }
 		

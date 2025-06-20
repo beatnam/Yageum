@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" href="../css/item_gener.css">
+	<script src="../js/jquery-3.6.0.js"></script>
+	    <title>구매항목 생성</title>
+</head>
+<body>
+    <div class="popup-overlay">
+        <div class="user-detail-container">
+            <div class="form-header">
+                <button class="close-btn" onclick="closePopup()">&times;</button>
+                <h2>구매항목 생성</h2>
+            </div>
+            
+            <div class="form-content">
+                <form id="purchaseItemCreateForm">
+                    <table class="form-table">
+                        <tr>
+                            <td>상품명<span class="required">*</span></td>
+                            <td>
+                                <input type="text" class="form-input" id="productName" name="itemName" placeholder="상품명을 입력하세요" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>가격<span class="required">*</span></td>
+                            <td>
+                                <input type="number" class="form-input" id="price" name="itemPrice" placeholder="가격을 입력하세요" min="0" required>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" onclick="createPurchaseItem()">생성하기</button>
+                <button type="button" class="btn btn-secondary" onclick="closePopup()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+		$(document).ready(function() {
+			    // meta 태그에서 CSRF 정보 가져오기
+			    var csrfToken = $("meta[name='_csrf']").attr("content");
+			    var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+	
+			    // jQuery의 모든 AJAX 요청에 CSRF 토큰 자동 설정
+			    $(document).ajaxSend(function(e, xhr, options) {
+			        xhr.setRequestHeader(csrfHeader, csrfToken);
+			    });
+		});
+		
+        function createPurchaseItem() {
+            const productName = document.getElementById('productName').value;
+            const price = document.getElementById('price').value;
+            
+            if (!productName.trim()) {
+                alert('상품명을 입력해주세요.');
+                return;
+            }
+            
+            if (!price || price < 0) {
+                alert('올바른 가격을 입력해주세요.');
+                return;
+            }
+            
+
+			const formData = $('#purchaseItemCreateForm').serialize();
+			$.post('/admin/item_generPro', formData, function(response){
+				window.opener.location.reload();
+				alert("구매항목 내용이 변경 되었습니다.");
+				window.close();
+				
+				
+			}).fail(function(){
+				alert('전송 오류가 발생 했습니다.')
+				
+			});
+			
+          
+        }
+        
+        function closePopup() {
+          if(confirm('페이지를 닫으시겠습니까?')){
+			window.close();
+		  }
+        }
+        
+        // 엔터키로 폼 제출
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                createPurchaseItem();
+            }
+        });
+        
+        // ESC 키로 팝업 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePopup();
+            }
+        });
+        
+        // 배경 클릭시 팝업 닫기
+        document.querySelector('.popup-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+    </script>
+</body>
+</html>

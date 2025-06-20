@@ -12,15 +12,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.ItemDTO;
 import com.yageum.domain.QuestDTO;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
 import com.yageum.entity.Member;
 import com.yageum.repository.CategoryMainRepository;
-import com.yageum.service.CategoryService;
 import com.yageum.service.AdminService;
+import com.yageum.service.CategoryService;
+import com.yageum.service.ItemService;
 import com.yageum.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,12 +35,16 @@ import lombok.extern.java.Log;
 @RequestMapping("/admin/*")
 public class AdminController {
 
+	
+	//service
 	private final MemberService memberService;
 	private final CategoryService categoryService;
-	private final CategoryMainRepository categoryMainRepository;
-	
-
 	private final AdminService adminService;
+	private final ItemService itemService;
+	
+	
+	//Repository			
+	private final CategoryMainRepository categoryMainRepository;
 
 	// 회원 관리 페이지
 	@GetMapping("/user")
@@ -369,12 +376,78 @@ public class AdminController {
 	// 사이트 설정 - 상품 설정 페이지
 
 	@GetMapping("/item")
-	public String item() {
+	public String item(Model model) {
 		log.info("AdminController item()");
 
+		
+		List<ItemDTO> itemList = itemService.findAll();
+		
+		
+		model.addAttribute("itemDTO", itemList);
+		
+		
+		
 		return "/admin/admin_item";
 	}
 
+		//아이템 생성 로직
+	@GetMapping("/item_gener")
+	public String itemGener(Model model) {
+		log.info("AdminController itemGener()");
+		
+		
+		return "/admin/item_gener";
+	}
+	@PostMapping("/item_generPro")
+	@ResponseBody
+	public void itemGenerPro(ItemDTO itemDTO) {
+		log.info("AdminController itemGenerPro()");
+		log.info(itemDTO.toString());
+		itemService.saveItem(itemDTO);
+		
+		
+		
+	}
+		
+		
+		
+	@GetMapping("/item_update")
+	public String itemUpdate(ItemDTO itemDTO,Model model) {
+		log.info("AdminController itemUpdate()");
+		ItemDTO itemFind = itemService.findByItemIn(itemDTO.getItemIn());
+//		log.info(itemFind.toString());
+		
+		
+		model.addAttribute("itemDTO", itemFind);
+	
+		return "/admin/item_update";
+	}
+	
+	@PostMapping("/item_updatePro")
+	@ResponseBody		//아이템 변경 로직
+	public void itemUpdatePro(ItemDTO itemDTO) {
+		log.info("AdminController itemUpdatePro()");
+//		log.info(itemDTO.toString());
+		ItemDTO itemFind = itemService.findByItemIn(itemDTO.getItemIn());
+		
+		itemFind.setItemName(itemDTO.getItemName());
+		itemFind.setItemPrice(itemDTO.getItemPrice());
+		
+		itemService.updateItem(itemFind);
+		
+	}
+	@GetMapping("/item_delete")
+	@ResponseBody		//아이템 변경 로직
+	public void itemdelete(@RequestParam("itemIn")int itemIn) {
+		log.info("AdminController itemdelete()");
+		ItemDTO itemFind = itemService.findByItemIn(itemIn);
+		log.info(itemFind.toString());
+		
+		itemService.deleteItem(itemFind);
+		
+	}
+	
+	
 	// 사이트 설정 - 상품 설정 페이지
 
 }

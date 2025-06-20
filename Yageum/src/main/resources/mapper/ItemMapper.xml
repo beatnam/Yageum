@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://mybatis.org/mybatis-3/getting-started.html
+src/main/resources/mapper폴더/MemberMapper.xml파일 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yageum.mapper.ItemMapper">
+
+	<select id="findAll" resultType="com.yageum.domain.ItemDTO">
+		select *
+		from item
+
+	</select>
+	
+	<select id="findByItemIn" resultType="com.yageum.domain.ItemDTO">
+		select *
+		from item
+		where item_In = #{itemIn};
+	</select>
+	
+	<update id="updateItem" parameterType="com.yageum.domain.ItemDTO">
+		update item 
+		set item_name = #{itemName}, item_price = #{itemPrice}
+		where item_in = #{itemIn}
+	</update>
+	
+	<insert id="saveItem" parameterType="com.yageum.domain.ItemDTO">
+		insert into item(item_name, item_price)
+		values(#{itemName}, #{itemPrice})
+	</insert>
+	
+	<delete id="deleteItem" parameterType="com.yageum.domain.ItemDTO">
+		delete from item
+		where item_in = #{itemIn}
+	</delete>
+</mapper>
