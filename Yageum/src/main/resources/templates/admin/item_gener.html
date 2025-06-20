@@ -73,7 +73,7 @@
 			const formData = $('#purchaseItemCreateForm').serialize();
 			$.post('/admin/item_generPro', formData, function(response){
 				window.opener.location.reload();
-				alert("구매항목 내용이 변경 되었습니다.");
+				alert("구매항목 추가 되었습니다.");
 				window.close();
 				
 				
