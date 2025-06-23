@@ -184,8 +184,8 @@ public class MemberController {
 
 			cookie.setMaxAge(30 * 60);
 			response.addCookie(cookie);
-		}else {
-			Cookie cookie = new Cookie("userID",null);
+		} else {
+			Cookie cookie = new Cookie("userID", null);
 			cookie.setMaxAge(0);
 			response.addCookie(cookie);
 		}

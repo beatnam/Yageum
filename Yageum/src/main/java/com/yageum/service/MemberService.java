@@ -39,6 +39,7 @@ public class MemberService {
 		memberDTO.setMemberRole("USER");
 		memberDTO.setMemberState("정상");
 		memberDTO.setMemberIsFirst(true);
+		memberDTO.setMemberReward(0);
 		memberMapper.joinMember(memberDTO);
 
 	}
@@ -60,6 +61,8 @@ public class MemberService {
 		memberDTO.setMemberRole("USER");
 		memberDTO.setMemberState("정상");
 		memberDTO.setMemberIsFirst(true);
+		memberDTO.setMemberReward(0);
+
 		memberMapper.joinMember(memberDTO);
 	}
 
