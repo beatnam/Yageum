@@ -4,6 +4,7 @@ import java.beans.PropertyEditorSupport;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -52,6 +53,24 @@ public class ExpenseController {
 		return "/cashbook/cashbook_main";
 	}
 
+	
+	@GetMapping("/monthsum")
+	@ResponseBody
+	public List<Map<String, Object>> getMonthlySum(@RequestParam("year") int year, @RequestParam("month") int month){
+		log.info("ExpenseController monthsum()");
+		// 로그인된 사용자 ID 가져오기 (Spring Security)
+	    String id = SecurityContextHolder.getContext().getAuthentication().getName();
+	    //Member member = memberService.find(id);
+	    //int memberIn = member.getMemberIn();
+	    log.info("로그인된 사용자 ID: {}", id);
+	    //log.info("memberIn : ", memberIn);
+	    
+	    return expenseService.getMonthlySum(id, year, month);
+	}
+	
+	
+	
+	
 	//일별 내역 페이지
 	@GetMapping("/list")
 	public String list(@RequestParam("date") String date, Model model) {
@@ -61,6 +80,8 @@ public class ExpenseController {
 	    String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 	    Member member = memberRepository.findByMemberId(memberId);
 	    int memberIn = member.getMemberIn();
+	    log.info("로그인된 사용자 ID: {}", memberId);
+	    log.info("memberIn : ", memberIn);
 
 	    // 서비스 호출
 	    List<Expense> expenses = expenseService.getExpensesByDate(memberIn, date);

@@ -82,26 +82,35 @@
 		<div th:replace="fragments/footer :: footer"></div>
 
     <script>
-             // 현재 표시중인 년도와 월
+        // 현재 표시중인 년도와 월
         let currentYear = new Date().getFullYear();
         let currentMonth = new Date().getMonth(); // 0부터 시작 (0 = 1월)
 
-        // 샘플 거래 데이터 (실제로는 서버에서 받아올 데이터)
-        const sampleTransactions = {
-            '2025-6-1': { income: 0, expense: 15000 },
-            '2025-6-3': { income: 50000, expense: 0 },
-            '2025-6-5': { income: 32000, expense: 25000 },
-            '2025-6-7': { income: 0, expense: 8000 },
-            '2025-6-10': { income: 2500000, expense: 0 },
-            '2025-6-12': { income: 0, expense: 45000 },
-            '2025-6-15': { income: 0, expense: 120000 },
-            '2025-6-18': { income: 0, expense: 30000 },
-            '2025-6-20': { income: 0, expense: 67000 },
-            '2025-6-22': { income: 0, expense: 15000 },
-            '2025-6-25': { income: 0, expense: 89000 },
-            '2025-6-28': { income: 0, expense: 42000 }
-        };
+		let transactionData = {};
 
+		function fetchTransactionData(year, month) {
+		    const url = `/cashbook/monthsum?year=${year}&month=${month + 1}`;
+		    
+		    fetch(url)
+		        .then(res => res.json())
+		        .then(data => {
+		            transactionData = {}; // 초기화
+
+		            data.forEach(item => {
+		                const dateStr = item.date; // "2025-06-01"
+		                transactionData[dateStr] = {
+		                    income: item.income || 0,
+		                    expense: item.expense || 0
+		                };
+		            });
+
+		            generateCalendar(year, month); // 받은 후 달력 다시 그림
+		        })
+		        .catch(error => {
+		            console.error("데이터 가져오기 실패:", error);
+		        });
+		}
+        
         // 달력 생성 함수
         function generateCalendar(year, month) {
             const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', 
@@ -161,29 +170,29 @@
                     
                     // 거래 내역 표시 (현재 월의 날짜만)
                     if (currentDate.getMonth() === month) {
-                        const dateKey = `${year}-${month + 1}-${currentDate.getDate()}`;
-                        const transactions = sampleTransactions[dateKey];
-                        
-                        if (transactions) {
-                            const transactionDiv = document.createElement('div');
-                            transactionDiv.className = 'date-transactions';
-                            
-                            if (transactions.income > 0) {
-                                const incomeDiv = document.createElement('div');
-                                incomeDiv.className = 'transaction-item transaction-income';
-                                incomeDiv.textContent = `+${transactions.income.toLocaleString()}`;
-                                transactionDiv.appendChild(incomeDiv);
-                            }
-                            
-                            if (transactions.expense > 0) {
-                                const expenseDiv = document.createElement('div');
-                                expenseDiv.className = 'transaction-item transaction-expense';
-                                expenseDiv.textContent = `-${transactions.expense.toLocaleString()}`;
-                                transactionDiv.appendChild(expenseDiv);
-                            }
-                            
-                            cell.appendChild(transactionDiv);
-                        }
+                       const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                        const transactions = transactionData[dateKey];
+
+						if (transactions) {
+						    const transactionDiv = document.createElement('div');
+						    transactionDiv.className = 'date-transactions';
+
+						    if (transactions.income > 0) {
+						        const incomeDiv = document.createElement('div');
+						        incomeDiv.className = 'transaction-item transaction-income';
+						        incomeDiv.textContent = `+${transactions.income.toLocaleString()}`;
+						        transactionDiv.appendChild(incomeDiv);
+						    }
+
+						    if (transactions.expense > 0) {
+						        const expenseDiv = document.createElement('div');
+						        expenseDiv.className = 'transaction-item transaction-expense';
+						        expenseDiv.textContent = `-${transactions.expense.toLocaleString()}`;
+						        transactionDiv.appendChild(expenseDiv);
+						    }
+
+						    cell.appendChild(transactionDiv);
+						}
                     }
                     
                     row.appendChild(cell);
@@ -245,9 +254,9 @@
         }
 
          // 페이지 로드 시 현재 월 달력 생성
-        document.addEventListener('DOMContentLoaded', function() {
-            generateCalendar(currentYear, currentMonth);
-        });
+		 document.addEventListener('DOMContentLoaded', function() {
+		     fetchTransactionData(currentYear, currentMonth); // ← 이걸로 시작
+		 });
     </script>
 </body>
 </html>

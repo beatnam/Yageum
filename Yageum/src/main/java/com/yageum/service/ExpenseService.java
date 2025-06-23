@@ -95,5 +95,11 @@ public class ExpenseService {
 			cashbookMapper.updateExpense(expenseDTO);
 		}
 
+		public List<Map<String, Object>> getMonthlySum(String id, int year, int month) {
+			LocalDate start = LocalDate.of(year, month, 1);
+			LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+			return cashbookMapper.getDailyIncomeExpense(id, start, end);
+		}
+
 	  
 }
