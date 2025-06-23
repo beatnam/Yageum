@@ -28,6 +28,7 @@ public class ExpenseDTO {
     private String cardName;
     private String accountName;
     private String bankName;
+    private String accountNum;
     
     private int csIn;
     private String csName;

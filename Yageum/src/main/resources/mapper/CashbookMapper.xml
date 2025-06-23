@@ -38,6 +38,14 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where expense_in = #{expenseIn}
 	</update>
 	
+	<select id="getAccountList" resultType="com.yageum.domain.ExpenseDTO">
+		select ba.account_in, ba.account_num, ba.account_name, b.bank_in, b.bank_name
+		from bank_account ba
+		join bank b
+		on ba.bank_in = b.bank_in
+		where ba.member_in = #{memberIn}
+	</select>
+	
 
 
 </mapper>

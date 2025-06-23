@@ -69,7 +69,7 @@ public class ExpenseService {
 
 	    // 계좌 리스트 (회원번호 기준)
 	    public List<BankAccount> getAccountList(int memberIn) {
-	        return bankAccountRepository.findByMemberIn(memberIn);
+	        return cashbookMapper.getAccountList(memberIn);
 	    }
 
 	    // 날짜별 내역 조회
