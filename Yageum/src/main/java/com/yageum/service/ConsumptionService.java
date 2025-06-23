@@ -265,17 +265,20 @@ public class ConsumptionService {
     private static final Map<Integer, String> MAIN_CATEGORY_NAMES = new HashMap<>();
     static {
         MAIN_CATEGORY_NAMES.put(1, "식비");
-        MAIN_CATEGORY_NAMES.put(2, "주거/통신");
-        MAIN_CATEGORY_NAMES.put(3, "교통");
-        MAIN_CATEGORY_NAMES.put(4, "건강/의료");
-        MAIN_CATEGORY_NAMES.put(5, "교육/자기계발");
-        MAIN_CATEGORY_NAMES.put(6, "문화/여가");
+        MAIN_CATEGORY_NAMES.put(2, "주거비");
+        MAIN_CATEGORY_NAMES.put(3, "교통비");
+        MAIN_CATEGORY_NAMES.put(4, "의료비");
+        MAIN_CATEGORY_NAMES.put(5, "교육비");
+        MAIN_CATEGORY_NAMES.put(6, "여가/문화");
         MAIN_CATEGORY_NAMES.put(7, "의류/미용");
-        MAIN_CATEGORY_NAMES.put(8, "금융");
-        MAIN_CATEGORY_NAMES.put(9, "가전/가구");
-        MAIN_CATEGORY_NAMES.put(10, "생활용품");
-        MAIN_CATEGORY_NAMES.put(11, "경조사/기부");
-        MAIN_CATEGORY_NAMES.put(12, "기타");
+        MAIN_CATEGORY_NAMES.put(8, "통신비");
+        MAIN_CATEGORY_NAMES.put(9, "보험/금융");
+        MAIN_CATEGORY_NAMES.put(10, "가전/가구");
+        MAIN_CATEGORY_NAMES.put(11, "생활용품");
+        MAIN_CATEGORY_NAMES.put(12, "사회활동/경조사");
+        MAIN_CATEGORY_NAMES.put(13, "기타");
+        MAIN_CATEGORY_NAMES.put(14, "수입");
+        MAIN_CATEGORY_NAMES.put(18, "헬스");
     }
     private static final Map<String, Integer> SUB_TO_MAIN_CATEGORY_MAP = new HashMap<>();
     static {
@@ -283,16 +286,16 @@ public class ConsumptionService {
         SUB_TO_MAIN_CATEGORY_MAP.put("식료품", 1);
         SUB_TO_MAIN_CATEGORY_MAP.put("카페/디저트", 1);
         SUB_TO_MAIN_CATEGORY_MAP.put("배달음식", 1);
+        SUB_TO_MAIN_CATEGORY_MAP.put("편의점", 1);
 
         SUB_TO_MAIN_CATEGORY_MAP.put("월세/전세", 2);
         SUB_TO_MAIN_CATEGORY_MAP.put("관리비", 2);
         SUB_TO_MAIN_CATEGORY_MAP.put("전기/수도/가스", 2);
         SUB_TO_MAIN_CATEGORY_MAP.put("인터넷/TV", 2);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("대중교통", 3);
+        SUB_TO_MAIN_CATEGORY_MAP.put("대중교통", 4); 
         SUB_TO_MAIN_CATEGORY_MAP.put("주유비", 3);
         SUB_TO_MAIN_CATEGORY_MAP.put("택시비", 3);
-        SUB_TO_MAIN_CATEGORY_MAP.put("자동차 유지비", 3);
 
         SUB_TO_MAIN_CATEGORY_MAP.put("병원비", 4);
         SUB_TO_MAIN_CATEGORY_MAP.put("약국", 4);
@@ -308,24 +311,43 @@ public class ConsumptionService {
         SUB_TO_MAIN_CATEGORY_MAP.put("영화/공연", 6);
         SUB_TO_MAIN_CATEGORY_MAP.put("게임/취미", 6);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("의류", 7);
         SUB_TO_MAIN_CATEGORY_MAP.put("미용실/네일", 7);
         SUB_TO_MAIN_CATEGORY_MAP.put("화장품", 7);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("보험료", 8);
-        SUB_TO_MAIN_CATEGORY_MAP.put("저축/투자", 8);
-        SUB_TO_MAIN_CATEGORY_MAP.put("대출 상환", 8);
+        SUB_TO_MAIN_CATEGORY_MAP.put("통신비", 8);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("가전제품", 9);
-        SUB_TO_MAIN_CATEGORY_MAP.put("가구/인테리어", 9);
+        SUB_TO_MAIN_CATEGORY_MAP.put("보험료", 9);
+        SUB_TO_MAIN_CATEGORY_MAP.put("저축/투자", 9);
+        SUB_TO_MAIN_CATEGORY_MAP.put("대출 상환", 9);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("생활용품", 10);
+        SUB_TO_MAIN_CATEGORY_MAP.put("가전제품", 10);
+        SUB_TO_MAIN_CATEGORY_MAP.put("가구/인테리어", 10);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("경조사비", 11);
-        SUB_TO_MAIN_CATEGORY_MAP.put("기부/후원", 11);
+        SUB_TO_MAIN_CATEGORY_MAP.put("생활용품", 11);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("기타 지출", 12);
+        SUB_TO_MAIN_CATEGORY_MAP.put("경조사비", 12);
+        SUB_TO_MAIN_CATEGORY_MAP.put("기부/후원", 12);
+
+        SUB_TO_MAIN_CATEGORY_MAP.put("기타 지출", 13);
+
+        SUB_TO_MAIN_CATEGORY_MAP.put("급여", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("용돈", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("사업 수입", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("금융소득", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("기타 수입", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("상여금", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("환급금/보조금", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("부수입", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("아르바이트", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("중고거래 판매금", 14);
+
+        SUB_TO_MAIN_CATEGORY_MAP.put("닭가슴살", 18);
+        SUB_TO_MAIN_CATEGORY_MAP.put("단백질쉐이크", 18);
+        SUB_TO_MAIN_CATEGORY_MAP.put("헬스장이용비", 18);
+        SUB_TO_MAIN_CATEGORY_MAP.put("보충제", 18);
+        SUB_TO_MAIN_CATEGORY_MAP.put("헬스용복압벨트", 18);
     }
+    
     public String analyzeCategoryExpenses(List<Map<String, Object>> categoryExpenses) {
         StringBuilder insightsText = new StringBuilder();
 
