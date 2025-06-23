@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.yageum.domain.ItemDTO;
 import com.yageum.domain.QuestStateDTO;
 import com.yageum.mapper.QuestMapper;
 
@@ -40,6 +41,32 @@ public class QuestService {
 	public List<Map<Object, Object>> myQuest(int memberIn) {
 		// TODO Auto-generated method stub
 		return questMapper.myQuest(memberIn);
+	}
+
+	public List<ItemDTO> listItem() {
+
+		return questMapper.listItem();
+
+	}
+
+	public int myReward(String memberId) {
+		// TODO Auto-generated method stub
+		return questMapper.myReward(memberId);
+	}
+
+	public void buyItemUser(Map<String, Object> buyItemUser) {
+
+		questMapper.buyItemUser(buyItemUser);
+	}
+
+	public void buyItemTransaction(Map<String, Object> buyItemTransaction) {
+		questMapper.buyItemTransaction(buyItemTransaction);
+
+	}
+
+	public ItemDTO getItemInfo(ItemDTO itemDTO) {
+		// TODO Auto-generated method stub
+		return questMapper.getItemInfo(itemDTO);
 	}
 
 }

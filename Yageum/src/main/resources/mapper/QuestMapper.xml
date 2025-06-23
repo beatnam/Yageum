@@ -41,7 +41,38 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		join quest_progress p
 		on s.qp_in = p.qp_in
 
-		where s.quest_in in (select s.quest_in from quest_state where s.member_in =
+		where s.quest_in in (select s.quest_in from quest_state where
+		s.member_in =
 		#{memberIn})
+	</select>
+
+	<select id="listItem" resultType="com.yageum.domain.ItemDTO">
+		select *
+		from item
+
+	</select>
+
+	<select id="myReward" resultType="java.lang.Integer">
+		select member_reward
+		from member
+		where member_id = #{memberId}
+
+	</select>
+
+	<update id="buyItemUser" parameterType="map">
+		update member
+		set member_reward = member_reward - #{itemPrice}
+		where member_id = #{memberId}
+	</update>
+	
+	<insert id="buyItemTransaction" parameterType="map">
+		insert transaction(member_in, item_in, transaction_date)
+		values(#{memberIn}, #{itemIn}, #{transactionDate})
+	</insert>
+	
+	<select id = "getItemInfo" resultType="com.yageum.domain.ItemDTO">
+		select *
+		from item
+		where item_in = #{itemIn}
 	</select>
 </mapper>
