@@ -52,7 +52,7 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 			sum(case when expense_type=0 then expense_sum else 0 end) as income,
 			sum(case when expense_type=1 then expense_sum else 0 end) as expense
 		from expense
-		where member_id = #{id}
+		where member_in = #{memberIn}
 		  and expense_date between #{start} and #{end}
 		group by expense_date;
 	</select>

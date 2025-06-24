@@ -30,7 +30,6 @@ import com.yageum.service.ExpenseService;
 import com.yageum.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -58,14 +57,15 @@ public class ExpenseController {
 	@ResponseBody
 	public List<Map<String, Object>> getMonthlySum(@RequestParam("year") int year, @RequestParam("month") int month){
 		log.info("ExpenseController monthsum()");
-		// 로그인된 사용자 ID 가져오기 (Spring Security)
+		
 	    String id = SecurityContextHolder.getContext().getAuthentication().getName();
-	    //Member member = memberService.find(id);
-	    //int memberIn = member.getMemberIn();
-	    log.info("로그인된 사용자 ID: {}", id);
-	    //log.info("memberIn : ", memberIn);
+	    Member member = memberService.find(id);
+	    int memberIn = member.getMemberIn();
 	    
-	    return expenseService.getMonthlySum(id, year, month);
+	    log.info("로그인된 사용자 ID: {}", id);
+	    log.info("memberIn : {} ", memberIn);
+	    
+	    return expenseService.getMonthlySum(memberIn, year, month);
 	}
 	
 	

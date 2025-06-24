@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.data.repository.query.Param;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.yageum.domain.ExpenseDTO;
@@ -21,7 +21,7 @@ public interface CashbookMapper {
 
    List<BankAccount> getAccountList(int memberIn);
 
-   List<Map<String, Object>> getDailyIncomeExpense(@Param("id") String id, @Param("start") LocalDate start, @Param("end") LocalDate end);
+   List<Map<String, Object>> getDailyIncomeExpense(@Param("memberIn") int memberIn, @Param("start") LocalDate start, @Param("end") LocalDate end);
 
     
     

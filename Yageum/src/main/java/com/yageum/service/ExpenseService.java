@@ -1,20 +1,11 @@
 package com.yageum.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.yageum.domain.BankAccountDTO;
-import com.yageum.domain.CardDTO;
-import com.yageum.domain.CategoryMainDTO;
-import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.ExpenseDTO;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Card;
@@ -22,7 +13,6 @@ import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
 import com.yageum.entity.Expense;
 import com.yageum.mapper.CashbookMapper;
-import com.yageum.repository.BankAccountRepository;
 import com.yageum.repository.CardRepository;
 import com.yageum.repository.CategoryMainRepository;
 import com.yageum.repository.CategorySubRepository;
@@ -30,7 +20,6 @@ import com.yageum.repository.ExpenseRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Transactional
@@ -43,7 +32,6 @@ public class ExpenseService {
 	 private final CategoryMainRepository categoryMainRepository;
 	 private final CategorySubRepository categorySubRepository;
 	 private final CardRepository cardRepository;
-	 private final BankAccountRepository bankAccountRepository;
 	 private final CashbookMapper cashbookMapper;
 
 	    
@@ -90,15 +78,17 @@ public class ExpenseService {
 	        return cashbookMapper.getExpenseDetailById(id);
 	    }
 
+	    // 가계부 수정
 		public void update(ExpenseDTO expenseDTO) {
 
 			cashbookMapper.updateExpense(expenseDTO);
 		}
 
-		public List<Map<String, Object>> getMonthlySum(String id, int year, int month) {
+		// 메인 페이지 내 수입 / 지출 금액
+		public List<Map<String, Object>> getMonthlySum(int memberIn, int year, int month) {
 			LocalDate start = LocalDate.of(year, month, 1);
 			LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
-			return cashbookMapper.getDailyIncomeExpense(id, start, end);
+			return cashbookMapper.getDailyIncomeExpense(memberIn, start, end);
 		}
 
 	  
