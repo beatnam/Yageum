@@ -105,8 +105,7 @@ public class MemberService {
 
 	//마이페이지 - 회원정보 수정 저장 로직 끝
 
-	
-	
+
 	
 	//관리자 페이지 사용자 권한 부여---------------------------
 	public void update(MemberDTO memberDTO) {
@@ -126,6 +125,8 @@ public class MemberService {
 		memberMapper.updateDate(memberDTO2);
 		
 	}
+
+	
 	//관리자 페이지 사용자 권한 부여----------------------------
 	
 }

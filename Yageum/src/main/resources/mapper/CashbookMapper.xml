@@ -24,17 +24,17 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	<update id="updateExpense" parameterType="com.yageum.domain.ExpenseDTO">
 		update expense 
 		set
-		expense_in = #{expenseIn},
-		member_in = #{memberIn},
-		card_in = #{cardIn},
-		account_in = #{accountIn},
-		expense_sum = #{expenseSum},
-		cs_in = #{csIn},
-		expense_memo = #{expenseMemo},
-		expense_date = #{expenseDate},
-		expense_content = #{expenseContent},
-		expense_type = #{expenseType},
-		method_in = #{methodIn}
+			expense_in = #{expenseIn},
+			member_in = #{memberIn},
+			card_in = #{cardIn},
+			account_in = #{accountIn},
+			expense_sum = #{expenseSum},
+			cs_in = #{csIn},
+			expense_memo = #{expenseMemo},
+			expense_date = #{expenseDate},
+			expense_content = #{expenseContent},
+			expense_type = #{expenseType},
+			method_in = #{methodIn}
 		where expense_in = #{expenseIn}
 	</update>
 	
@@ -46,6 +46,16 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where ba.member_in = #{memberIn}
 	</select>
 	
+	<select id="getDailyIncomeExpense" resultType="map">
+		select 
+			expense_date, 
+			sum(case when expense_type=0 then expense_sum else 0 end) as income,
+			sum(case when expense_type=1 then expense_sum else 0 end) as expense
+		from expense
+		where member_in = #{memberIn}
+		  and expense_date between #{start} and #{end}
+		group by expense_date;
+	</select>
 
 
 </mapper>
