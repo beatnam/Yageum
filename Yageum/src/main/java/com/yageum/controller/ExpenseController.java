@@ -141,6 +141,7 @@ public class ExpenseController {
 		
 		List<CategoryMain> mainList = expenseService.getMainCategoryList();
 		model.addAttribute("mainList", mainList);
+		model.addAttribute("selectedDate", LocalDate.now());
 
 		return "/cashbook/cashbook_insert";
 	}

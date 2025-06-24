@@ -1,5 +1,5 @@
 
-//url에서 쿼리 파라미터 값 들고옴
+		//url에서 쿼리 파라미터 값 들고옴
 		function getDateFromURL() {
 	        const params = new URLSearchParams(window.location.search);
 	        return params.get("date");
@@ -57,11 +57,3 @@
 		    const day = (`0${date.getDate()}`).slice(-2);         // 1~31
 		    return `${year}-${month}-${day}`;
 		}
-		
-		
-			
-        function logout() {
-            if(confirm('로그아웃 하시겠습니까?')) {
-                window.location.href = '/logout';
-            }
-        }
