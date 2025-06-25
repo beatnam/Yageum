@@ -127,4 +127,12 @@ public class QuestController {
 
 		return "redirect:/quest/list";
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

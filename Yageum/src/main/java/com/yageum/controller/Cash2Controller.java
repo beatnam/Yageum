@@ -22,15 +22,14 @@ import lombok.extern.java.Log;
 public class Cash2Controller {
 
 	private final QuestService questService;
-	
-	
+
 	@GetMapping("/chart")
 	public String chart() {
 		log.info("Cash2Controller chart()");
-		
-		
+
 		return "/cashbook/cashbook_chart";
 	}
+
 	@GetMapping("/quest")
 	public String quest(Model model, @AuthenticationPrincipal UserDetails userDetails) {
 		log.info("Cash2Controller quest()");
@@ -38,15 +37,14 @@ public class Cash2Controller {
 		System.out.println(userDetails.getUsername());
 
 		int memberIn = questService.searchMemberIn(memberId);
-		
-		List<Map<Object,Object>> myQuest = questService.myQuest(memberIn);
-		
+
+		List<Map<Object, Object>> myQuest = questService.myQuest(memberIn);
+
 		model.addAttribute("myQuest", myQuest);
-		
+
 		return "/cashbook/cashbook_quest";
 	}
+
 	
-	
-	
-	
+
 }

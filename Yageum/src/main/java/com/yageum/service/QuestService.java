@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.yageum.domain.ItemDTO;
 import com.yageum.domain.QuestStateDTO;
+import com.yageum.domain.QuestSuccessDTO;
 import com.yageum.mapper.QuestMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -67,6 +68,38 @@ public class QuestService {
 	public ItemDTO getItemInfo(ItemDTO itemDTO) {
 		// TODO Auto-generated method stub
 		return questMapper.getItemInfo(itemDTO);
+	}
+
+	public Map<Object, Object> questType2() {
+		// TODO Auto-generated method stub
+		return questMapper.questType2();
+	}
+
+	public List<Map<String, Object>> listQuestType2(int memberIn) {
+		// TODO Auto-generated method stub
+		return questMapper.listQuestType2(memberIn);
+	}
+
+	public void successQuestType(QuestSuccessDTO questSuccessDTO) {
+
+		questMapper.successQuestType(questSuccessDTO);
+
+	}
+
+	public void memberReward(QuestSuccessDTO questSuccessDTO) {
+		
+		questMapper.memberReward(questSuccessDTO);
+		
+	}
+
+	public List<Map<String, Object>> listQuestType3(int memberIn) {
+		// TODO Auto-generated method stub
+		return questMapper.listQuestType3(memberIn);
+	}
+
+	public void successQuestType3(QuestSuccessDTO questSuccessDTO) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

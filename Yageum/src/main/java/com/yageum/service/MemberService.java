@@ -2,11 +2,13 @@ package com.yageum.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.yageum.domain.ExpenseDTO;
 import com.yageum.domain.MemberDTO;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.Member;
@@ -66,20 +68,16 @@ public class MemberService {
 		memberMapper.joinMember(memberDTO);
 	}
 
-
-	//관리자 - 유저 페이지 회원 정보 출력 시작
+	// 관리자 - 유저 페이지 회원 정보 출력 시작
 
 	public List<Member> adminInfo() {
-		
-		
+
 		return memberRepository.findAll();
 	}
 
+	// 관리자 - 유저 페이지 회원 정보 출력 끝
 
-	//관리자 - 유저 페이지 회원 정보 출력 끝
-
-	
-	//마이페이지 - 회원정보 수정 저장 로직 시작
+	// 마이페이지 - 회원정보 수정 저장 로직 시작
 	public Optional<Member> findByMemberId(String memberId) {
 		log.info("MemberService findByMemberId()");
 
@@ -87,20 +85,20 @@ public class MemberService {
 
 	}
 
-	
 	public void save(Member member) {
 		log.info("MemberService save()");
-		
-		memberRepository.save(member); 
+
+		memberRepository.save(member);
 	}
 
 	public void deleteByMemberId(String id) {
 		log.info("MemberService deleteByMemberId()");
-		
-		memberRepository.deleteByMemberId(id); 
-		
+
+		memberRepository.deleteByMemberId(id);
+
 	}
 
+	// 마이페이지 - 회원정보 수정 저장 로직 끝
 
 
 	//마이페이지 - 회원정보 수정 저장 로직 끝
@@ -108,25 +106,54 @@ public class MemberService {
 
 	
 	//관리자 페이지 사용자 권한 부여---------------------------
+
 	public void update(MemberDTO memberDTO) {
 		log.info("MemberService update()");
-		
+
 		Member member = new Member();
 		member.setMemberEntity(memberDTO);
-		
+
 		memberRepository.save(member);
-		
+
 	}
 
 	public Member find(String memberId) {
 		return memberRepository.findByMemberId(memberId);
 	}
+
 	public void updateDate(MemberDTO memberDTO2) {
 		memberMapper.updateDate(memberDTO2);
-		
+
 	}
 
-	
-	//관리자 페이지 사용자 권한 부여----------------------------
-	
+
+	public List<MemberDTO> listMemberLastLogin() {
+		// TODO Auto-generated method stub
+		return memberMapper.listMemberLastLogin();
+	}
+
+	public void updateMemberStraight(int memberIn) {
+		memberMapper.updateMemberStraight(memberIn);
+	}
+
+	public List<ExpenseDTO> listMemberLastExpense() {
+
+		return memberMapper.listMemberLastExpense();
+	}
+
+	public void updateMemberExpense(int memberIn) {
+		memberMapper.updateMemberExpense(memberIn);
+	}
+
+	public void updateMemberStraightZero(int memberIn) {
+		memberMapper.updateMemberStraightZero(memberIn);
+
+	}
+
+	public void updateMemberExpenseZero(int memberIn) {
+		memberMapper.updateMemberExpenseZero(memberIn);
+	}
+
+	// 관리자 페이지 사용자 권한 부여----------------------------
+
 }
