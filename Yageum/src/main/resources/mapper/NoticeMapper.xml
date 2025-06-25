@@ -23,6 +23,7 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	</select>
 	
 	<insert id="insert" parameterType="com.yageum.domain.NoticeDTO">
-		insert into notice(notice_In, notice_subject, notice_content, notice_date)
+		insert into notice(notice_subject, notice_content, notice_date)
+		values(#{noticeSubject}, #{noticeContent}, #{noticeDate})
 	</insert>
 </mapper>
