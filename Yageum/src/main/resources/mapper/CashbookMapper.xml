@@ -56,6 +56,23 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		  and expense_date between #{start} and #{end}
 		group by expense_date;
 	</select>
+	
+	<select id="getMonthList" resultType="com.yageum.domain.ExpenseDTO">
+		select e.expense_sum, e.expense_memo, e.expense_date, e.expense_content, e.expense_type,
+			   m.method_type, cs.cs_name, cm.cm_name, c.card_name, ba.account_name, b.bank_name,
+			   e.method_in, cs.cs_in, cs.cm_in, e.card_in, e.account_in, b.bank_in, e.expense_in,
+			   e.member_in
+		from expense e
+		left join ex_method m on e.method_in = m.method_in
+		left join category_sub cs on e.cs_in = cs.cs_in
+		left join category_main cm on cs.cm_in = cm.cm_in 
+		left join card c on c.card_in = e.card_in 
+		left join bank_account ba on e.account_in = ba.account_in 
+		left join bank b on b.bank_in = ba.bank_in
+		where e.member_in = #{memberIn} 
+		and e.expense_date between #{start} and #{end}
+		order by e.expense_date desc
+	</select>
 
 
 </mapper>

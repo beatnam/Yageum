@@ -87,92 +87,29 @@
                    </div>
                </div>
 
-               <!-- 내역 리스트 -->
+               <!-- 내역  -->
                <div class="transaction-list">
+				
+					<!-- 내역 헤더-->
                    <div class="transaction-header">
-                       <h3 class="transaction-title">2025. 06월 내역</h3>
+                       <h3 class="transaction-title" th:text="${startDate} + ' ~ ' + ${endDate}"></h3>
                        <div class="transaction-summary">
                            <div class="summary-item">
                                <span>수입:</span>
-                               <span class="income">+2,560,000원</span>
+                               <span class="income"></span>
                            </div>
                            <div class="summary-item">
                                <span>지출:</span>
-                               <span class="expense">-464,000원</span>
+                               <span class="expense"></span>
                            </div>
                        </div>
                    </div>
 
-                   <!-- 내역 아이템들 -->
+                   <!-- 내역 리스트 -->
                    <div class="transaction-item">
-                       <div class="transaction-icon icon-home">🏠</div>
-                       <div class="transaction-details">
-                           <div class="transaction-desc">6월 월세</div>
-                           <div class="transaction-meta">
-                               <span>국민은행 계좌</span>
-                           </div>
-                       </div>
-                       <div>
-                           <div class="transaction-amount expense">-350,000원</div>
-                           <div class="transaction-date">2025.06.06</div>
-                       </div>
+
                    </div>
 
-                   <div class="transaction-item">
-                       <div class="transaction-icon icon-maintenance">🔧</div>
-                       <div class="transaction-details">
-                           <div class="transaction-desc">6월 관리비</div>
-                           <div class="transaction-meta">
-                               <span>네이버삼성카드</span>
-                           </div>
-                       </div>
-                       <div>
-                           <div class="transaction-amount expense">-105,000원</div>
-                           <div class="transaction-date">2025.06.06</div>
-                       </div>
-                   </div>
-
-                   <div class="transaction-item">
-                       <div class="transaction-icon icon-salary">💰</div>
-                       <div class="transaction-details">
-                           <div class="transaction-desc">아이디얼 6월 월급</div>
-                           <div class="transaction-meta">
-                               <span>국민은행 계좌</span>
-                           </div>
-                       </div>
-                       <div>
-                           <div class="transaction-amount income">+2,560,000원</div>
-                           <div class="transaction-date">2025.06.05</div>
-                       </div>
-                   </div>
-
-                   <div class="transaction-item">
-                       <div class="transaction-icon icon-food">🍽️</div>
-                       <div class="transaction-details">
-                           <div class="transaction-desc">민양돼지국밥</div>
-                           <div class="transaction-meta">
-                               <span>카이뱅크 체크카드</span>
-                           </div>
-                       </div>
-                       <div>
-                           <div class="transaction-amount expense">-9,000원</div>
-                           <div class="transaction-date">2025.06.05</div>
-                       </div>
-                   </div>
-
-                   <div class="transaction-item">
-                       <div class="transaction-icon icon-shopping">🛍️</div>
-                       <div class="transaction-details">
-                           <div class="transaction-desc">다이소 서면중앙점</div>
-                           <div class="transaction-meta">
-                               <span>현금</span>
-                           </div>
-                       </div>
-                       <div>
-                           <div class="transaction-amount expense">-4,000원</div>
-                           <div class="transaction-date">2025.06.05</div>
-                       </div>
-                   </div>
                </div>
             </div>
         </main>
@@ -181,7 +118,7 @@
 	<!--푸터-->
 	<div th:replace="fragments/footer :: footer"></div>
 
-    <script>
+    <script src="../js/cashbook_search.js">
 
     </script>
 </body>
