@@ -25,6 +25,10 @@ public interface CashbookMapper {
 
    List<ExpenseDTO> getMonthList(@Param("memberIn") int memberIn, @Param("start") LocalDate start, @Param("end") LocalDate end);
 
+//   List<ExpenseDTO> filterSearch(@Param("memberIn") int memberIn, @Param("startDate") String start,
+//		    @Param("endDate") String end, @Param("category") String category, @Param("type") String type,
+//		    @Param("method") String method, @Param("keyword") String keyword);
+
     
     
     

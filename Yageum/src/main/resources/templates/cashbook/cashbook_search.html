@@ -30,64 +30,72 @@
 			
             <div class="content-body">
 				
-				<!-- 필터 영역 -->
-               <div class="filter-section">
-                   <div class="filter-row">
-                       <div class="filter-group">
-                           <label class="filter-label">카테고리</label>
-                           <select class="filter-select" id="categoryFilter">
-                               <option value="">전체</option>
-                               <option value="housing">주거</option>
-                               <option value="food">식비</option>
-                               <option value="transport">교통</option>
-                               <option value="medical">의료</option>
-                               <option value="entertainment">여가</option>
-                               <option value="salary">급여</option>
-                               <option value="side">부업</option>
-                           </select>
-                       </div>
-                       
-                       <div class="filter-group">
-                           <label class="filter-label">기간</label>
-                           <select class="filter-select" id="periodFilter">
-                               <option value="thisMonth">이번 달</option>
-                               <option value="lastMonth">지난 달</option>
-                               <option value="3months">최근 3개월</option>
-                               <option value="custom">직접 입력</option>
-                           </select>
-                       </div>
-                       
-                       <div class="filter-group">
-                           <label class="filter-label">유형</label>
-                           <select class="filter-select" id="typeFilter">
-                               <option value="">전체</option>
-                               <option value="income">수입</option>
-                               <option value="expense">지출</option>
-                           </select>
-                       </div>
-                       
-                       <div class="filter-group">
-                           <label class="filter-label">결제수단</label>
-                           <select class="filter-select" id="paymentFilter">
-                               <option value="">전체</option>
-                               <option value="account">계좌</option>
-                               <option value="card">카드</option>
-                               <option value="cash">현금</option>
-                           </select>
-                       </div>
-                   </div>
-                   
-                   <div class="filter-row">
-                       <div class="filter-group">
-                           <label class="filter-label">검색</label>
-                           <input type="text" class="filter-input" id="searchInput" placeholder="검색어를 입력하세요">
-                       </div>
-                       
-                       <button class="btn-search" onclick="applyFilters()">조회</button>
-                   </div>
-               </div>
+			  <!-- 필터 영역 -->
+				<div class="filter-section">
+				  <div class="filter-row">
+					
+				    <!-- 카테고리 -->
+				    <div class="filter-group">
+				      <label class="filter-label">카테고리</label>
+					  <select class="filter-select" id="categoryFilter">
+					    <option value="">전체</option>
+					    <option th:each="category : ${mainCategories}"
+					            th:value="${category.code}"
+					            th:text="${category.name}">
+					    </option>
+					  </select>
+				    </div>
 
-               <!-- 내역  -->
+				    <!-- 기간 -->
+				    <div class="filter-group">
+				      <label class="filter-label">기간</label>
+				      <select class="filter-select" id="periodFilter">
+				        <option value="thisMonth">이번 달</option>
+				        <option value="lastMonth">지난 달</option>
+				        <option value="custom">직접 입력</option>
+				      </select>
+					  
+				      <div id="customDateRange" style="display: none; margin-top: 5px;">
+				        <input type="date" id="startDateInput" class="filter-input" />
+				        <span style="margin: 0 5px;">~</span>
+				        <input type="date" id="endDateInput" class="filter-input" />
+				      </div>
+				    </div>
+
+				    <!-- 유형 -->
+				    <div class="filter-group">
+				      <label class="filter-label">유형</label>
+				      <select class="filter-select" id="typeFilter">
+				        <option value="">전체</option>
+				        <option value="income">수입</option>
+				        <option value="expense">지출</option>
+				      </select>
+				    </div>
+
+				    <!-- 결제수단 -->
+				    <div class="filter-group">
+				      <label class="filter-label">결제수단</label>
+				      <select class="filter-select" id="paymentFilter">
+				        <option value="">전체</option>
+				        <!-- 카드/계좌는 JS로 동적 삽입 예정 -->
+				        <option value="cash">현금</option>
+				      </select>
+				    </div>
+				  </div>
+
+				  <!-- 검색 -->
+				  <div class="filter-row">
+				    <div class="filter-group">
+				      <label class="filter-label">검색</label>
+				      <input type="text" class="filter-input" id="searchInput" placeholder="검색어를 입력하세요">
+				    </div>
+
+				    <button class="btn-search" onclick="applyFilters()">조회</button>
+				  </div>
+				</div>
+
+				
+             <!-- 내역 영역 -->
                <div class="transaction-list">
 				
 					<!-- 내역 헤더-->
