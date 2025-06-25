@@ -74,15 +74,43 @@ public class ExpenseController {
 				questSuccessDTO.setMemberIn(memberIn2);
 				questSuccessDTO.setQuestIn(questIn);
 				// 조건에 만족하면 퀘스트타입2의 상태 수정(성공으로)
-				questService.successQuestType2(questSuccessDTO);
+				questService.successQuestType(questSuccessDTO);
 
 				questSuccessDTO.setRewardValue(rewardValue);
-				questService.memberReward2(questSuccessDTO);
+				questService.memberReward(questSuccessDTO);
 
 			}
 
 		}
+		
+		// 연속 작성 조회
+		List<Map<String, Object>> memberInType3 = questService.listQuestType3(memberIn);
 
+		// 조회한 모든 멤버에 대해
+		for (int i = 0; i < memberInType3.size(); i++) {
+			int memberExpense = (Integer) memberInType3.get(i).get("member_expense");
+			int goalValue = (Integer) memberInType3.get(i).get("goal_value");
+			int qpIn = (Integer) memberInType3.get(i).get("qp_in");
+
+			// 연속출석일수가 목표치보다 같거나 크고 퀘스트가 성공 전인 상태
+			if ((memberExpense >= goalValue) && qpIn == 2) {
+				int memberIn2 = (Integer) memberInType3.get(i).get("member_in");
+				int questIn = (Integer) memberInType3.get(i).get("quest_in");
+				int rewardValue = (Integer) memberInType3.get(i).get("reward_value");
+
+				QuestSuccessDTO questSuccessDTO = new QuestSuccessDTO();
+				questSuccessDTO.setMemberIn(memberIn2);
+				questSuccessDTO.setQuestIn(questIn);
+				// 조건에 만족하면 퀘스트타입2의 상태 수정(성공으로)
+				questService.successQuestType(questSuccessDTO);
+
+				questSuccessDTO.setRewardValue(rewardValue);
+				questService.memberReward(questSuccessDTO);
+
+			}
+
+		}
+		
 		return "/cashbook/cashbook_main";
 	}
 

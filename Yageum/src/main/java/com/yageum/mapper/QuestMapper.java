@@ -36,9 +36,13 @@ public interface QuestMapper {
 	Map<Object, Object> questType2();
 
 	List<Map<String, Object>> listQuestType2(int memberIn);
+	
+	List<Map<String, Object>> listQuestType3(int memberIn);
 
-	void successQuestType2(QuestSuccessDTO questSuccessDTOn);
+	void successQuestType(QuestSuccessDTO questSuccessDTOn);
 
-	void memberReward2(QuestSuccessDTO questSuccessDTO);
+	void memberReward(QuestSuccessDTO questSuccessDTO);
+
+	
 
 }

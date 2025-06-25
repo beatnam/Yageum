@@ -80,15 +80,25 @@ public class QuestService {
 		return questMapper.listQuestType2(memberIn);
 	}
 
-	public void successQuestType2(QuestSuccessDTO questSuccessDTO) {
+	public void successQuestType(QuestSuccessDTO questSuccessDTO) {
 
-		questMapper.successQuestType2(questSuccessDTO);
+		questMapper.successQuestType(questSuccessDTO);
 
 	}
 
-	public void memberReward2(QuestSuccessDTO questSuccessDTO) {
+	public void memberReward(QuestSuccessDTO questSuccessDTO) {
 		
-		questMapper.memberReward2(questSuccessDTO);
+		questMapper.memberReward(questSuccessDTO);
+		
+	}
+
+	public List<Map<String, Object>> listQuestType3(int memberIn) {
+		// TODO Auto-generated method stub
+		return questMapper.listQuestType3(memberIn);
+	}
+
+	public void successQuestType3(QuestSuccessDTO questSuccessDTO) {
+		// TODO Auto-generated method stub
 		
 	}
 
