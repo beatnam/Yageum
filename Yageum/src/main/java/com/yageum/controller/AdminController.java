@@ -389,6 +389,9 @@ public class AdminController {
 	@PostMapping("/notice_generPro")
 	public String noticeGenerPro(NoticeDTO noticeDTO, Model model) {
 		log.info("AdminController noticeGenerPro()");
+		log.info(noticeDTO.toString());
+
+		
 		
 		noticeService.insert(noticeDTO);
 		
