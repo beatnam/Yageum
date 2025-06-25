@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.ItemDTO;
+import com.yageum.domain.NoticeDTO;
 import com.yageum.domain.QuestDTO;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
@@ -25,6 +26,7 @@ import com.yageum.service.AdminService;
 import com.yageum.service.CategoryService;
 import com.yageum.service.ItemService;
 import com.yageum.service.MemberService;
+import com.yageum.service.NoticeService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -41,7 +43,7 @@ public class AdminController {
 	private final CategoryService categoryService;
 	private final AdminService adminService;
 	private final ItemService itemService;
-	
+	private final NoticeService noticeService;
 	
 	//Repository			
 	private final CategoryMainRepository categoryMainRepository;
@@ -365,12 +367,47 @@ public class AdminController {
 	// 사이트 설정 - 공지사항 페이지
 
 	@GetMapping("/noticfication")
-	public String noticfication() {
+	public String noticfication(Model model) {
 		log.info("AdminController noticfication()");
 
+		List<NoticeDTO> noticeList = noticeService.listNotice();
+		log.info(noticeList.toString());
+		model.addAttribute("noticeL", noticeList);
+		
+		
+		
 		return "/admin/admin_noticfication";
 	}
 
+	@GetMapping("/notice_gener")
+	public String noticeGener(Model model) {
+		log.info("AdminController noticeGener()");
+
+		
+		return "/admin/notice_gener";
+	}
+	@PostMapping("/notice_generPro")
+	public String noticeGenerPro(NoticeDTO noticeDTO, Model model) {
+		log.info("AdminController noticeGenerPro()");
+		
+		noticeService.insert(noticeDTO);
+		
+		
+		
+		
+		return "/admin/notice_gener";
+	}
+	
+	@GetMapping("/notice_update")
+	public String noticeUpdate(Model model) {
+		log.info("AdminController noticeUpdate()");
+
+		return "/admin/notice_update";
+
+	}
+	
+	
+	
 	// 사이트 설정 - 공지사항 페이지
 
 	// 사이트 설정 - 상품 설정 페이지

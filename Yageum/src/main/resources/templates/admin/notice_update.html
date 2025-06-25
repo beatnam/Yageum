@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>공지사항 수정</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>공지사항 수정</h2>
+        </div>
+        
+        <div class="form-container">
+            <!-- 기존 공지사항 정보 표시 -->
+            <div class="notice-info">
+                <p><strong>공지사항 번호:</strong> <span th:text="${notice.noticeId}"></span></p>
+                <p><strong>최초 등록일:</strong> <span th:text="${#temporals.format(notice.noticeDate, 'yyyy-MM-dd')}"></span></p>
+            </div>
+            
+            <form action="/admin/notice_modify" method="post" onsubmit="return validateForm()">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="noticeId" th:value="${notice.noticeId}">
+                
+                <div class="form-group">
+                    <label for="noticeSubject">제목 <span class="required">*</span></label>
+                    <input type="text" id="noticeSubject" name="noticeSubject" 
+                           th:value="${notice.noticeSubject}"
+                           placeholder="공지사항 제목을 입력하세요" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noticeContent">내용 <span class="required">*</span></label>
+                    <textarea id="noticeContent" name="noticeContent" 
+                              placeholder="공지사항 내용을 입력하세요" required 
+                              th:text="${notice.noticeContent}"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noticeDate">수정 날짜</label>
+                    <input type="date" id="noticeDate" name="noticeDate" 
+                           th:value="${#temporals.format(notice.noticeDate, 'yyyy-MM-dd')}" required>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeWindow()">취소</button>
+                    <button type="submit" class="btn btn-primary">수정하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 폼 유효성 검사
+        function validateForm() {
+            const subject = document.getElementById('noticeSubject').value.trim();
+            const content = document.getElementById('noticeContent').value.trim();
+            const date = document.getElementById('noticeDate').value;
+
+            if (!subject) {
+                alert('제목을 입력해주세요.');
+                document.getElementById('noticeSubject').focus();
+                return false;
+            }
+
+            if (!content) {
+                alert('내용을 입력해주세요.');
+                document.getElementById('noticeContent').focus();
+                return false;
+            }
+
+            if (!date) {
+                alert('수정 날짜를 선택해주세요.');
+                document.getElementById('noticeDate').focus();
+                return false;
+            }
+
+            if (confirm('공지사항을 수정하시겠습니까?')) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        // 창 닫기
+        function closeWindow() {
+            if (confirm('수정 중인 내용이 사라집니다. 정말 취소하시겠습니까?')) {
+                window.close();
+            }
+        }
+    </script>
+</body>
+</html>

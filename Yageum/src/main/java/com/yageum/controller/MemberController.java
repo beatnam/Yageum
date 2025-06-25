@@ -127,7 +127,7 @@ public class MemberController {
 			memberDTO.setLastLoginDate(LocalDate.now());
 			memberService.updateDate(memberDTO);
 			session.setAttribute("memberName", memberDTO.getMemberName());
-
+			
 			return "redirect:/cashbook/main";
 		}
 	}
