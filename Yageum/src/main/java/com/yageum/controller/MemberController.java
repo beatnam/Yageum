@@ -3,6 +3,7 @@ package com.yageum.controller;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -62,7 +63,6 @@ public class MemberController {
 	public String login(Model model, HttpSession session,
 			@CookieValue(value = "userID", defaultValue = "") String userID) {
 		log.info("MemberController login()");
-
 		String clientId = nClientId;
 
 		String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);

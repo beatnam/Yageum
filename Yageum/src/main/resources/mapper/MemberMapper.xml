@@ -40,4 +40,16 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		set lastlogin_date = #{lastLoginDate}
 		where member_id = #{memberId}
 	</update>
+	
+	<select id="listMemberLastLogin" resultType="com.yageum.domain.MemberDTO">
+		select member_in, lastlogin_date
+		from member	
+	</select>
+	
+	<update id="updateMemberStraight">
+		update member
+		set member_straight = member_straight + 1
+		where member_in = #{memberIn}
+	</update>
+	
 </mapper>

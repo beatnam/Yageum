@@ -64,15 +64,38 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		set member_reward = member_reward - #{itemPrice}
 		where member_id = #{memberId}
 	</update>
-	
+
 	<insert id="buyItemTransaction" parameterType="map">
 		insert transaction(member_in, item_in, transaction_date)
 		values(#{memberIn}, #{itemIn}, #{transactionDate})
 	</insert>
-	
-	<select id = "getItemInfo" resultType="com.yageum.domain.ItemDTO">
+
+	<select id="getItemInfo" resultType="com.yageum.domain.ItemDTO">
 		select *
 		from item
 		where item_in = #{itemIn}
 	</select>
+
+	<select id="listQuestType2" resultType="map">
+		select m.member_in, s.quest_in, member_straight, q.goal_value, s.qp_in,
+		q.reward_value
+		from quest_state s join quest q
+		on s.quest_in = q.quest_in
+		join member m
+		on m.member_in = s.member_in
+		where m.member_in = #{memberIn} and quest_type_in = 2;
+	</select>
+
+	<update id="successQuestType2">
+		update quest_state
+		set qp_in = 3
+		where member_in = #{memberIn} and quest_in = #{questIn}
+	</update>
+	
+	<update id="memberReward2">
+		update member
+		set member_reward = member_reward + #{rewardValue}
+		where member_in = #{memberIn}
+	</update>
+
 </mapper>
