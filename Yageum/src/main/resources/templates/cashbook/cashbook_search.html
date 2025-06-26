@@ -27,176 +27,107 @@
                 <h2>월별 내역</h2>
                 <p>자신이 원하는 내역을 찾아보세요!</p>
             </div>
+			
             <div class="content-body">
-				<!-- 필터 영역 -->
-				               <div class="filter-section">
-				                   <div class="filter-row">
-				                       <div class="filter-group">
-				                           <label class="filter-label">카테고리</label>
-				                           <select class="filter-select" id="categoryFilter">
-				                               <option value="">전체</option>
-				                               <option value="housing">주거</option>
-				                               <option value="food">식비</option>
-				                               <option value="transport">교통</option>
-				                               <option value="medical">의료</option>
-				                               <option value="entertainment">여가</option>
-				                               <option value="salary">급여</option>
-				                               <option value="side">부업</option>
-				                           </select>
-				                       </div>
-				                       
-				                       <div class="filter-group">
-				                           <label class="filter-label">기간</label>
-				                           <select class="filter-select" id="periodFilter">
-				                               <option value="thisMonth">이번 달</option>
-				                               <option value="lastMonth">지난 달</option>
-				                               <option value="3months">최근 3개월</option>
-				                               <option value="custom">직접 입력</option>
-				                           </select>
-				                       </div>
-				                       
-				                       <div class="filter-group">
-				                           <label class="filter-label">유형</label>
-				                           <select class="filter-select" id="typeFilter">
-				                               <option value="">전체</option>
-				                               <option value="income">수입</option>
-				                               <option value="expense">지출</option>
-				                           </select>
-				                       </div>
-				                       
-				                       <div class="filter-group">
-				                           <label class="filter-label">결제수단</label>
-				                           <select class="filter-select" id="paymentFilter">
-				                               <option value="">전체</option>
-				                               <option value="account">계좌</option>
-				                               <option value="card">카드</option>
-				                               <option value="cash">현금</option>
-				                           </select>
-				                       </div>
-				                   </div>
-				                   
-				                   <div class="filter-row">
-				                       <div class="filter-group">
-				                           <label class="filter-label">검색</label>
-				                           <input type="text" class="filter-input" id="searchInput" placeholder="검색어를 입력하세요">
-				                       </div>
-				                       
-				                       <button class="btn-search" onclick="applyFilters()">조회</button>
-				                   </div>
-				               </div>
+				
+			  <!-- 필터 영역 -->
+				<div class="filter-section">
+				  <div class="filter-row">
+					
+				    <!-- 카테고리 -->
+				    <div class="filter-group">
+				      <label class="filter-label">카테고리</label>
+					  <select class="filter-select" id="categoryFilter">
+					    <option value="">전체</option>
+					    <option th:each="category : ${mainCategories}"
+					            th:value="${category.code}"
+					            th:text="${category.name}">
+					    </option>
+					  </select>
+				    </div>
 
-				               <!-- 내역 리스트 -->
-				               <div class="transaction-list">
-				                   <div class="transaction-header">
-				                       <h3 class="transaction-title">2025. 06월 내역</h3>
-				                       <div class="transaction-summary">
-				                           <div class="summary-item">
-				                               <span>수입:</span>
-				                               <span class="income">+2,560,000원</span>
-				                           </div>
-				                           <div class="summary-item">
-				                               <span>지출:</span>
-				                               <span class="expense">-464,000원</span>
-				                           </div>
-				                       </div>
-				                   </div>
+				    <!-- 기간 -->
+				    <div class="filter-group">
+				      <label class="filter-label">기간</label>
+				      <select class="filter-select" id="periodFilter">
+				        <option value="thisMonth">이번 달</option>
+				        <option value="lastMonth">지난 달</option>
+				        <option value="custom">직접 입력</option>
+				      </select>
+					  
+				      <div id="customDateRange" style="display: none; margin-top: 5px;">
+				        <input type="date" id="startDateInput" class="filter-input" />
+				        <span style="margin: 0 5px;">~</span>
+				        <input type="date" id="endDateInput" class="filter-input" />
+				      </div>
+				    </div>
 
-				                   <!-- 내역 아이템들 -->
-				                   <div class="transaction-item">
-				                       <div class="transaction-icon icon-home">🏠</div>
-				                       <div class="transaction-details">
-				                           <div class="transaction-desc">6월 월세</div>
-				                           <div class="transaction-meta">
-				                               <span>국민은행 계좌</span>
-				                           </div>
-				                       </div>
-				                       <div>
-				                           <div class="transaction-amount expense">-350,000원</div>
-				                           <div class="transaction-date">2025.06.06</div>
-				                       </div>
-				                   </div>
+				    <!-- 유형 -->
+				    <div class="filter-group">
+				      <label class="filter-label">유형</label>
+				      <select class="filter-select" id="typeFilter">
+				        <option value="">전체</option>
+				        <option value="income">수입</option>
+				        <option value="expense">지출</option>
+				      </select>
+				    </div>
 
-				                   <div class="transaction-item">
-				                       <div class="transaction-icon icon-maintenance">🔧</div>
-				                       <div class="transaction-details">
-				                           <div class="transaction-desc">6월 관리비</div>
-				                           <div class="transaction-meta">
-				                               <span>네이버삼성카드</span>
-				                           </div>
-				                       </div>
-				                       <div>
-				                           <div class="transaction-amount expense">-105,000원</div>
-				                           <div class="transaction-date">2025.06.06</div>
-				                       </div>
-				                   </div>
+				    <!-- 결제수단 -->
+				    <div class="filter-group">
+				      <label class="filter-label">결제수단</label>
+				      <select class="filter-select" id="paymentFilter">
+				        <option value="">전체</option>
+				        <!-- 카드/계좌는 JS로 동적 삽입 예정 -->
+				        <option value="cash">현금</option>
+				      </select>
+				    </div>
+				  </div>
 
-				                   <div class="transaction-item">
-				                       <div class="transaction-icon icon-salary">💰</div>
-				                       <div class="transaction-details">
-				                           <div class="transaction-desc">아이디얼 6월 월급</div>
-				                           <div class="transaction-meta">
-				                               <span>국민은행 계좌</span>
-				                           </div>
-				                       </div>
-				                       <div>
-				                           <div class="transaction-amount income">+2,560,000원</div>
-				                           <div class="transaction-date">2025.06.05</div>
-				                       </div>
-				                   </div>
+				  <!-- 검색 -->
+				  <div class="filter-row">
+				    <div class="filter-group">
+				      <label class="filter-label">검색</label>
+				      <input type="text" class="filter-input" id="searchInput" placeholder="검색어를 입력하세요">
+				    </div>
 
-				                   <div class="transaction-item">
-				                       <div class="transaction-icon icon-food">🍽️</div>
-				                       <div class="transaction-details">
-				                           <div class="transaction-desc">민양돼지국밥</div>
-				                           <div class="transaction-meta">
-				                               <span>카이뱅크 체크카드</span>
-				                           </div>
-				                       </div>
-				                       <div>
-				                           <div class="transaction-amount expense">-9,000원</div>
-				                           <div class="transaction-date">2025.06.05</div>
-				                       </div>
-				                   </div>
+				    <button class="btn-search" onclick="applyFilters()">조회</button>
+				  </div>
+				</div>
 
-				                   <div class="transaction-item">
-				                       <div class="transaction-icon icon-shopping">🛍️</div>
-				                       <div class="transaction-details">
-				                           <div class="transaction-desc">다이소 서면중앙점</div>
-				                           <div class="transaction-meta">
-				                               <span>현금</span>
-				                           </div>
-				                       </div>
-				                       <div>
-				                           <div class="transaction-amount expense">-4,000원</div>
-				                           <div class="transaction-date">2025.06.05</div>
-				                       </div>
-				                   </div>
-				               </div>
+				
+             <!-- 내역 영역 -->
+               <div class="transaction-list">
+				
+					<!-- 내역 헤더-->
+                   <div class="transaction-header">
+                       <h3 class="transaction-title" th:text="${startDate} + ' ~ ' + ${endDate}"></h3>
+                       <div class="transaction-summary">
+                           <div class="summary-item">
+                               <span>수입:</span>
+                               <span class="income"></span>
+                           </div>
+                           <div class="summary-item">
+                               <span>지출:</span>
+                               <span class="expense"></span>
+                           </div>
+                       </div>
+                   </div>
+
+                   <!-- 내역 리스트 -->
+                   <div class="transaction-item">
+
+                   </div>
+
+               </div>
             </div>
         </main>
     </div>
 
-	<!--	푸터-->
-		<div th:replace="fragments/footer :: footer"></div>
+	<!--푸터-->
+	<div th:replace="fragments/footer :: footer"></div>
 
-    <script>
-     
-  
-        function logout() {
-            if(confirm('로그아웃 하시겠습니까?')) {
-                window.location.href = '/logout';
-            }
-        }
+    <script src="../js/cashbook_search.js">
 
-            function previousDay() {
-            // 이전 날짜로 이동하는 로직
-            console.log('이전 날짜로 이동');
-        }
-
-        function nextDay() {
-            // 다음 날짜로 이동하는 로직
-            console.log('다음 날짜로 이동');
-        }
     </script>
 </body>
 </html>

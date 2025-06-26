@@ -6,10 +6,11 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 
 <mapper namespace="com.yageum.mapper.CashbookMapper">
 
-	<select id="selectExpenseDetail" resultType="com.yageum.domain.ExpenseDTO">
+	<select id="getExpenseDetailById" resultType="com.yageum.domain.ExpenseDTO">
 		select e.expense_sum, e.expense_memo, e.expense_date, e.expense_content, e.expense_type,
 			   m.method_type, cs.cs_name, cm.cm_name, c.card_name, ba.account_name, b.bank_name,
-			   e.method_in, cs.cs_in, c.card_in, ba.account_in, b.bank_in
+			   e.method_in, cs.cs_in, cs.cm_in, e.card_in, e.account_in, b.bank_in, e.expense_in,
+			   e.member_in
 		from expense e
 		left join ex_method m on e.method_in = m.method_in
 		left join category_sub cs on e.cs_in = cs.cs_in
@@ -20,6 +21,90 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where e.expense_in = #{id} 
 	</select>
 	
+	<update id="updateExpense" parameterType="com.yageum.domain.ExpenseDTO">
+		update expense 
+		set
+			expense_in = #{expenseIn},
+			member_in = #{memberIn},
+			card_in = #{cardIn},
+			account_in = #{accountIn},
+			expense_sum = #{expenseSum},
+			cs_in = #{csIn},
+			expense_memo = #{expenseMemo},
+			expense_date = #{expenseDate},
+			expense_content = #{expenseContent},
+			expense_type = #{expenseType},
+			method_in = #{methodIn}
+		where expense_in = #{expenseIn}
+	</update>
+	
+	<select id="getAccountList" resultType="com.yageum.domain.ExpenseDTO">
+		select ba.account_in, ba.account_num, ba.account_name, b.bank_in, b.bank_name
+		from bank_account ba
+		join bank b
+		on ba.bank_in = b.bank_in
+		where ba.member_in = #{memberIn}
+	</select>
+	
+	<select id="getDailyIncomeExpense" resultType="map">
+		select 
+			expense_date, 
+			sum(case when expense_type=0 then expense_sum else 0 end) as income,
+			sum(case when expense_type=1 then expense_sum else 0 end) as expense
+		from expense
+		where member_in = #{memberIn}
+		  and expense_date between #{start} and #{end}
+		group by expense_date;
+	</select>
+	
+	<select id="getMonthList" resultType="com.yageum.domain.ExpenseDTO">
+		select e.expense_sum, e.expense_memo, e.expense_date, e.expense_content, e.expense_type,
+			   m.method_type, cs.cs_name, cm.cm_name, c.card_name, ba.account_name, b.bank_name,
+			   e.method_in, cs.cs_in, cs.cm_in, e.card_in, e.account_in, b.bank_in, e.expense_in,
+			   e.member_in
+		from expense e
+		left join ex_method m on e.method_in = m.method_in
+		left join category_sub cs on e.cs_in = cs.cs_in
+		left join category_main cm on cs.cm_in = cm.cm_in 
+		left join card c on c.card_in = e.card_in 
+		left join bank_account ba on e.account_in = ba.account_in 
+		left join bank b on b.bank_in = ba.bank_in
+		where e.member_in = #{memberIn} 
+		and e.expense_date between #{start} and #{end}
+		order by e.expense_date desc
+	</select>
+	
+	<select id="filterSearch" resultType="com.yageum.domain.ExpenseDTO">
+SELECT *
+FROM expense
+WHERE member_in = #{memberIn}
+  AND expense_date BETWEEN #{start} AND #{end}
+
+  <if test="category != null and category != ''">
+    AND expense_category = #{category}
+  </if>
+
+  <if test="type != null and type != ''">
+    AND expense_type =
+      <choose>
+        <when test="type == 'income'">0</when>
+        <otherwise>1</otherwise>
+      </choose>
+  </if>
+
+  <if test="method != null and method != ''">
+    AND ex_method = #{method}
+  </if>
+
+  <if test="keyword != null and keyword != ''">
+    AND (
+      expense_content LIKE CONCAT('%', #{keyword}, '%')
+      OR expense_memo LIKE CONCAT('%', #{keyword}, '%')
+    )
+  </if>
+
+ORDER BY expense_date DESC
+</select>
 
 
 </mapper>

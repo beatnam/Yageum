@@ -100,7 +100,6 @@
 		
 		//전송 버튼 제어 구문
 		$('#formBtn').click(function(){
-			alert("전송");				
 			const formData = $('#categoryEditForm').serialize();
 			$.post('/admin/category_updatePro2', formData, function(response){	
 				window.opener.location.reload();
@@ -115,7 +114,7 @@
 			
 		});
         function closePopup() {
-			if (confirm('사용자 상세보기를 닫으시겠습니까?')) {
+			if (confirm('페이지를 닫으시겠습니까?')) {
               		 window.close();
 			 }
         }

@@ -30,7 +30,8 @@
             </div>
             <div class="content-body">
               <div class="form-container">
-        <form id="transactionForm" action="/cashbook/updatePro" method="post" onsubmit="return handleSubmit(event)">
+				
+        <form id="transactionForm" th:action="@{/cashbook/updatePro}" method="post">
 			<!-- 날짜 입력 -->
 			<div class="form-group">
 			    <label class="form-label">날짜 <span class="required">*</span></label>
@@ -66,32 +67,32 @@
             </div>
 
             <!-- 수단 선택 -->
-            <div class="form-group">
-                <label class="form-label">수단 <span class="required">*</span></label>
-                <div class="select-group">
-					<select class="form-select" id="method1" name="method_in" onchange="updateMethod2()" required>
-					    <option value="">선택</option>
-					    <option value="1" th:selected="${expense.methodIn == 1}">신용카드</option>
-					    <option value="2" th:selected="${expense.methodIn == 2}">체크카드</option>
-					    <option value="3" th:selected="${expense.methodIn == 3}">현금</option>
-					    <option value="4" th:selected="${expense.methodIn == 4}">계좌</option>
-					</select>
-					<input type="hidden" id="cardIn" th:value="${expense.cardIn}"/>
-					<input type="hidden" id="accountIn" th:value="${expense.accountIn}"/>
-                    <select class="form-select" id="method2" name="method2" disabled required>
-                        <option value="">상세 선택</option>
-                    </select>
-                </div>
-                <div class="error-message">수단을 선택해주세요.</div>
-            </div>
+			<div class="form-group">
+			  <label class="form-label">수단 <span class="required">*</span></label>
+			  <div class="select-group">
+			    <select class="form-select" id="method1" name="methodIn" onchange="updateMethod2()" required>
+			      <option value="">선택</option>
+			      <option value="1" th:selected="${expense.methodIn == 1}">신용카드</option>
+			      <option value="2" th:selected="${expense.methodIn == 2}">체크카드</option>
+			      <option value="3" th:selected="${expense.methodIn == 3}">현금</option>
+			      <option value="4" th:selected="${expense.methodIn == 4}">계좌</option>
+			    </select>
+			    <input type="hidden" id="cardIn" name="cardIn" th:value="${expense.cardIn}" />
+			    <input type="hidden" id="accountIn" name="accountIn" th:value="${expense.accountIn}" />
+			    <select class="form-select" id="method2" name="method2" disabled required>
+			      <option value="">상세 선택</option>
+			    </select>
+			  </div>
+			  <div class="error-message">수단을 선택해주세요.</div>
+			</div>
 
 			<!-- 카테고리 선택 -->
 			<div class="form-group">
 			  <label class="form-label">카테고리 <span class="required">*</span></label>
 			  <div class="category-selector">
-			    <div class="category-display" id="categoryDisplay">카테고리를 선택하세요</div>
+			    <div class="category-display" id="categoryDisplay" th:text="${expense.cmName} + ' > ' + ${expense.csName}">카테고리를 선택하세요</div>
 			    <button type="button" class="category-btn" onclick="openCategoryModal()">선택</button>
-			    <input type="hidden" id="cs_in" name="cs_in" required>
+			    <input type="hidden" id="cs_in" name="csIn" th:value="${expense.csIn}" required />
 			  </div>
 			</div>
 
@@ -122,8 +123,11 @@
             </div>
 
             <!-- 제출 버튼 -->
+			<input type="hidden" name="expenseIn" th:value="${expense.expenseIn}" />
+			<input type="hidden" name="date" th:value="${date}" />
+			<input type="hidden" name="memberIn" th:value="${expense.memberIn}" />
 			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <button type="submit" class="submit-btn">수정하기</button>
+            <button type="submit" class="submit-btn" id="btn">수정하기</button>
         </form>
     </div>
             </div>
@@ -133,131 +137,9 @@
 	<!-- 푸터 -->
 		<div th:replace="fragments/footer :: footer"></div>
 
-    <script>
-		console.log("✅ 페이지 로딩됨!");
-		// 페이지 로드되자마자 기존 expenseType 값에 따라 버튼 색상 지정
-		document.addEventListener("DOMContentLoaded", () => {
-		    const expenseType = document.getElementById("expenseType").value;
-
-		    const incomeBtn = document.querySelector(".type-btn.income");
-		    const expenseBtn = document.querySelector(".type-btn.expense");
-
-		    if (expenseType === "0") {
-		        incomeBtn.classList.add("active");
-		    } else if (expenseType === "1") {
-		        expenseBtn.classList.add("active");
-		    }
-		});
+    <script src="../js/cashbook_update.js">
 		
-		// 유형 수정
-		function selectType(type) {
-		    const incomeBtn = document.querySelector(".type-btn.income");
-		    const expenseBtn = document.querySelector(".type-btn.expense");
-		    const expenseTypeInput = document.getElementById("expenseType");
-
-		    if (type === 'income') {
-		        incomeBtn.classList.add("active");
-		        expenseBtn.classList.remove("active");
-		        expenseTypeInput.value = 0;
-		    } else if (type === 'expense') {
-		        incomeBtn.classList.remove("active");
-		        expenseBtn.classList.add("active");
-		        expenseTypeInput.value = 1;
-		    }
-		}
-		
-		//수단 관련
-		document.addEventListener("DOMContentLoaded", function () {
-		    const method1 = document.getElementById("method1").value;
-			console.log("🎯 method1 값:", method1);
-		    const method2 = document.getElementById("method2");
-		    const selectedCardIn = document.getElementById("cardIn").value;
-		    const selectedAccountIn = document.getElementById("accountIn").value;
-
-		    if (method1 === "1" || method1 === "2") {
-		        fetch(`/cashbook/cards/byMethod/${method1}`)
-		            .then(res => res.json())
-		            .then(data => {
-						console.log("📦 카드 데이터:", data);
-						console.log("🎯 선택된 카드 ID:", selectedCardIn);
-						
-		                data.forEach(card => {
-		                    const option = document.createElement("option");
-		                    option.value = card.cardIn;
-		                    option.textContent = card.cardName;
-		                    if (String(card.cardIn) === selectedCardIn) {
-		                        option.selected = true;
-		                    }
-		                    method2.appendChild(option);
-		                });
-		                method2.disabled = false;
-		            });
-		    } else if (method1 === "4") {
-		        fetch(`/cashbook/accounts`)
-		            .then(res => res.json())
-		            .then(data => {
-						console.log("🏦 계좌 데이터:", data);
-						console.log("🎯 선택된 계좌 ID:", selectedAccountIn);
-						
-		                data.forEach(account => {
-		                    const option = document.createElement("option");
-		                    option.value = account.accountIn;
-		                    option.textContent = account.bankName + " " + account.accountNum;
-							console.log("계좌 option ID 비교: ", account.accountIn, selectedAccountIn);
-		                    if (String(account.accountIn) === selectedAccountIn) {
-		                        option.selected = true;
-		                    }
-		                    method2.appendChild(option);
-		                });
-		                method2.disabled = false;
-		            });
-		    }
-		});
-		
-		
-		// 수단 method2 나오게함
-		function updateMethod2() {
-		    const method1 = document.getElementById('method1').value;
-		    const method2 = document.getElementById('method2');
-		    const selectedCard = /*[[${expense.cardIn}]]*/ 0;
-		    const selectedAccount = /*[[${expense.accountIn}]]*/ 0;
-
-		    method2.innerHTML = '<option value="">상세 선택</option>';
-		    method2.disabled = true;
-		    method2.removeAttribute("required");
-
-		    if (method1 === "1" || method1 === "2") {
-		        fetch(`/cashbook/cards/byMethod/${method1}`)
-		            .then(res => res.json())
-		            .then(data => {
-		                data.forEach(card => {
-		                    const option = document.createElement("option");
-		                    option.value = card.cardIn;
-		                    option.textContent = card.cardName;
-		                    if (card.cardIn === selectedCard) {
-		                        option.selected = true;
-		                    }
-		                    method2.appendChild(option);
-		                });
-		                method2.disabled = false;
-		            });
-		    } else if (method1 === "4") {
-		        fetch(`/cashbook/accounts`)
-		            .then(res => res.json())
-		            .then(data => {
-		                data.forEach(account => {
-		                    const option = document.createElement("option");
-		                    option.value = account.accountIn;
-		                    option.textContent = account.bankName + " " + account.accountNum;
-		                    if (account.accountIn === selectedAccount) {
-		                        option.selected = true;
-		                    }
-		                    method2.appendChild(option);
-		                });
-		                method2.disabled = false;
-		            });
-		    }
-		}
+			
 		</script>
 	
 
