@@ -42,7 +42,7 @@
 						<a href="/admin/category" class="submenu-link">카테고리 관리</a>
 					</div>
 					<div class="submenu-item">
-						<a href="/admin/noticfication" class="submenu-link active">공지사항 관리</a>
+						<a href="/admin/notification" class="submenu-link active">공지사항 관리</a>
 					</div>
 				</div>
 			</div>
@@ -54,31 +54,6 @@
 				<h1>공지사항 목록</h1>
 				<button class="add-btn" onclick="addNotice()">추가하기</button>
 			</div>
-
-			<!-- 필터 -->
-<!--			<div class="filter-container">-->
-<!--				<h3>공지사항 필터</h3>-->
-<!--				<div class="filter-group">-->
-<!--					<label for="noticeTypeFilter">공지 유형:</label>-->
-<!--					<select id="noticeTypeFilter" class="filter-select" onchange="filterNotices()">-->
-<!--						<option value="">전체 유형</option>-->
-<!--						<option value="일반">일반 공지</option>-->
-<!--						<option value="중요">중요 공지</option>-->
-<!--						<option value="이벤트">이벤트</option>-->
-<!--						<option value="점검">점검 안내</option>-->
-<!--						<option value="업데이트">업데이트</option>-->
-<!--					</select>-->
-					
-<!--					<label for="statusFilter">게시 상태:</label>-->
-<!--					<select id="statusFilter" class="filter-select" onchange="filterNotices()">-->
-<!--						<option value="">전체 상태</option>-->
-<!--						<option value="Y">게시중</option>-->
-<!--						<option value="N">비게시</option>-->
-<!--					</select>-->
-					
-<!--					<button class="filter-btn" onclick="resetFilter()">필터 초기화</button>-->
-<!--				</div>-->
-<!--			</div>-->
 
 			<div class="table-container">
 				<table>
@@ -169,13 +144,13 @@
 		// 공지사항 추가 기능
 		function addNotice() {
 			const uri = "/admin/notice_gener";
-			window.open(uri, "popup", "height=650, width=470");
+			window.open(uri, "popup", "height=590, width=470");
 		}
 
 		// 공지사항 수정 기능
 		function editNotice(id) {
 			const uri = "/admin/notice_update?noticeIn=" + id;
-			window.open(uri, "popup", "height=400, width=470" );
+			window.open(uri, "popup", "height=590, width=470" );
 		}
 
 	

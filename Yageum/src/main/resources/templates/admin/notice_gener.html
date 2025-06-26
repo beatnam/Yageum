@@ -56,42 +56,17 @@
 		function createButton(){
 			const formData = $('#noticeCreateForm').serialize();
 			$.post('/admin/notice_generPro', formData, function(response){	
-							window.opener.location.reload();
-							alert("공지사항이 등록되었습니다.");
-							window.close();
+				window.opener.location.reload();
+				alert("공지사항이 등록되었습니다.");
+				window.close();
 						
-						}).fail(function(){
-							alert('전송 오류가 발생 했습니다');
+			}).fail(function(){
+					alert('전송 오류가 발생 했습니다');
 							
-						});//ajax
+			});//ajax
 			
-		}
-        // 폼 유효성 검사
-        function validateForm() {
-            const subject = document.getElementById('noticeSubject').value.trim();
-            const content = document.getElementById('noticeContent').value.trim();
-            const date = document.getElementById('noticeDate').value;
-
-            if (!subject) {
-                alert('제목을 입력해주세요.');
-                document.getElementById('noticeSubject').focus();
-                return false;
-            }
-
-            if (!content) {
-                alert('내용을 입력해주세요.');
-                document.getElementById('noticeContent').focus();
-                return false;
-            }
-
-            if (!date) {
-                alert('등록 날짜를 선택해주세요.');
-                document.getElementById('noticeDate').focus();
-                return false;
-            }
-
-            return true;
-        }
+		}//createButton()
+      
 
         // 창 닫기
         function closeWindow() {

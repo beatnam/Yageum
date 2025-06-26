@@ -19,4 +19,8 @@ public interface NoticeMapper {
 	Optional<NoticeDTO> findByIn(int noticeIn);
 
 	void insert(NoticeDTO noticeDTO);
+
+	void delete(int noticeIn);
+
+	void update(NoticeDTO noitceDTO);
 }

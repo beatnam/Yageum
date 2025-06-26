@@ -26,4 +26,16 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		insert into notice(notice_subject, notice_content, notice_date)
 		values(#{noticeSubject}, #{noticeContent}, #{noticeDate})
 	</insert>
+	
+	<delete id = "delete" parameterType="com.yageum.domain.NoticeDTO">
+		delete from notice
+		where notice_in = #{noticeIn}
+	</delete>
+	
+	
+	<update id = "update"  parameterType="com.yageum.domain.NoticeDTO">
+		update notice
+		set notice_Subject = #{noticeSubject}, notice_Content = #{noticeContent}, notice_date = #{noticeDate}
+		where notice_in = #{noticeIn}	
+	</update>
 </mapper>

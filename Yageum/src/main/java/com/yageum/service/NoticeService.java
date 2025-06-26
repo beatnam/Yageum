@@ -44,4 +44,17 @@ public class NoticeService {
 		
 		
 	}
+
+	public void delete(int noticeIn) {
+		log.info("noticeService deleteByIn()");
+
+		noticeMapper.delete(noticeIn);
+	}
+
+	public void update(NoticeDTO noitceDTO) {
+		log.info("noticeService update()");
+
+		
+		noticeMapper.update(noitceDTO);
+	}
 }
