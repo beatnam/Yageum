@@ -31,5 +31,13 @@ public class BankAccountDTO {
         this.bankName = bankAccount.getBank().getBankName(); // 연관관계 필요
         this.accountNum = bankAccount.getAccountNum();
     }
+    
+//    //마스킹
+//    public String getAccountNumMasked() {
+//        if (accountNum != null && accountNum.length() >= 4) {
+//            return "****-****-****-" + accountNum.substring(accountNum.length() - 4);
+//        }
+//        return accountNum;
+//    }
 
 }

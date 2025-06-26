@@ -2,6 +2,7 @@ package com.yageum.controller;
 
 import java.security.Principal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,8 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.MemberDTO;
+import com.yageum.entity.BankAccount;
+import com.yageum.entity.Card;
+import com.yageum.entity.CategoryMain;
 import com.yageum.entity.Member;
+import com.yageum.repository.MemberRepository;
+import com.yageum.service.ExpenseService;
 import com.yageum.service.MemberService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +38,9 @@ import lombok.extern.java.Log;
 public class MypageController {
 	
 	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final ExpenseService expenseService;
 	
 	@GetMapping("/update")
 	public String update(HttpSession session, Model model, MemberDTO memberDTO) {
@@ -149,9 +158,26 @@ public class MypageController {
 	}
 	
 	@GetMapping("/mlist")
-	public String methodlist() {
+	public String methodlist(Model model) {
 		log.info("MypageController methodlist()");
 		
+		String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+		Member member = memberRepository.findByMemberId(memberId);
+		int memberIn = member.getMemberIn();
+		
+		// 카테고리
+	    List<CategoryMain> mainList = expenseService.getMainCategoryList();
+	    model.addAttribute("mainList", mainList);
+	    
+	    // 카드
+	    List<Card> cardList = expenseService.getCardList(memberIn, 1);
+	    cardList.addAll(expenseService.getCardList(memberIn, 2)); 
+	    model.addAttribute("cardList", cardList);
+	    
+	    // 계좌
+	    List<BankAccount> accountList = expenseService.getAccountList(memberIn);
+	    model.addAttribute("accountList", accountList);
+		    
 		return "/mypage/mypage_method_list";
 	}
 	

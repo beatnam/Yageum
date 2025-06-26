@@ -47,4 +47,11 @@ public class BankAccount {
 
     @Column(name = "create_date")
     private LocalDate createDate;
+    
+//    public String getAccountNumMasked() {
+//        if (accountNum != null && accountNum.length() >= 4) {
+//            return "****-****-****-" + accountNum.substring(accountNum.length() - 4);
+//        }
+//        return accountNum;
+//    }
 }

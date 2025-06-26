@@ -30,61 +30,22 @@
 					<div class="section-controls">
 						<button class="btn btn-edit">편집</button>
 						<button class="btn btn-add">추가</button>
-						<button class="btn btn-use" style="display: none;">사용</button>
+<!--						<button class="btn btn-use" style="display: none;">사용</button>-->
 						<button class="btn btn-delete" style="display: none;">삭제</button>
 						<button class="btn btn-cancel" style="display: none;">취소</button>
 					</div>
 				</div>
 				<ul class="payment-list">
-					<li class="payment-item">
+					<li class="payment-item" th:each="account : ${accountList}">
 						<div class="checkbox-container">
 							<input type="checkbox" class="select-checkbox">
 							<div class="payment-info">
-								<div class="payment-name">KB Star★ 통장</div>
-								<div class="payment-details">KB국민은행 • ****-****-****-1234</div>
+								<div class="payment-name" th:text="${account.accountName}">통장이름</div>
+								<div class="payment-details"
+									th:text="${account.bankName + ' • ' + account.accountNum}">은행 • 계좌번호</div>
 							</div>
 						</div>
-						<span class="payment-status status-active">사용중</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">더나은미래통장</div>
-								<div class="payment-details">우리은행 • ****-****-****-5678</div>
-							</div>
-						</div>
-						<span class="payment-status status-active">사용중</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">솔편한 입출금통장</div>
-								<div class="payment-details">신한은행 • ****-****-****-9012</div>
-							</div>
-						</div>
-						<span class="payment-status status-active">사용중</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">우리신세대 저축예금</div>
-								<div class="payment-details">우리은행 • ****-****-****-3456</div>
-							</div>
-						</div>
-						<span class="payment-status status-inactive">미사용</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">듀얼K 입출금통장</div>
-								<div class="payment-details">KB국민은행 • ****-****-****-7890</div>
-							</div>
-						</div>
-						<span class="payment-status status-active">사용중</span>
+<!--						<span class="payment-status status-active">사용중</span>-->
 					</li>
 				</ul>
 			</section>
@@ -96,31 +57,22 @@
 					<div class="section-controls">
 						<button class="btn btn-edit">편집</button>
 						<button class="btn btn-add">추가</button>
-						<button class="btn btn-use" style="display: none;">사용</button>
+<!--						<button class="btn btn-use" style="display: none;">사용</button>-->
 						<button class="btn btn-delete" style="display: none;">삭제</button>
 						<button class="btn btn-cancel" style="display: none;">취소</button>
 					</div>
 				</div>
 				<ul class="payment-list">
-					<li class="payment-item">
+					<li class="payment-item" th:each="card : ${cardList}" th:if="${card.methodIn == 1}">
 						<div class="checkbox-container">
 							<input type="checkbox" class="select-checkbox">
 							<div class="payment-info">
-								<div class="payment-name">케이뱅크 체크카드</div>
-								<div class="payment-details">케이뱅크 • **** **** **** 1234</div>
+								<div class="payment-name" th:text="${card.cardName}">카드이름</div>
+								<div class="payment-details"
+								     th:text="${card.cardCompany.ccName + ' • ' + card.cardNum}">회사 • 카드번호</div>
 							</div>
 						</div>
-						<span class="payment-status status-active">사용중</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">네이버삼성카드</div>
-								<div class="payment-details">삼성카드 • **** **** **** 5678</div>
-							</div>
-						</div>
-						<span class="payment-status status-active">사용중</span>
+<!--						<span class="payment-status status-active">사용중</span>-->
 					</li>
 				</ul>
 			</section>
@@ -132,21 +84,22 @@
 					<div class="section-controls">
 						<button class="btn btn-edit">편집</button>
 						<button class="btn btn-add">추가</button>
-						<button class="btn btn-use" style="display: none;">사용</button>
+<!--						<button class="btn btn-use" style="display: none;">사용</button>-->
 						<button class="btn btn-delete" style="display: none;">삭제</button>
 						<button class="btn btn-cancel" style="display: none;">취소</button>
 					</div>
 				</div>
 				<ul class="payment-list">
-					<li class="payment-item">
+					<li class="payment-item" th:each="card : ${cardList}" th:if="${card.methodIn == 2}">
 						<div class="checkbox-container">
 							<input type="checkbox" class="select-checkbox">
 							<div class="payment-info">
-								<div class="payment-name">현대카드 M</div>
-								<div class="payment-details">현대카드 • **** **** **** 9012</div>
+								<div class="payment-name" th:text="${card.cardName}">카드이름</div>
+								<div class="payment-details"
+								     th:text="${card.cardCompany.ccName + ' • ' + card.cardNum}">회사 • 카드번호</div>
 							</div>
 						</div>
-						<span class="payment-status status-active">사용중</span>
+<!--						<span class="payment-status status-active">사용중</span>-->
 					</li>
 				</ul>
 			</section>
@@ -165,7 +118,7 @@
 				const editBtn = section.querySelector('.btn-edit');
 				const deleteBtn = section.querySelector('.btn-delete');
 				const addBtn = section.querySelector('.btn-add');
-				const useBtn = section.querySelector('.btn-use');
+				//const useBtn = section.querySelector('.btn-use');
 				const cancelBtn = section.querySelector('.btn-cancel');
 				const checkboxes = section.querySelectorAll('.select-checkbox');
 
@@ -174,7 +127,7 @@
 					section.classList.add('edit-mode');
 					editBtn.style.display = 'none';
 					addBtn.style.display = 'none';
-					useBtn.style.display = 'inline-block';
+					//useBtn.style.display = 'inline-block';
 					deleteBtn.style.display = 'inline-block';
 					cancelBtn.style.display = 'inline-block';
 					
@@ -189,7 +142,7 @@
 					section.classList.remove('edit-mode');
 					editBtn.style.display = 'inline-block';
 					addBtn.style.display = 'inline-block';
-					useBtn.style.display = 'none';
+					//useBtn.style.display = 'none';
 					deleteBtn.style.display = 'none';
 					cancelBtn.style.display = 'none';
 					
@@ -221,24 +174,24 @@
 						alert('선택한 결제 수단이 삭제되었습니다.');
 					}
 				});
-			useBtn.addEventListener('click', function () {
-				const checked = section.querySelectorAll('.select-checkbox:checked');
-				if (checked.length === 0) {
-					alert('변경할 항목을 선택해주세요.');
-					return;
-				}
-				checked.forEach(cb => {
-					const status = cb.closest('.payment-item').querySelector('.payment-status');
-					if (status.classList.contains('status-active')) {
-						status.textContent = '미사용';
-						status.classList.replace('status-active', 'status-inactive');
-					} else {
-						status.textContent = '사용중';
-						status.classList.replace('status-inactive', 'status-active');
-					}
-				});
-				alert('선택한 항목의 상태가 변경되었습니다.');
-			});
+			//useBtn.addEventListener('click', function () {
+			//	const checked = section.querySelectorAll('.select-checkbox:checked');
+			//	if (checked.length === 0) {
+			//		alert('변경할 항목을 선택해주세요.');
+			//		return;
+			//	}
+			//	checked.forEach(cb => {
+			//		const status = cb.closest('.payment-item').querySelector('.payment-status');
+			//		if (status.classList.contains('status-active')) {
+			//			status.textContent = '미사용';
+			//			status.classList.replace('status-active', 'status-inactive');
+			//		} else {
+			//			status.textContent = '사용중';
+			//			status.classList.replace('status-inactive', 'status-active');
+			//		}
+			//	});
+			//	alert('선택한 항목의 상태가 변경되었습니다.');
+		//	});
 		});
 	});
 	</script>
