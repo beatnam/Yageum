@@ -74,37 +74,52 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		order by e.expense_date desc
 	</select>
 	
-	<select id="filterSearch" resultType="com.yageum.domain.ExpenseDTO">
-SELECT *
-FROM expense
-WHERE member_in = #{memberIn}
-  AND expense_date BETWEEN #{start} AND #{end}
+	<select id="searchExpense" resultType="com.yageum.domain.ExpenseDTO">
+	  select e.expense_sum, e.expense_memo, e.expense_date, e.expense_content, e.expense_type,
+			   m.method_type, cs.cs_name, cm.cm_name, c.card_name, ba.account_name, b.bank_name,
+			   e.method_in, cs.cs_in, cs.cm_in, e.card_in, e.account_in, b.bank_in, e.expense_in,
+			   e.member_in
+		from expense e
+		left join ex_method m on e.method_in = m.method_in
+		left join category_sub cs on e.cs_in = cs.cs_in
+		left join category_main cm on cs.cm_in = cm.cm_in 
+		left join card c on c.card_in = e.card_in 
+		left join bank_account ba on e.account_in = ba.account_in 
+		left join bank b on b.bank_in = ba.bank_in
+		where e.member_in = #{memberIn} 
+	
+	  <if test="category != null and category != ''">
+	    and cs.cm_in = #{category}
+	  </if>
+	
+	  <if test="type != null and type != ''">
+	    <if test="type == 'income'">
+		  and e.expense_type = 0
+		</if>
+		<if test="type == 'expense'">
+		  and e.expense_type = 1
+		</if>
+	  </if>
+	
+	  <if test="method != null and method != ''">
+	    and e.method_in = #{method}
+	  </if>
+	
+	  <if test="startDate != null">
+	    and e.expense_date &gt;= #{startDate}
+	  </if>
+	  <if test="endDate != null">
+	    AND e.expense_date &lt;= #{endDate}
+	  </if>
+	
+	  <if test="keyword != null and keyword != ''">
+	    and (
+	      e.expense_memo like concat('%', #{keyword}, '%')
+	      or e.expense_content like concat('%', #{keyword}, '%')
+	    )
+	  </if>
 
-  <if test="category != null and category != ''">
-    AND expense_category = #{category}
-  </if>
-
-  <if test="type != null and type != ''">
-    AND expense_type =
-      <choose>
-        <when test="type == 'income'">0</when>
-        <otherwise>1</otherwise>
-      </choose>
-  </if>
-
-  <if test="method != null and method != ''">
-    AND ex_method = #{method}
-  </if>
-
-  <if test="keyword != null and keyword != ''">
-    AND (
-      expense_content LIKE CONCAT('%', #{keyword}, '%')
-      OR expense_memo LIKE CONCAT('%', #{keyword}, '%')
-    )
-  </if>
-
-ORDER BY expense_date DESC
-</select>
-
+	  order by e.expense_date DESC
+	</select>
 
 </mapper>

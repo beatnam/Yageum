@@ -36,13 +36,57 @@ function getDateRange() {
   };
 }
 
+// 카드 불러오기 (신용 + 체크)
+function fetchCards() {
+  const methodIds = [1, 2]; // 1: 신용, 2: 체크
+
+  methodIds.forEach(methodId => {
+    fetch(`/cashbook/cards/byMethod/${methodId}`)
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(card => {
+          const option = document.createElement('option');
+          option.value = `card-${card.cardIn}`;
+          option.textContent = card.cardName;
+          document.getElementById("paymentFilter").appendChild(option);
+        });
+      });
+  });
+}
+
+// 계좌 불러오기
+function fetchAccounts() {
+  fetch('/cashbook/accounts')
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(account => {
+        const option = document.createElement('option');
+        option.value = `account-${account.accountIn}`;
+        option.textContent = account.accountName;
+        document.getElementById("paymentFilter").appendChild(option);
+      });
+    });
+}
+
+
+
 // 필터링 요청 함수
 function applyFilters() {
   const category = document.getElementById("categoryFilter").value;
   const type = document.getElementById("typeFilter").value;
-  const method = document.getElementById("paymentFilter").value;
+  const rawMethod  = document.getElementById("paymentFilter").value;
   const keyword = document.getElementById("searchInput").value;
   const { startDate, endDate } = getDateRange();
+  
+  // 결제수단 파싱
+    let method = "";
+    if (rawMethod.startsWith("card-")) {
+      method = 1; // 카드 methodIn
+    } else if (rawMethod.startsWith("account-")) {
+      method = 4; // 계좌 methodIn
+    } else if (rawMethod === "cash") {
+      method = 3; // 현금 methodIn
+    }
 
   // 타이틀 날짜 출력
   const formattedTitle = startDate.replaceAll("-", ".") + " ~ " + endDate.replaceAll("-", ".");
@@ -69,14 +113,37 @@ function applyFilters() {
 document.addEventListener("DOMContentLoaded", function () {
   const periodSelect = document.getElementById("periodFilter");
   const customDateRange = document.getElementById("customDateRange");
+  
+  document.getElementById("categoryFilter").addEventListener("change", applyFilters);
+  document.getElementById("typeFilter").addEventListener("change", applyFilters);
+  document.getElementById("paymentFilter").addEventListener("change", applyFilters);
+  document.getElementById("periodFilter").addEventListener("change", applyFilters);
 
   periodSelect.addEventListener("change", function () {
     customDateRange.style.display = (this.value === "custom") ? "block" : "none";
   });
 
+  fetchCards();    // 카드 불러오기
+  fetchAccounts(); // 계좌 불러오기
   applyFilters(); // 초기 실행
 });
 
+// 초기화 버튼
+function resetFilters() {
+  document.getElementById("categoryFilter").value = "";
+  document.getElementById("typeFilter").value = "";
+  document.getElementById("paymentFilter").value = "";
+  document.getElementById("searchInput").value = "";
+  document.getElementById("periodFilter").value = "thisMonth";
+
+  // 사용자 정의 날짜 입력창 숨기고 초기화
+  document.getElementById("customDateRange").style.display = "none";
+  document.getElementById("startDateInput").value = "";
+  document.getElementById("endDateInput").value = "";
+
+  // 다시 필터 적용
+  applyFilters();
+}
 
 // ======================== 내역 출력 영역 ========================
 
@@ -86,6 +153,23 @@ function renderTransactions(data) {
   // 기존 항목 제거
   const items = listContainer.querySelectorAll(".transaction-item");
   items.forEach(item => item.remove());
+  
+  // 데이터가 없을 경우 안내 문구 출력
+  if (!data || data.length === 0) {
+    const emptyHTML = `
+      <div class="transaction-item empty">
+        <div class="transaction-details">
+          <div class="transaction-desc">내역이 존재하지 않습니다</div>
+        </div>
+      </div>
+    `;
+    listContainer.insertAdjacentHTML("beforeend", emptyHTML);
+
+    // 총합도 0으로 초기화
+    document.querySelector(".transaction-summary .income").textContent = "+0원";
+    document.querySelector(".transaction-summary .expense").textContent = "-0원";
+    return;
+  }
 
   let totalIncome = 0;
   let totalExpense = 0;

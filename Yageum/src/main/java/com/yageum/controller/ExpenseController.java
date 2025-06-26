@@ -3,9 +3,11 @@ package com.yageum.controller;
 import java.beans.PropertyEditorSupport;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -276,34 +278,65 @@ public class ExpenseController {
 
 	//월별 내역 / 검색 페이지
 	@GetMapping("/search")
-	public String search() {
+	public String search(Model model) {
 	    log.info("ExpenseController search()");
+	    
+	    int memberIn = getLoginMemberIn();
+	    
+	    // 카테고리
+	    List<CategoryMain> mainList = expenseService.getMainCategoryList();
+	    model.addAttribute("mainList", mainList);
+	    
+	    // 카드
+	    List<Card> cardList = expenseService.getCardList(memberIn, 1);
+	    cardList.addAll(expenseService.getCardList(memberIn, 2)); 
+	    model.addAttribute("cardList", cardList);
+	    
+	    // 계좌
+	    List<BankAccount> accountList = expenseService.getAccountList(memberIn);
+	    model.addAttribute("accountList", accountList);
 
 	    return "/cashbook/cashbook_search";
 	}
 	
-	@GetMapping("/monthList")
+	@GetMapping("/filterSearch")
 	@ResponseBody
-	public List<ExpenseDTO> getMonthList(@RequestParam("year") int year, @RequestParam("month") int month){
-		log.info("ExpenseController monthList() : {}년 {}월", year, month);
-		
-		int memberIn = getLoginMemberIn();
-		
-		LocalDate start = LocalDate.of(year, month, 1);
-	    LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
-		
-	    return expenseService.getMonthList(memberIn, start, end);
+	public List<ExpenseDTO> filterSearch(
+	        @RequestParam(name = "category", required = false) String category,
+	        @RequestParam(name = "type", required = false) String type,
+	        @RequestParam(name = "method", required = false) String method,
+	        @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+	        @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+	        @RequestParam(name = "keyword", required = false) String keyword
+	) {
+	    log.info("filterSearch() 요청: category={}, type={}, method={}, 기간={}~{}, keyword={}",
+	            category, type, method, startDate, endDate, keyword);
+
+	    int memberIn = getLoginMemberIn();
+
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("memberIn", memberIn);
+	    paramMap.put("category", category);
+	    paramMap.put("type", type);
+	    paramMap.put("method", method);
+	    paramMap.put("startDate", startDate);
+	    paramMap.put("endDate", endDate);
+	    paramMap.put("keyword", keyword);
+
+	    return expenseService.searchExpense(paramMap);
 	}
 	
-//	@GetMapping("/filterSearch")
+//	@GetMapping("/monthList")
 //	@ResponseBody
-//	public List<ExpenseDTO> filterSearch(@RequestParam("start") String start,@RequestParam("end") String end,
-//		    @RequestParam(required = false) String category, @RequestParam(required = false) String type,
-//		    @RequestParam(required = false) String method, @RequestParam(required = false) String keyword){
-//	
+//	public List<ExpenseDTO> getMonthList(@RequestParam("year") int year, @RequestParam("month") int month){
+//		log.info("ExpenseController monthList() : {}년 {}월", year, month);
+//		
 //		int memberIn = getLoginMemberIn();
-//	
-//		return expenseService.filterSearch(memberIn, start, end, category, type, method, keyword);
+//		
+//		LocalDate start = LocalDate.of(year, month, 1);
+//	    LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+//		
+//	    return expenseService.getMonthList(memberIn, start, end);
 //	}
 
 }

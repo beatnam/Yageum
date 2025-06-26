@@ -109,17 +109,17 @@ public class ExpenseService {
 		}
 
 
-		public List<ExpenseDTO> getMonthList(int memberIn, LocalDate start, LocalDate end) {
-			log.info("ExpenseService getMonthList() : memberIn={}, start={}, end={}", memberIn, start, end);
-			
-			return cashbookMapper.getMonthList(memberIn, start, end);
+//		public List<ExpenseDTO> getMonthList(int memberIn, LocalDate start, LocalDate end) {
+//			log.info("ExpenseService getMonthList() : memberIn={}, start={}, end={}", memberIn, start, end);
+//			
+//			return cashbookMapper.getMonthList(memberIn, start, end);
+//		}
+
+		public List<ExpenseDTO> searchExpense(Map<String, Object> paramMap) {
+			log.info("ExpenseService searchExpense() - param: {}", paramMap);
+			return cashbookMapper.searchExpense(paramMap);
 		}
 
-//		public List<ExpenseDTO> filterSearch(int memberIn, String start, String end, String category, String type,
-//				String method, String keyword) {
-//			
-//			return cashbookMapper.filterSearch(memberIn, start, end, category, type, method, keyword);
-//		}
 
 	  
 
