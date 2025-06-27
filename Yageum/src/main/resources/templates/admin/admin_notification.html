@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/admin_common.css">
+	<link rel="stylesheet" href="../css/admin_header.css">
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+	<script src="../js/jquery-3.6.0.js"></script>
+	<title>공지사항 관리</title>
+</head>
+
+<body>
+
+	<div th:replace="fragments/admin_header :: header"></div>
+
+	<div class="container">
+		<!-- 사이드바 -->
+		<div class="sidebar">
+			<h2>관리자 페이지</h2>
+
+			<div class="menu-item">
+				<a href="/admin/user" class="menu-link">사용자 관리</a>
+			</div>
+
+			<div class="menu-item">
+				<a href="/admin/state" class="menu-link">통계 / 리포트</a>
+			</div>
+
+			<div class="menu-item">
+				<a href="#" class="menu-link active" onclick="toggleSubmenu(event)">사이트 설정</a>
+				<div class="submenu show" id="siteSettingsSubmenu">
+					<div class="submenu-item">
+						<a href="/admin/quest" class="submenu-link">퀘스트 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/item" class="submenu-link">구매항목 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/category" class="submenu-link">카테고리 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/notification" class="submenu-link active">공지사항 관리</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 메인 콘텐츠 -->
+		<div class="main-content">
+			<div class="main_header">
+				<h1>공지사항 목록</h1>
+				<button class="add-btn" onclick="addNotice()">추가하기</button>
+			</div>
+
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>제목</th>
+							<th>내용</th>
+							<th>작성일</th>
+							<th>관리</th>
+						</tr>
+					</thead>
+					<tbody id="noticeTableBody">
+						
+						<!-- 공지사항 목록 -->
+						<div th:each="notice, state : ${noticeL}">
+							<tr class="notice-row">
+								<td th:text="${state.count}"></td>
+								<td th:text="${notice.noticeSubject}"></td>
+								<td th:text="${notice.noticeContent}"></td>
+								<td th:text="${#dates.format(notice.noticeDate, 'yyyy-MM-dd')}"></td>
+								<td>
+									<button class="action-btn edit" th:onclick="editNotice([[${notice.noticeIn}]])">수정</button>
+									<button class="action-btn delete" th:onclick="deleteNotice([[${notice.noticeIn}]])">삭제</button>
+								</td>
+							</tr>
+						</div>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="pagination">
+				<span>이전</span>
+				<a href="#">1</a>
+				<a href="#">2</a>
+				<a href="#">3</a>
+				<a href="#">4</a>
+				<a href="#">5</a>
+				<span>다음</span>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 사이트 설정 하위 메뉴 토글
+		function toggleSubmenu(event) {
+			event.preventDefault();
+			const submenu = document.getElementById('siteSettingsSubmenu');
+			submenu.classList.toggle('show');
+		}
+/*
+		// 공지사항 필터링 기능
+		function filterNotices() {
+			const typeFilter = document.getElementById('noticeTypeFilter').value;
+			const statusFilter = document.getElementById('statusFilter').value;
+			const rows = document.querySelectorAll('.notice-row');
+
+			rows.forEach(row => {
+				let showRow = true;
+
+				// 유형 필터
+				if (typeFilter !== '') {
+					const noticeType = row.dataset.noticeType;
+					if (noticeType !== typeFilter) {
+						showRow = false;
+					}
+				}
+
+				// 상태 필터
+				if (statusFilter !== '') {
+					const status = row.dataset.status;
+					if (status !== statusFilter) {
+						showRow = false;
+					}
+				}
+
+				row.style.display = showRow ? '' : 'none';
+			});
+		}
+		*/
+		// 필터 초기화
+		function resetFilter() {
+			document.getElementById('noticeTypeFilter').value = '';
+			document.getElementById('statusFilter').value = '';
+			filterNotices();
+		}
+
+		// 공지사항 추가 기능
+		function addNotice() {
+			const uri = "/admin/notice_gener";
+			window.open(uri, "popup", "height=590, width=470");
+		}
+
+		// 공지사항 수정 기능
+		function editNotice(id) {
+			const uri = "/admin/notice_update?noticeIn=" + id;
+			window.open(uri, "popup", "height=590, width=470" );
+		}
+
+	
+
+		// 공지사항 삭제 기능
+		function deleteNotice(id) {
+			if (confirm('정말로 이 공지사항을 삭제하시겠습니까?\n삭제된 공지사항은 복구할 수 없습니다.')) {
+				location.href = "/admin/notice_delete?noticeIn=" + id;
+			}
+		}
+
+		// 로그아웃 기능
+		function logout() {
+			if (confirm('로그아웃 하시겠습니까?')) {
+				window.location.href = '/logout';
+			}
+		}
+	</script>
+
+</body>
+
+</html>

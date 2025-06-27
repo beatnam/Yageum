@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/notice_update.css">
+	<script src="../js/jquery-3.6.0.js"></script>
+    <title>공지사항 수정</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>공지사항 수정</h2>
+        </div>
+        
+        <div class="form-container">
+            
+            <form id="editForm">
+             <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
+                <input type="hidden" name="noticeIn" th:value="${notice.noticeIn}">
+                
+                <div class="form-group">
+                    <label for="noticeDate">수정 날짜</label>
+                    <input type="date" id="noticeDate" name="noticeDate" 
+                           th:value="${notice.noticeDate}" required>
+                </div>
+                <div class="form-group">
+                    <label for="noticeSubject">제목 <span class="required">*</span></label>
+                    <input type="text" id="noticeSubject" name="noticeSubject" 
+                           th:value="${notice.noticeSubject}"
+                           placeholder="공지사항 제목을 입력하세요" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noticeContent">내용 <span class="required">*</span></label>
+                    <input type="text" id="noticeContent" name="noticeContent" 
+                              placeholder="공지사항 내용을 입력하세요" required 
+                            th:value="${notice.noticeContent}"></input>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="editButton">수정하기</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeWindow()">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+		//ajax 성공 후 안에 코드들이 실행 안됨
+       	$('#editButton').click(function(){
+				const formData = $('#editForm').serialize();
+				$.post('/admin/notice_updatePro', formData, function(response){	
+						window.opener.location.reload();
+						alert("공지사항이 등록되었습니다.");
+						window.close();
+							
+				}).fail(function(){
+						alert('전송 오류가 발생 했습니다');
+								
+				});//ajax
+			});
+
+        // 창 닫기
+        function closeWindow() {
+            if (confirm('수정 중인 내용이 사라집니다. 정말 취소하시겠습니까?')) {
+				window.close();
+			}
+			
+			
+        }
+    </script>
+</body>
+</html>

@@ -65,6 +65,21 @@
       .btn-search:hover {
           background-color: #FFC107;
       }
+	  
+	  .btn-reset {
+	      background-color: #4E342E;
+	      color: #FFF9E5;
+	      border: none;
+	      padding: 10px 20px;
+	      border-radius: 6px;
+	      cursor: pointer;
+	      font-weight: 500;
+	      transition: 0.3s;
+	  }
+
+	  .btn-reset:hover {
+	      background-color: #4E342E;
+	  }
 
       /* 내역 리스트 */
       .transaction-list {

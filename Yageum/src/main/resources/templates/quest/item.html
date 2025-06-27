@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
 <head>
 	<meta charset="UTF-8">
 	<title>야금야금 - 오픈뱅킹 가계부</title>
@@ -9,13 +8,10 @@
 	<!-- Google Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
-		rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap" rel="stylesheet">
 
 	<link rel="stylesheet" href="../css/common.css">
 	<link rel="stylesheet" href="../css/cashbook_quest.css">
-
 </head>
 
 <body>
@@ -26,6 +22,7 @@
 
 		<div class="main-content">
 			<div class="main_header">
+				<p th:text="'내 보유 포인트 : ' + ${myReward}"></p>
 				<h1 class="quest-header">아이템 목록</h1>
 			</div>
 
@@ -33,36 +30,23 @@
 				<table class="quest-table">
 					<thead class="quest-subheader">
 						<tr>
-							<th>퀘스트 번호</th>
-							<th>퀘스트 내용</th>
-							<th>유형</th>
-							<th>목표</th>
-							<th>보상</th>
-							<th>기간</th>
-							<th>수락 가능 여부</th>
-							<th>퀘스트 수행하기</th>
+							<th>아이템 번호</th>
+							<th>상품명</th>
+							<th>가격</th>
+							<th>구매</th>
 						</tr>
 					</thead>
 					<tbody id="questTableBody">
-						<tr th:each="quest : ${questList}" th:classappend="${!quest['is_valid']} ? ' invalid-row'">
-							<form th:action="@{/quest/acceptQuest}" method="post" th:object="${quest}">
-								<td th:text="${quest['quest_in']}"></td>
-								<td class="quest-name" th:text="${quest['quest_name']}"></td>
-								<td th:text="${quest['quest_type_name']}"></td>
-								<td th:text="${quest['goal_value']}">원</td>
-								<td class="quest-reward" th:text="${quest['reward_value']}">포인트</td>
-								<td class="quest-period"
-									th:text="${quest['start_date']} + ' ~ ' + ${quest['end_date']}">기간</td>
-								<td class="quest-isValid" th:text="${quest['is_valid']} ? '가능한 퀘스트' : '기간 만료 퀘스트'"></td>
-
-								<!-- 조건부 버튼 렌더링 -->
-								<td class="quest-status">
-									<input type="hidden" name="questIn" th:value="${quest['quest_in']}" />
-									<button type="submit" class="action-btn edit" th:if="${quest['is_valid']}">퀘스트
-										수락</button>
+						<tr th:each="itemDTO : ${itemList}">
+							<form th:action="@{/quest/buy_item}" method="post" th:object="${itemDTO}">
+								<td th:text="${itemDTO.itemIn}"></td>
+								<td th:text="${itemDTO.itemName}"></td>
+								<td th:text="${itemDTO.itemPrice} + ' 포인트'"></td>
+								<td>
+									<input type="hidden" name="itemIn" th:value="${itemDTO.itemIn}" />
+									<button type="submit" class="action-btn edit">구매하기</button>
 								</td>
-								<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
-
+								<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
 							</form>
 						</tr>
 					</tbody>
@@ -79,9 +63,8 @@
 				<span class="progress-dot"></span>
 			</div>
 		</div>
-
-
 	</div>
+
 	<div th:replace="fragments/footer :: footer"></div>
 
 	<script>
@@ -89,7 +72,7 @@
 			if (confirm('로그아웃 하시겠습니까?')) {
 				window.location.href = '/logout';
 			}
-		}</script>
+		}
+	</script>
 </body>
-
 </html>

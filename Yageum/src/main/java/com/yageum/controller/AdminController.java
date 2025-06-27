@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.ItemDTO;
+import com.yageum.domain.NoticeDTO;
 import com.yageum.domain.QuestDTO;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
@@ -25,6 +26,7 @@ import com.yageum.service.AdminService;
 import com.yageum.service.CategoryService;
 import com.yageum.service.ItemService;
 import com.yageum.service.MemberService;
+import com.yageum.service.NoticeService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -41,7 +43,7 @@ public class AdminController {
 	private final CategoryService categoryService;
 	private final AdminService adminService;
 	private final ItemService itemService;
-	
+	private final NoticeService noticeService;
 	
 	//Repository			
 	private final CategoryMainRepository categoryMainRepository;
@@ -205,16 +207,22 @@ public class AdminController {
 	}
 	
 	@GetMapping("/category_delete1")
-	@ResponseBody	
-	public void cateDelete1(@RequestParam("cmIn") int cmIn) {
+	public String cateDelete1(@RequestParam("cmIn") int cmIn, Model model) {
 		log.info("AdminController cateDelete1()");
 		
 		CategoryMain cateFound = categoryService.findById1(cmIn).orElseThrow(()
 				-> new UsernameNotFoundException("없는 카테고리")
 				);
 		
-		categoryService.delete1(cateFound);
 		
+		
+			
+			categoryService.deleteAll(cmIn);
+			categoryService.delete1(cateFound);
+			
+			
+			return "redirect:/admin/category";
+
 	}
 	
 	
@@ -254,8 +262,7 @@ public class AdminController {
 	}
 	
 	@GetMapping("/category_delete2")
-	@ResponseBody	
-	public void cateDelete2(@RequestParam("csIn") int csIn) {
+	public String cateDelete2(@RequestParam("csIn") int csIn) {
 		log.info("AdminController cateDelete2()");
 
 		CategorySub cateFound = categoryService.findById2(csIn).orElseThrow(()
@@ -263,7 +270,7 @@ public class AdminController {
 				);
 		
 		categoryService.delete2(cateFound);
-		
+		return "redirect:/admin/category";
 	}
 	// 사이트 설정 - 카테고리 설정 페이지
 
@@ -364,13 +371,80 @@ public class AdminController {
 	
 	// 사이트 설정 - 공지사항 페이지
 
-	@GetMapping("/noticfication")
-	public String noticfication() {
+	@GetMapping("/notification")
+	public String noticfication(Model model) {
 		log.info("AdminController noticfication()");
 
-		return "/admin/admin_noticfication";
+		List<NoticeDTO> noticeList = noticeService.listNotice();
+		log.info(noticeList.toString());
+		model.addAttribute("noticeL", noticeList);
+		
+		
+		
+		return "/admin/admin_notification";
 	}
 
+	@GetMapping("/notice_gener")
+	public String noticeGener(Model model) {
+		log.info("AdminController noticeGener()");
+
+		
+		return "/admin/notice_gener";
+	}
+	@PostMapping("/notice_generPro")
+	@ResponseBody
+	public void noticeGenerPro(NoticeDTO noticeDTO, Model model) {
+		log.info("AdminController noticeGenerPro()");
+		log.info(noticeDTO.toString());
+
+		
+		
+		noticeService.insert(noticeDTO);
+	}
+	
+	@GetMapping("/notice_update")
+	public String noticeUpdate(@RequestParam("noticeIn")int noticeIn ,Model model) {
+		log.info("AdminController noticeUpdate()");
+		
+		Optional<NoticeDTO> noticeDTO = noticeService.findByIn(noticeIn);
+		
+		
+		model.addAttribute("notice", noticeDTO.get());
+		return "/admin/notice_update";
+
+	}
+	
+	@PostMapping("/notice_updatePro")
+	@ResponseBody
+	public void noticeUpdatePro(@RequestParam("noticeIn") int noticeIn, 
+			@RequestParam Map<String, Object> map, NoticeDTO noitceDTO) {
+		log.info("AdminController noticeUpdatePro()");
+		log.info(noitceDTO.toString());
+
+//		NoticeDTO noticeDTO2 = noticeService.findByIn(noticeIn).orElseThrow(()
+//				-> new UsernameNotFoundException("없는 카테고리")
+//				);
+//		noticeDTO2.setNoticeContent(map.get("noticeContent"));
+//		noticeDTO2.setNoticeDate(map.get("noticeDate"));
+//		noticeDTO2.setNoticeSubject(map.get("noticeSubject"));
+
+		
+		noticeService.update(noitceDTO);
+	}
+	
+	
+	
+	@GetMapping("/notice_delete")
+	public String noticeDelete(@RequestParam("noticeIn") int noticeIn) {
+		log.info("AdminController noticeDelete()");
+			
+		
+		noticeService.delete(noticeIn);
+		
+		return "redirect:/admin/notification";
+	}
+	
+	
 	// 사이트 설정 - 공지사항 페이지
 
 	// 사이트 설정 - 상품 설정 페이지

@@ -42,7 +42,7 @@
 						<a href="/admin/category" class="submenu-link active">카테고리 관리</a>
 					</div>
 					<div class="submenu-item">
-						<a href="/admin/noticfication" class="submenu-link">공지사항 관리</a>
+						<a href="/admin/notification" class="submenu-link">공지사항 관리</a>
 					</div>
 				</div>
 			</div>
@@ -193,9 +193,9 @@
 		
 		 function deleteMain(id){
 			
-			 if (confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {	
+			
+			 if (confirm('하위 카테고리가 존재할시 같이 삭제됩니다. 삭제하시겠습니까?')) {	
 				location.href= "/admin/category_delete1?cmIn=" + id;
-				location.reload();
 			}
 						
 			
@@ -204,7 +204,6 @@
 		 function deleteSub(id){
 			if (confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {
 				location.href= "/admin/category_delete2?csIn=" + id;
-				location.reload();
 		 
 				}
 			}
