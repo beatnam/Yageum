@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자동 공지사항 팝업</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../css/notice_main.css" >
+  </head>
+<body>
+    <!-- 팝업 오버레이 -->
+    <div class="popup-overlay" id="noticePopup">
+        <div class="popup-container">
+            <!-- 팝업 헤더 -->
+            <div class="popup-header">
+                <h2 class="popup-title">📢 공지사항</h2>
+                <button class="popup-close" onclick="closePopup()">&times;</button>
+            </div>
+
+            <!-- 팝업 본문 -->
+            <div class="popup-body">
+                <div class="notice-list">
+					<div th:each="notice, state : ${notice}">
+	                    <div class="notice-item" th:onclick="viewNotice([[${notice.noticeIn}]])">
+	                        <div class="notice-header">
+	                            <span class="notice-number" th:text="${state.count}"></span>
+	                            <span class="notice-date" th:text="${notice.noticeDate}"></span>
+	                        </div>
+	                        <div class="notice-title" th:text="${notice.noticeSubject}">
+<!--	                            <span class="notice-badge important">중요</span>-->
+	                        </div>
+	                    </div>
+					</div>
+                  
+                    </div>
+                </div>
+
+            <!-- 팝업 하단 -->
+            <div class="popup-footer">
+                <button class="btn-today-close" onclick="closeTodayPopup()">오늘 하루 보지 않기</button>
+                <button class="btn-close" onclick="closePopup()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+		//쿠키 get / set 함수 
+		function setCookie(name, value, expirationDate) {
+	           let expires = "";
+	           if (expirationDate) {
+	               expires = "; expires=" + expirationDate.toUTCString();
+	           }
+	           document.cookie = name + "=" + (value || "") + expires + "; path=/";
+	       }
+
+	       function getCookie(name) {
+	           let nameEQ = name + "=";
+	           let ca = document.cookie.split(';');
+	           for(let i=0; i < ca.length; i++) {
+	               let c = ca[i];
+	               while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+	               if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+	           }
+	           return null;
+	       }
+        // 페이지 로드시 자동으로 팝업 표시
+        window.addEventListener('load', function() {
+            // 오늘 하루 보지 않기를 선택했는지 확인
+            const todayClose = sessionStorage.getItem('noticePopupTodayClose');
+            const today = new Date().toDateString();
+            
+            if (todayClose !== today) {
+                showPopup();
+            }
+        });
+
+        // 팝업 표시
+        function showPopup() {
+            document.getElementById('noticePopup').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 팝업 닫기
+        function closePopup() {
+            window.close();
+        }
+
+        // 오늘 하루 보지 않기
+        function closeTodayPopup() {
+			alert("클릭");
+			const cookieName = "hideLoginPopupToday";
+			const now = new Date();
+			const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0); 
+            setCookie(cookieName, 'true', midnight);
+			window.close();
+           
+        }
+
+        // 오버레이 클릭시 팝업 닫기
+        document.getElementById('noticePopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+
+        // ESC 키로 팝업 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePopup();
+            }
+        });
+
+        // 공지사항 상세보기
+        function viewNotice(noticeIn) {
+            alert('공지사항 ' + noticeIn + '번 상세보기로 이동합니다.');
+			location.href="/notice/content?noticeIn=" + noticeIn;
+			
+        }
+    </script>
+</body>
+</html>

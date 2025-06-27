@@ -29,18 +29,18 @@ public class NoticeController {
 		log.info("NoticeController main()");
 		List<NoticeDTO> noticeList = noticeService.listNotice();
 		
-		model.addAttribute("noticDTO", noticeList);
+		model.addAttribute("notice", noticeList);
 		
 		return "/notice/main";
 	}
 	@GetMapping("/content")
-	public String content(@RequestParam("noticIn") int noticeIn, Model model) {
+	public String content(@RequestParam("noticeIn") int noticeIn, Model model) {
 		log.info("NoticeController content()");
 		
 		Optional<NoticeDTO> noticeDTO = noticeService.findByIn(noticeIn);
 		
 		
-		model.addAttribute("noticDTO", noticeDTO.get());
+		model.addAttribute("notice", noticeDTO.get());
 		
 		
 		
