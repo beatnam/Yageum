@@ -8,7 +8,37 @@
 	<meta name="_csrf" th:content="${_csrf.token}">
 	<meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>구매항목 관리</title>
-   
+    <style>
+        .sortable {
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+        }
+        
+        .sortable:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .sort-arrows {
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .sort-arrows.active-asc .arrow-up {
+            color: #007bff;
+        }
+        
+        .sort-arrows.active-desc .arrow-down {
+            color: #007bff;
+        }
+        
+        .arrow-up, .arrow-down {
+            display: block;
+            line-height: 0.5;
+        }
+    </style>
 </head>
 <body>
 	<div th:replace="fragments/admin_header :: header"></div>
@@ -38,7 +68,7 @@
                         <a href="/admin/category" class="submenu-link">카테고리 관리</a>
                     </div>
                     <div class="submenu-item">
-                        <a href="/admin/noticfication" class="submenu-link">공지사항 관리</a>
+                        <a href="/admin/notification" class="submenu-link">공지사항 관리</a>
                     </div>
                 </div>
             </div>
@@ -57,7 +87,13 @@
                         <tr>
                             <th>항목 번호</th>
                             <th>상품명</th>
-                            <th>가격</th>
+                            <th class="sortable" onclick="sortByPrice()">
+                                가격
+                                <span class="sort-arrows" id="priceSort">
+                                    <span class="arrow-up">▲</span>
+                                    <span class="arrow-down">▼</span>
+                                </span>
+                            </th>
                             <th>관리</th>
                         </tr>
                     </thead>
@@ -66,8 +102,8 @@
                         <tr th:each="itemDTO, num : ${itemDTO}">
                             <td th:text="${num.count}"></td>
                             <td th:text="${itemDTO.itemName}"></td>
-                            <td th:text="${itemDTO.itemPrice} + 포인트"></td>
-                        <td>
+                            <td th:text="${itemDTO.itemPrice} + '포인트'" data-price th:attr="data-price=${itemDTO.itemPrice}"></td>
+                            <td>
                                 <button class="action-btn edit" 
 									th:onclick="editItem([[${itemDTO.itemIn}]])">변경</button>
                                 <button class="action-btn delete" 
@@ -91,11 +127,66 @@
     </div>
 
     <script>
+        let sortOrder = 'none'; // 'none', 'asc', 'desc'
+        
         // 사이트 설정 하위 메뉴 토글
         function toggleSubmenu(event) {
             event.preventDefault();
             const submenu = document.getElementById('siteSettingsSubmenu');
             submenu.classList.toggle('show');
+        }
+
+        // 가격으로 정렬하는 기능
+        function sortByPrice() {
+            const tableBody = document.getElementById('itemTableBody');
+            const rows = Array.from(tableBody.getElementsByTagName('tr'));
+            const sortArrows = document.getElementById('priceSort');
+            
+            // 현재 정렬 상태에 따라 다음 정렬 상태 결정
+            if (sortOrder === 'none' || sortOrder === 'desc') {
+                sortOrder = 'asc';
+            } else {
+                sortOrder = 'desc';
+            }
+            
+            // 화살표 상태 업데이트
+            sortArrows.className = 'sort-arrows';
+            if (sortOrder === 'asc') {
+                sortArrows.classList.add('active-asc');
+            } else if (sortOrder === 'desc') {
+                sortArrows.classList.add('active-desc');
+            }
+            
+            // 정렬 실행
+            rows.sort((a, b) => {
+                const priceA = parseInt(a.querySelector('[data-price]').getAttribute('data-price'));
+                const priceB = parseInt(b.querySelector('[data-price]').getAttribute('data-price'));
+                
+                if (sortOrder === 'asc') {
+                    return priceA - priceB;
+                } else {
+                    return priceB - priceA;
+                }
+            });
+            
+            // 정렬된 행들을 다시 테이블에 추가
+            rows.forEach(row => {
+                tableBody.appendChild(row);
+            });
+            
+            // 항목 번호 다시 매기기
+            updateRowNumbers();
+        }
+        
+        // 행 번호 업데이트 함수
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#itemTableBody tr');
+            rows.forEach((row, index) => {
+                const firstCell = row.querySelector('td:first-child');
+                if (firstCell) {
+                    firstCell.textContent = index + 1;
+                }
+            });
         }
 
         // 구매항목 추가 기능
@@ -108,7 +199,6 @@
         function editItem(id) {
 			var uri = "/admin/item_update?itemIn=" + id;
 			window.open(uri, "popup", "width=430, height=470");
-			
         }
 
         // 구매항목 삭제 기능
@@ -116,16 +206,15 @@
             if (confirm('정말로 이 구매항목을 삭제하시겠습니까?')) {
 				location.href="/admin/item_delete?itemIn=" + id;
 				location.reload();
-				
             }
         }
 		
 		//로그아웃 기능
 		function logout() {
-		           if (confirm('로그아웃 하시겠습니까?')) {
-		              window.location.href = '/logout';
-		           }
-		        }
+		    if (confirm('로그아웃 하시겠습니까?')) {
+		        window.location.href = '/logout';
+		    }
+		}
     </script>
 </body>
 </html>
