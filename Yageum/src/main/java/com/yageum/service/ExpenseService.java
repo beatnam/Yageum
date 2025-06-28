@@ -37,37 +37,51 @@ public class ExpenseService {
 	    
 	    // 내역 저장
 	    public void saveExpense(Expense expense) {
+	    	log.info("ExpenseService saveExpense()");
+	    	
 	        expenseRepository.save(expense);
 	    }
 
 	    // 대분류 리스트
 	    public List<CategoryMain> getMainCategoryList() {
+	    	log.info("ExpenseService getMainCategoryList()");
+	    	
 	        return categoryMainRepository.findAll();
 	    }
 
 	    // 소분류 리스트 (대분류 id 기준)
 	    public List<CategorySub> getSubCategoryList(int cmIn) {
+	    	log.info("ExpenseService getSubCategoryList()");
+	    	
 	        return categorySubRepository.findByCmIn(cmIn);
 	    }
 
 	    // 카드 리스트 (수단과 회원번호 기준)
 	    public List<Card> getCardList(int memberIn, int methodIn) {
+	    	log.info("ExpenseService getCardList()");
+	    	
 	        return cardRepository.findCardsByMemberInAndMethodIn(memberIn, methodIn);
 	    }
 
 	    // 계좌 리스트 (회원번호 기준)
 	    public List<BankAccount> getAccountList(int memberIn) {
+	    	log.info("ExpenseService getAccountList()");
+	    	
 	        return cashbookMapper.getAccountList(memberIn);
 	    }
 
 	    // 날짜별 내역 조회
 	    public List<Expense> getExpensesByDate(int memberIn, String dateStr) {
+	    	log.info("ExpenseService getExpensesByDate()");
+	    	
 	        LocalDate date = LocalDate.parse(dateStr);
 	        return expenseRepository.findByMemberInAndDate(memberIn, date);
 	    }
 
 	    // 일일 수입 또는 지출 합계
 	    public int getDailyTotal(int memberIn, String dateStr, int type) {
+	    	log.info("ExpenseService getDailyTotal()");
+	    	
 	        LocalDate date = LocalDate.parse(dateStr);
 	        boolean isExpense = (type == 1);
 	        return expenseRepository.sumExpenseByDateAndType(memberIn, date, isExpense);
@@ -75,20 +89,38 @@ public class ExpenseService {
 	    
 	    // 단일 상세 내역 조회
 	    public ExpenseDTO getExpenseDetailById(int id) {
+	    	log.info("ExpenseService getExpenseDetailById()");
+	    	
 	        return cashbookMapper.getExpenseDetailById(id);
 	    }
 
 	    // 가계부 수정
 		public void update(ExpenseDTO expenseDTO) {
+			log.info("ExpenseService update()");
 
 			cashbookMapper.updateExpense(expenseDTO);
 		}
 
 		// 메인 페이지 내 수입 / 지출 금액
-		public List<Map<String, Object>> getMonthlySum(int memberIn, int year, int month) {
-			LocalDate start = LocalDate.of(year, month, 1);
-			LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+		public List<Map<String, Object>> getMonthlySum(int memberIn, LocalDate start, LocalDate end) {
+			log.info("ExpenseService getMonthlySum()");
+			
 			return cashbookMapper.getDailyIncomeExpense(memberIn, start, end);
 		}
+
+
+//		public List<ExpenseDTO> getMonthList(int memberIn, LocalDate start, LocalDate end) {
+//			log.info("ExpenseService getMonthList() : memberIn={}, start={}, end={}", memberIn, start, end);
+//			
+//			return cashbookMapper.getMonthList(memberIn, start, end);
+//		}
+
+		public List<ExpenseDTO> searchExpense(Map<String, Object> paramMap) {
+			log.info("ExpenseService searchExpense() - param: {}", paramMap);
+			return cashbookMapper.searchExpense(paramMap);
+		}
+
+
+	  
 
 }

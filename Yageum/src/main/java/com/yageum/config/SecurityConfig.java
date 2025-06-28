@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/consumption/**", "/eanalysis/**", "/efeedback/**", "/canalysis/**", "/bplanner/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/admin/**","/user_detail/**","/authority/**").hasRole("ADMIN")
+                .requestMatchers("/notice/**").hasAnyRole("USER","ADMIN")
                 .anyRequest().authenticated()
             )
             .securityContext(security -> security

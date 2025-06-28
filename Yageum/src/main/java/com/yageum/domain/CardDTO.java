@@ -36,4 +36,11 @@ public class CardDTO {
         this.methodIn = card.getMethodIn();
     }
 
+//    //마스킹
+//    public String getCardNumMasked() {
+//        if (cardNum != null && cardNum.length() >= 4) {
+//            return "**** **** **** " + cardNum.substring(cardNum.length() - 4);
+//        }
+//        return cardNum;
+//    }
 }

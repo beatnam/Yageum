@@ -163,8 +163,58 @@
             generateCalendar(currentYear, currentMonth);
         }
 
+		
+		//쿠키 get / set 함수 
+		function setCookie(name, value, expirationDate) {
+	           let expires = "";
+	           if (expirationDate) {
+	               expires = "; expires=" + expirationDate.toUTCString();
+	           }
+	           document.cookie = name + "=" + (value || "") + expires + "; path=/";
+	       }
+
+	       function getCookie(name) {
+	           let nameEQ = name + "=";
+	           let ca = document.cookie.split(';');
+	           for(let i=0; i < ca.length; i++) {
+	               let c = ca[i];
+	               while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+	               if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+	           }
+	           return null;
+	       }
+
+		
+		
+		
 
          // 페이지 로드 시 현재 월 달력 생성
 		 document.addEventListener('DOMContentLoaded', function() {
 		     fetchTransactionData(currentYear, currentMonth); // ← 이걸로 시작
+//			 alert("작동");
+			 const cookieName = "hideLoginPopupToday";
+			 if (getCookie(cookieName)  !== 'true') {
+//				alert("조건식 통과");
+ 		        // 이 안에 팝업을 띄우는 로직을 넣습니다.
+ 		        // window.open() 방식의 팝업은 window.onload로 감싸는 게 좋습니다.
+ 		            const uri = "/notice/main";
+					setTimeout(function(){
+
+					window.open(uri, "popup", "height=540, width=600, scrollbars=yes, resizable=yes"); // 추가 옵션 포함 예시
+					}, 100);
+ 		        }
+			 	 		       
+			 
 		 });
+		 
+					
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 

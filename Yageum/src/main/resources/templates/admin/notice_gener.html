@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/notice_gener.css">
+	<script src="../js/jquery-3.6.0.js"></script>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>공지사항 등록</title>
+  
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>새 공지사항 등록</h2>
+        </div>
+        
+        <div class="form-container">
+            <form id="noticeCreateForm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                
+                <div class="form-group">
+                    <label for="noticeDate">등록 날짜</label>
+                    <input type="date" id="noticeDate" name="noticeDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="noticeSubject">제목 <span class="required">*</span></label>
+                    <input type="text" id="noticeSubject" name="noticeSubject" 
+                           placeholder="공지사항 제목을 입력하세요" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noticeContent">내용 <span class="required">*</span></label>
+                    <textarea id="noticeContent" name="noticeContent" 
+                              placeholder="공지사항 내용을 입력하세요" required></textarea>
+                </div>
+                
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="createButton()">등록하기</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeWindow()">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 오늘 날짜를 기본값으로 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('noticeDate').value = today;
+        });
+
+		
+		function createButton(){
+			const formData = $('#noticeCreateForm').serialize();
+			$.post('/admin/notice_generPro', formData, function(response){	
+				window.opener.location.reload();
+				alert("공지사항이 등록되었습니다.");
+				window.close();
+						
+			}).fail(function(){
+					alert('전송 오류가 발생 했습니다');
+							
+			});//ajax
+			
+		}//createButton()
+      
+
+        // 창 닫기
+        function closeWindow() {
+            if (confirm('작성 중인 내용이 사라집니다. 정말 취소하시겠습니까?')) {
+                window.close();
+            }
+        }
+    </script>
+</body>
+</html>
