@@ -198,6 +198,11 @@
 			width: 16px;
 			height: 16px;
 		}
+		
+		.global-controls {
+		    margin-bottom: 20px;
+		    text-align: right;
+		}
 
 /* 편집 모드 관련 스타일 */
 .edit-mode .select-checkbox {

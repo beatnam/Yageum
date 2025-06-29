@@ -14,25 +14,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.MemberDTO;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Card;
+import com.yageum.entity.CardCompany;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.Member;
 import com.yageum.repository.MemberRepository;
 import com.yageum.service.ExpenseService;
 import com.yageum.service.MemberService;
+import com.yageum.service.MypageService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@Log
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/mypage/*")
 public class MypageController {
@@ -41,6 +45,7 @@ public class MypageController {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final ExpenseService expenseService;
+	private final MypageService mypageService;
 	
 	@GetMapping("/update")
 	public String update(HttpSession session, Model model, MemberDTO memberDTO) {
@@ -123,7 +128,7 @@ public class MypageController {
 	        match = passwordEncoder.matches(inputPassword, member.getMemberPasswd());
 	        log.info("매치 결과: " + match);
 	    } else {
-	        log.warning("해당 ID의 회원 정보 없음");
+	        log.info("해당 ID의 회원 정보 없음");
 	    }
 
 	    return Collections.singletonMap("match", match);
@@ -181,13 +186,75 @@ public class MypageController {
 		return "/mypage/mypage_method_list";
 	}
 	
+	// 수단 삭제 로직
+	@PostMapping("/mdelete")
+	public String mdelete(@RequestParam("ids") List<String> ids, @RequestParam("types") List<String> types) {
+		log.info("MypageController mdelete()");
+	    log.info("삭제 요청: ids={}, types={}", ids, types);
+
+	    for (int i = 0; i < ids.size(); i++) {
+	        int id = Integer.parseInt(ids.get(i));
+	        String type = types.get(i);
+
+	        if (type.equals("account")) {
+	        	mypageService.deleteAccountById(id);
+	        } else if (type.equals("credit") || type.equals("check")) {
+	        	mypageService.deleteCardById(id);
+	        }
+	    }
+	    return "redirect:/mypage/mlist"; // 다시 목록으로
+	}
+	
+	
+	
+	
 	@GetMapping("/minsert")
-	public String methodinsert() {
+	public String methodinsert(Model model) {
 		log.info("MypageController methodinsert()");
+		
+		// 카드회사 목록 조회
+		List<CardCompany> companyList = mypageService.getCardCorporationList();
+		model.addAttribute("companyList", companyList);
 		
 		return "/mypage/mypage_method_insert";
 	}
 	
+	@PostMapping("/minsertPro")
+	public String minsertPro(@RequestParam("card1") String card1,
+	        @RequestParam("card2") String card2,
+	        @RequestParam("card3") String card3,
+	        @RequestParam("card4") String card4,
+	        @RequestParam("expiryMM") String expiryMM,
+	        @RequestParam("expiryYY") String expiryYY,
+	        @RequestParam("cardHolder") String cardHolder,
+	        @RequestParam("cvc") String cvc,
+	        @RequestParam("cardType") int cardType,
+	        @RequestParam("cardCompany") int cardCompany,
+	        @RequestParam("cardName") String cardName) {
+		log.info("MypageController minsertPro()");
+
+		String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+		Member member = memberRepository.findByMemberId(memberId);
+		int memberIn = member.getMemberIn();
+
+		String cardNumber = card1 + card2 + card3 + card4;
+
+	    Card card = new Card();
+	    card.setCardNum(cardNumber);
+	    card.setCardMonth(expiryMM);
+	    card.setCardYear(expiryYY);
+	    card.setCardCvc(cvc);
+	    card.setCardUsername(cardHolder);
+	    card.setMethodIn(cardType);
+	    card.setCcIn(cardCompany);
+	    card.setCardName(cardName);
+	    card.setMemberIn(memberIn);
+
+
+		mypageService.minsertPro(card);
+
+		return "redirect:/mypage/mlist";
+	}
 
 
 }
