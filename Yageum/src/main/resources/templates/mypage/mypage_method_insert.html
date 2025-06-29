@@ -212,6 +212,61 @@
 	  function hideError(id) {
 	    document.getElementById(id).textContent = '';
 	  }
+	  
+	  const bankNameMap = {
+		"Kb Kookmin Card Co., Ltd.": "27",
+	      "KB Kookmin Card": "27",
+	      "Kookmin Card": "27",
+	      "Shinhan Card": "28",
+	      "Samsung Card": "29",
+	      "Hyundai Card": "30",
+	      "Lotte Card": "31",
+	      "Hana Card": "32",
+	      "Woori Card": "33",
+	      "NH Nonghyup Card": "34",
+	      "Citi": "35",
+	      "Citibank": "35",
+	      "IBK": "36",
+	      "SC First Bank": "37",
+	      "SC Bank": "37",
+	      "KakaoBank": "38",
+	      "Toss Bank": "39",
+	      "Suhyup Bank": "40",
+	      "K Bank": "41"
+	    };
+
+	    const cardCompanySelect = document.getElementById('cardCompany');
+
+	    cardInputs.forEach(input => {
+	      input.addEventListener('input', async () => {
+	        const fullNumber = Array.from(cardInputs).map(i => i.value).join('');
+	        if (fullNumber.length >= 6) {
+	          const bin = fullNumber.substring(0, 6);
+	          try {
+	            const res = await fetch(`/mypage/binlookup/${bin}`);
+	            if (!res.ok) throw new Error("BIN 조회 실패");
+
+	            const data = await res.json();
+	            const bankName = data.bank?.name;
+	            console.log("조회된 카드사명:", bankName);
+
+	            const matchedValue = bankNameMap[bankName];
+	            if (matchedValue) {
+	              cardCompanySelect.value = matchedValue;
+	              console.log("자동 선택된 cc_in 값:", matchedValue);
+	            } else {
+	              console.warn("매칭 실패:", bankName);
+	            }
+	          } catch (e) {
+	            console.error("BIN API 오류:", e);
+	          }
+	        }
+	      });
+	    });
+	    
+
+	    // DOM 로드 후 실행
+	    //document.addEventListener('DOMContentLoaded', autoDetectCardCompany);
 	</script>
 	</script>
 </body>

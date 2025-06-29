@@ -6,18 +6,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
-import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.MemberDTO;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Card;
@@ -32,7 +38,6 @@ import com.yageum.service.MypageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -47,6 +52,7 @@ public class MypageController {
 	private final ExpenseService expenseService;
 	private final MypageService mypageService;
 	
+	// 회원정보 수정 페이지
 	@GetMapping("/update")
 	public String update(HttpSession session, Model model, MemberDTO memberDTO) {
 		log.info("MypageController update()");
@@ -69,7 +75,7 @@ public class MypageController {
 		
 	}
 	
-	
+	// 회원정보 수정 로직
 	@PostMapping("/updatePro")
 	public String updatePro(MemberDTO memberDTO, Model model, HttpServletRequest request) {
 		log.info("MypageController updatePro()");
@@ -107,7 +113,7 @@ public class MypageController {
 	}
 	
 	
-	
+	// 비밀번호 검증
 	@PostMapping("/checkPassword")
 	@ResponseBody
 	public Map<String, Boolean> checkPassword(@RequestBody Map<String, String> requestBody) {
@@ -135,7 +141,7 @@ public class MypageController {
 	}
 	
 	
-	
+	// 회원 탈퇴 전 비밀번호 확인
 	@GetMapping("/deletepw")
 	public String deletepw() {
 		log.info("MypageController deletepw()");
@@ -143,6 +149,7 @@ public class MypageController {
 		return "/mypage/mypage_delete_pw";
 	}
 	
+	// 회원 탈퇴 페이지
 	@GetMapping("/delete")
 	public String delete() {
 		log.info("MypageController delete()");
@@ -150,6 +157,7 @@ public class MypageController {
 		return "/mypage/mypage_delete";
 	}
 	
+	// 회원 탈퇴 로직
 	@PostMapping("/deletePro")
 	public String deletePro(HttpSession session, Principal principal) {
 		log.info("MypageController deletePro()");
@@ -162,6 +170,7 @@ public class MypageController {
 		return "redirect:/member/login";
 	}
 	
+	// 수단 리스트 페이지
 	@GetMapping("/mlist")
 	public String methodlist(Model model) {
 		log.info("MypageController methodlist()");
@@ -207,7 +216,7 @@ public class MypageController {
 	
 	
 	
-	
+	// 수단 추가
 	@GetMapping("/minsert")
 	public String methodinsert(Model model) {
 		log.info("MypageController methodinsert()");
@@ -219,6 +228,7 @@ public class MypageController {
 		return "/mypage/mypage_method_insert";
 	}
 	
+	// 수단 추가 로직
 	@PostMapping("/minsertPro")
 	public String minsertPro(@RequestParam("card1") String card1,
 	        @RequestParam("card2") String card2,
@@ -254,6 +264,29 @@ public class MypageController {
 		mypageService.minsertPro(card);
 
 		return "redirect:/mypage/mlist";
+	}
+	
+	//카드사 자동 매칭 api
+	@GetMapping("/binlookup/{bin}")
+	@ResponseBody
+	public ResponseEntity<?> lookupBin(@PathVariable("bin") String bin) {
+	    String url = "https://lookup.binlist.net/" + bin;
+	    RestTemplate restTemplate = new RestTemplate();
+
+	    try {
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.set("Accept-Version", "3"); // binlist.net 권장 헤더
+	        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+	        ResponseEntity<String> response = restTemplate.exchange(
+	            url, HttpMethod.GET, entity, String.class
+	        );
+
+	        return ResponseEntity.ok().body(response.getBody());
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("BIN 조회 실패: " + e.getMessage());
+	    }
 	}
 
 
