@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.SavingsPlanDTO;
 
 import java.time.LocalDate;
@@ -72,7 +73,7 @@ public interface SavingsPlanMapper {
 
     List<Map<String, Object>> getIncomeCategoriesBySavingsPlanId(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
 
-    List<Map<String, Object>> getExpenseCategoriesBySavingsPlanId(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
+    List<Map<String, Object>> getExpenseCategoriesBySavingsPlanId(@Param("saveIn") Integer saveIn, @Param("month") int month, @Param("year") int year);
     
     List<Map<String, Object>> getIncomeCategoriesForMonth(
             @Param("memberIn") Integer memberIn,
@@ -82,6 +83,8 @@ public interface SavingsPlanMapper {
     SavingsPlanDTO findSavingsPlanByDateRange(@Param("memberIn") Integer memberIn,
             @Param("saveCreatedDate") LocalDate saveCreatedDate,
             @Param("saveTargetDate") LocalDate saveTargetDate);
+
+	List<CategorySubDTO> getAllIncomeCategories();
     
 	
 }

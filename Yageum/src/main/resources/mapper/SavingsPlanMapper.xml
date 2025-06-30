@@ -198,16 +198,19 @@
 	</select>
 
     <select id="getExpenseCategoriesBySavingsPlanId" resultType="map">
-        SELECT
-            cm.cm_name AS categoryName,
-            SUM(e.expense_sum) AS amount
-        FROM expense e
-        JOIN category_sub cs ON e.cs_in = cs.cs_in
-        JOIN category_main cm ON cs.cm_in = cm.cm_in
-        WHERE e.member_in = #{memberIn}
-          AND MONTH(e.expense_date) = #{month}
-          AND YEAR(e.expense_date) = #{year}
-          AND e.expense_type = TRUE GROUP BY cm.cm_name
+	    SELECT
+	        sd.sd_cost AS amount,
+	        cm.cm_name AS categoryName
+	    FROM
+	        savings_detail sd
+	    JOIN
+	        category_main cm ON sd.cm_in = cm.cm_in
+	    WHERE
+	        sd.save_in = #{saveIn}
+	        AND MONTH(sd.sd_date) = #{month}
+	        AND YEAR(sd.sd_date) = #{year}
+	    ORDER BY
+	        sd.sd_date ASC
     </select>
     
     <select id="getIncomeCategoriesForMonth" resultType="map">
@@ -238,7 +241,11 @@
         LIMIT 1
     </select>
     
-    
+    <select id="getAllIncomeCategories" resultType="com.yageum.domain.CategorySubDTO">
+	    SELECT cs_in AS csIn, cs_name AS csName
+	    FROM category_sub
+	    where cm_in = 14;
+	</select>
     
 	
 	

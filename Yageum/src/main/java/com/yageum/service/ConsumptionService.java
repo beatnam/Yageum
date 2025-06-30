@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.SavingsDetail;
 import com.yageum.domain.SavingsPlanDTO;
 import com.yageum.mapper.ConsumptionMapper;
@@ -678,7 +679,7 @@ public class ConsumptionService {
     }
 
     // 월별 예산 및 카테고리 정보 가져오기
-    public Map<String, Object> getSavingsPlanAndCategoriesByMonth(Integer memberIn, LocalDate startOfMonth, LocalDate endOfMonth) {
+    public Map<String, Object> getSavingsPlanAndCategoriesByMonth(Integer memberIn, Integer saveIn, LocalDate startOfMonth, LocalDate endOfMonth) {
         log.info("ConsumptionService getSavingsPlanAndCategoriesByMonth() 호출: memberIn={}, startOfMonth={}, endOfMonth={}" + memberIn + startOfMonth + endOfMonth);
 
         Map<String, Object> result = new HashMap<>();
@@ -695,7 +696,7 @@ public class ConsumptionService {
             // 2. 수입 카테고리 조회
             List<Map<String, Object>> incomeCategories = savingsPlanMapper.getIncomeCategoriesBySavingsPlanId(memberIn, month, year);
             // 3. 지출 카테고리 조회
-            List<Map<String, Object>> expenseCategories = savingsPlanMapper.getExpenseCategoriesBySavingsPlanId(memberIn, month, year);
+            List<Map<String, Object>> expenseCategories = savingsPlanMapper.getExpenseCategoriesBySavingsPlanId(saveIn, month, year);
 
             result.put("savingsPlan", savingsPlan);
             result.put("incomeCategories", incomeCategories);
@@ -792,5 +793,10 @@ public class ConsumptionService {
             return response;
         }
     }
+
+	public List<CategorySubDTO> getAllIncomeCategories() {
+		// TODO Auto-generated method stub
+		return savingsPlanMapper.getAllIncomeCategories();
+	}
     
 }

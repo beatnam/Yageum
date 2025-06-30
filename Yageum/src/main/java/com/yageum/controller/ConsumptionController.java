@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.yageum.service.ConsumptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.SavingsDetail;
 import com.yageum.domain.SavingsPlanDTO;
 import com.yageum.mapper.SavingsPlanMapper;
@@ -557,6 +558,12 @@ public class ConsumptionController {
             @RequestParam("startOfMonth") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate startOfMonth,
             @RequestParam("endOfMonth") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate endOfMonth,
             @AuthenticationPrincipal UserDetails userDetails) {
+        YearMonth currentYearMonth = YearMonth.now();
+        LocalDate conMonthDate = currentYearMonth.atDay(1);
+        LocalDate today = LocalDate.now();
+	    int year = today.getYear();
+	    int month = today.getMonthValue();
+    	
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -565,7 +572,8 @@ public class ConsumptionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
-            Map<String, Object> savingsPlanData = consumptionService.getSavingsPlanAndCategoriesByMonth(memberIn, startOfMonth, endOfMonth);
+        	Integer saveIn = consumptionService.getSaveIn(memberIn, year, month);
+            Map<String, Object> savingsPlanData = consumptionService.getSavingsPlanAndCategoriesByMonth(memberIn, saveIn, startOfMonth, endOfMonth);
             
             if (savingsPlanData != null && !savingsPlanData.isEmpty()) {
                 return ResponseEntity.ok(Map.of("success", true, "data", savingsPlanData));
@@ -1067,6 +1075,10 @@ public class ConsumptionController {
         }
     }
     
-    
+    @GetMapping("/api/income-categories")
+    public ResponseEntity<List<CategorySubDTO>> getAllIncomeCategories() {
+        List<CategorySubDTO> incomeCategories = consumptionService.getAllIncomeCategories();
+        return ResponseEntity.ok(incomeCategories);
+    }
     
 }

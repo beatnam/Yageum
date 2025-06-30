@@ -11,30 +11,39 @@ if (!csrfToken || !csrfHeader) {
     alert('보안 토큰을 찾을 수 없습니다. 페이지를 새로고침하거나 관리자에게 문의하세요.');
 }
 
+// ⭐ 수정: addIncome 함수 - 수입 카테고리 select에서 값을 가져오도록 변경
 function addIncome() {
-    const sourceNameInput = document.getElementById('income-source-name'); // 변경된 id 사용
+    const categorySelect = document.getElementById('income-category-select'); // HTML에서 변경된 ID 사용
+    const selectedCategoryValue = categorySelect.value; // 선택된 카테고리의 ID (csIn)
+    const selectedCategoryName = categorySelect.options[categorySelect.selectedIndex].text; // 선택된 카테고리의 이름 (표시 텍스트)
+
     const amountInput = document.getElementById('income-amount-input');
-    const name = sourceNameInput.value.trim(); // .trim()을 사용하여 앞뒤 공백 제거
     const amount = parseInt(amountInput.value);
 
-    if (name && !isNaN(amount) && amount > 0) {
-        incomes.push({ name, amount });
+    // 카테고리 선택 및 유효한 금액 검사
+    if (selectedCategoryValue && !isNaN(amount) && amount > 0) {
+        incomes.push({ 
+            name: selectedCategoryName, // 카테고리 이름 사용
+            amount: amount,
+            categoryId: selectedCategoryValue // 백엔드 전송을 위해 카테고리 ID 저장
+            // 새로운 수입 항목에는 'memo' 필드가 추가되지 않음 (select로 대체되었기 때문)
+        });
         updateIncomeList();
         updateTotals();
-        sourceNameInput.value = ''; // 입력 필드 초기화
+        categorySelect.value = ''; // select 박스 초기화
         amountInput.value = '';
     } else {
-        alert('수입원(메모)과 유효한 금액을 입력해주세요.'); // 알림 메시지 수정
+        alert('수입 카테고리와 유효한 금액을 선택/입력해주세요.'); // 알림 메시지 수정
     }
 }
 
 function addExpense() {
     const categorySelect = document.getElementById('expense-category');
-    // ⭐ 삭제: const memoInput = document.getElementById('expense-memo-input');
+    // ⭐ 삭제된 부분 (memoInput 관련)
     const amountInput = document.getElementById('expense-amount-input');
     
     const name = categorySelect.options[categorySelect.selectedIndex].textContent;
-    // ⭐ 삭제: const memo = memoInput.value;
+    // ⭐ 삭제된 부분 (memo 관련)
     const amount = parseInt(amountInput.value);
 
     // 지출 카테고리가 선택되었는지 확인
@@ -49,7 +58,7 @@ function addExpense() {
         updateExpenseList();
         updateTotals();
         categorySelect.value = ''; // 선택된 카테고리 초기화
-        // ⭐ 삭제: memoInput.value = ''; 
+        // ⭐ 삭제된 부분 (memoInput 관련)
         amountInput.value = '';
     } else {
         alert('유효한 금액을 입력해주세요.'); // 알림 메시지 수정
@@ -71,6 +80,7 @@ function updateIncomeList() {
             div.className = 'category-item';
 
             // ⭐ 수입 메모를 표시하도록 수정 (기존과 동일하게 유지)
+            // 백엔드에서 로드된 수입에 memo 필드가 있다면 memo를 표시, 없으면 name (카테고리 이름) 표시
             const displayText = item.memo && item.memo.trim() !== '' ? `${item.memo}` : item.name; 
 
             div.innerHTML = `
@@ -361,90 +371,7 @@ function resetBudget() {
     }
 }
 
-async function loadBudgetForSelectedMonth() {
-	console.log("loadBudgetForSelectedMonth 함수 호출됨");
-    const selectedMonthValue = document.getElementById('budget-month-select').value;
-    const [year, month] = selectedMonthValue.split('-').map(Number);
-
-    try {
-        const response = await fetch(`/consumption/loadBudgetPlan?year=${year}&month=${month}`, {
-            method: 'GET',
-            headers: {
-                [csrfHeader]: csrfToken
-            }
-        });
-        const data = await response.json();
-        
-		if (data.success && data.data) {
-		    const savingsPlan = data.data.savingsPlan;
-		    const incomeCategories = data.data.incomeCategories;
-		    const expenseCategories = data.data.expenseCategories;
-
-		    document.getElementById('budget-goal-name').value = savingsPlan.saveName || '';
-
-		    // 수입 항목 맵핑: memo 필드 포함 (백엔드에서 memo를 반환할 경우)
-		    incomes = incomeCategories.map(item => ({ 
-		        name: item.categoryName, 
-		        amount: item.amount,
-		        memo: item.memo // 백엔드에서 'memo'라는 키로 반환된다고 가정
-		    }));
-
-		    // ⭐ 지출 항목 맵핑: memo 필드를 포함하지 않습니다.
-		    expenses = expenseCategories.map(item => ({ 
-		        name: item.categoryName, 
-		        amount: item.amount 
-		        // memo: item.memo // 삭제: 지출에는 메모 필드를 사용하지 않습니다.
-		    }));
-
-        } else {
-            console.log("저장된 예산 데이터가 없습니다: " + (data.message || "알 수 없는 응답"));
-            incomes = [];
-            expenses = [];
-            document.getElementById('budget-goal-name').value = '';
-        }
-        updateIncomeList();
-        updateExpenseList(); 
-        updateTotals();
-        
-    } catch (error) {
-        console.error('예산 로드 중 오류 발생:', error);
-        alert('예산 로드 중 오류가 발생했습니다: ' + error.message);
-    }
-}
-
-/**
- * 백엔드에서 지출 카테고리 목록을 가져와서 <select> 엘리먼트를 채웁니다.
- * 카테고리 번호를 value로, 카테고리 이름을 텍스트로 사용합니다.
- */
-async function populateExpenseCategories() {
-    const selectElement = document.getElementById('expense-category');
-    selectElement.innerHTML = '<option value="">카테고리를 선택하세요</option>'; 
-
-    try {
-        const response = await fetch('/consumption/api/expense-categories', { 
-            method: 'GET',
-            headers: {
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`카테고리 로드 실패: ${response.status} ${response.statusText}`);
-        }
-
-        const categories = await response.json();
-
-        categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category.cmIn; 
-            option.textContent = category.cmName; 
-            selectElement.appendChild(option);
-        });
-    } catch (error) {
-        console.error('지출 카테고리를 불러오는 중 오류 발생:', error);
-        alert('지출 카테고리를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
-    }
-}
-
+// ⭐ 수정: loadBudgetForSelectedMonth 함수 - 두 번째 (더 완전한) 버전을 사용하고 fetchWithCsrf 적용
 async function loadBudgetForSelectedMonth() {
     console.log("loadBudgetForSelectedMonth 함수 호출됨"); 
 
@@ -461,7 +388,7 @@ async function loadBudgetForSelectedMonth() {
     const loadUrl = `/consumption/getSavingsPlanForMonth?startOfMonth=${firstDayOfMonth}&endOfMonth=${lastDayOfMonth}`; 
 
     try {
-        const response = await fetchWithCsrf(loadUrl, { 
+        const response = await fetchWithCsrf(loadUrl, { // ⭐ fetchWithCsrf 사용
             method: 'GET'
         });
 
@@ -501,7 +428,7 @@ async function loadBudgetForSelectedMonth() {
                 memo: item.memo // 백엔드에서 'memo'라는 키로 반환된다고 가정
             }));
             
-            // ⭐ 지출 항목 맵핑: memo 필드를 포함하지 않습니다.
+            // 지출 항목 맵핑: memo 필드를 포함하지 않습니다.
             expenses = expenseCategories.map(item => ({ 
                 name: item.categoryName, 
                 amount: item.amount
@@ -523,13 +450,83 @@ async function loadBudgetForSelectedMonth() {
     }
 }
 
+/**
+ * 백엔드에서 지출 카테고리 목록을 가져와서 <select> 엘리먼트를 채웁니다.
+ * 카테고리 번호를 value로, 카테고리 이름을 텍스트로 사용합니다.
+ */
+// ⭐ 수정: populateExpenseCategories 함수 - fetchWithCsrf 적용
+async function populateExpenseCategories() {
+    const selectElement = document.getElementById('expense-category');
+    selectElement.innerHTML = '<option value="">카테고리를 선택하세요</option>'; 
 
+    try {
+        const response = await fetchWithCsrf('/consumption/api/expense-categories', { // ⭐ fetchWithCsrf 사용
+            method: 'GET'
+        });
+
+        if (!response.ok) {
+            throw new Error(`카테고리 로드 실패: ${response.status} ${response.statusText}`);
+        }
+
+        const categories = await response.json();
+
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.cmIn; 
+            option.textContent = category.cmName; 
+            selectElement.appendChild(option);
+        });
+    } catch (error) {
+        console.error('지출 카테고리를 불러오는 중 오류 발생:', error);
+        alert('지출 카테고리를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+    }
+}
+
+// ⭐ 새로 추가: populateIncomeCategories 함수 - 백엔드에서 수입 카테고리를 가져와 select 엘리먼트를 채웁니다.
+async function populateIncomeCategories() {
+    const incomeCategorySelect = document.getElementById('income-category-select');
+    // 기존 옵션들을 모두 지우고 '카테고리 선택' 옵션을 다시 추가
+    incomeCategorySelect.innerHTML = '<option value="">카테고리 선택</option>';
+
+    try {
+        const response = await fetchWithCsrf('/consumption/api/income-categories', { // ⭐ CSRF 토큰을 포함한 fetchWithCsrf 사용
+            method: 'GET'
+        });
+        const data = await response.json();
+
+        if (response.ok && data) {
+            data.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.csIn; // CategorySubDTO의 csIn 필드 사용
+                option.textContent = category.csName; // CategorySubDTO의 csName 필드 사용
+                incomeCategorySelect.appendChild(option);
+            });
+        } else {
+            console.error('수입 카테고리 로드 실패:', data.message || '알 수 없는 응답');
+        }
+    } catch (error) {
+        console.error('수입 카테고리 로드 중 오류 발생:', error);
+        alert('수입 카테고리 로드 중 오류가 발생했습니다.');
+    }
+}
+
+
+// ⭐ 수정: DOMContentLoaded 이벤트 리스너
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOMContentLoaded 이벤트 발생");
     populateMonthSelect();
     loadBudgetForSelectedMonth(); 
     populateExpenseCategories(); 
+    populateIncomeCategories(); // ⭐ 수입 카테고리 로드 함수 호출 추가
     
+    // ⭐ 수입 추가 버튼 이벤트 리스너 추가 (HTML에 'add-income-button' ID가 있다고 가정)
+    const addIncomeButton = document.getElementById('add-income-button');
+    if (addIncomeButton) {
+        addIncomeButton.addEventListener('click', addIncome);
+    } else {
+        console.error("Error: 'add-income-button' element not found. Please check your HTML.");
+    }
+
     const addExpenseButton = document.getElementById('add-expense-button');
     if (addExpenseButton) { 
         addExpenseButton.addEventListener('click', addExpense);
