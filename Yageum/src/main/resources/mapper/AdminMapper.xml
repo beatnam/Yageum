@@ -19,10 +19,10 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	</select>
 
 	<insert id="insertQuest" parameterType="com.yageum.domain.QuestDTO">
-		insert into quest(quest_name, quest_type_in, cm_in, cs_in, goal_value,
+		insert into quest(quest_name, quest_type_in, cm_in, goal_value,
 		reward_value, start_date, end_date, is_valid)
 		values(#{questName},
-		#{questTypeIn},#{cmIn},#{csIn},#{goalValue},#{rewardValue},#{startDate},
+		#{questTypeIn},#{cmIn},#{goalValue},#{rewardValue},#{startDate},
 		#{endDate}, #{isValid})
 	</insert>
 
@@ -42,7 +42,7 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	
 	<update id = "updateQuest"  parameterType="com.yageum.domain.QuestDTO">
 		update quest
-		set quest_name = #{questName} , quest_type_in = #{questTypeIn}, cm_in = #{cmIn}, cs_in = #{csIn},
+		set quest_name = #{questName} , quest_type_in = #{questTypeIn}, cm_in = #{cmIn},
 		    goal_value = #{goalValue}, reward_value = #{rewardValue}, start_date = #{startDate},
 		    end_date = #{endDate} 
 		where quest_in = #{questIn}	
