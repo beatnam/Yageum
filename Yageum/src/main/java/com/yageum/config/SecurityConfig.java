@@ -35,6 +35,8 @@ public class SecurityConfig {
                 .requestMatchers("/cashbook/**","/quest/**").permitAll()
                 .requestMatchers("/mypage/mdelete").permitAll()
                 .requestMatchers("/mypage/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/callback/**","/userInfo/**").permitAll()
+                .requestMatchers("/openbanking/**").permitAll()
                 .requestMatchers("/consumption/**", "/eanalysis/**", "/efeedback/**", "/canalysis/**", "/bplanner/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/admin/**","/user_detail/**","/authority/**").hasRole("ADMIN")

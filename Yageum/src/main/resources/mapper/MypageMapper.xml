@@ -23,6 +23,15 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		 (#{cardNum}, #{cardMonth}, #{cardYear}, #{cardCvc}, #{cardName}, #{cardUsername},
 		 #{ccIn}, #{methodIn}, #{memberIn})
 	</insert>
+	
+	<insert id="insertBankAccount" parameterType="com.yageum.entity.BankAccount">
+	    insert into bank_account (
+	        member_in, bank_in, account_num, finnum, account_name, create_date, account_alias
+	    )
+	    VALUES (
+	        #{memberIn}, #{bankIn}, #{accountNum}, #{finnum}, #{accountName}, NOW(), #{accountAlias}
+	    )
+	</insert>
 
 	
 

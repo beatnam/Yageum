@@ -1,0 +1,76 @@
+.accountbook-main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;     
+    justify-content: center; 
+    text-align: center;
+    min-height: 500px;       
+    padding: 30px;
+}
+
+/* 버튼 스타일 */
+.accountbook-main-content button {
+    background-color: #f4b400;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    margin: 10px 10px 20px 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.accountbook-main-content button:hover {
+    background-color: #e0a800;
+}
+
+/* 계좌 목록 제목 */
+#account-list h3 {
+    margin-top: 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+	text-align: center;
+}
+
+/* 계좌 하나씩 카드 형태 */
+#account-list div {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-left: 6px solid #f4b400;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 계좌 앞 아이콘 */
+#account-list div::before {
+    content: "🏦";
+    font-size: 1.1rem;
+}
+
+.edit-header {
+    background-color: white;
+    padding: 40px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.edit-header h1 {
+    font-size: 2rem;
+    color: #4E342E;
+    margin-bottom: 10px;
+}
+
+.edit-header p {
+    font-size: 1.1rem;
+    color: #6D4C41;
+}

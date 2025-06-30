@@ -1,0 +1,77 @@
+body {
+    font-family: 'Gowun Dodum', sans-serif;
+    background-color: #fff8dc;
+    margin: 0;
+}
+
+.accountbook-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.accountbook-main-content {
+    background-color: #fff2b6;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 400px;
+    width: 90%;
+}
+
+.accountbook-main-content h1 {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #3b2f19;
+    text-align: center;
+}
+
+.accountbook-main-content p {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #4a3f2a;
+	text-align: center;
+}
+
+.accountbook-main-content ul {
+    list-style: none;            
+    padding: 0;
+    margin: 20px auto;
+    width: fit-content;
+    font-size: 1.1rem;
+    color: #333;
+    text-align: left;
+}
+
+.accountbook-main-content li {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.accountbook-main-content li::before {
+    content: "✔";
+    color: #f4b400;
+    font-weight: bold;
+}
+.accountbook-main-content button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background-color: #ffca2c;
+    color: #3b2f19;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
+}
+
+.accountbook-main-content button:hover {
+    background-color: #f4b400;
+}

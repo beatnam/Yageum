@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오픈뱅킹 연결</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+    <link rel="stylesheet" href="/css/my_page.css">
+    <link rel="stylesheet" href="/css/my_page_openbanking.css">
+</head>
+
+<body>
+    <!-- 헤더 -->
+    <div th:replace="fragments/header :: header"></div>
+
+    <div class="accountbook-container">
+		
+        <!-- 마이페이지 사이드바 -->
+        <div th:replace="fragments/m_sidebar :: m_sidebar"></div>
+
+        <!-- 본문 -->
+        <main class="accountbook-main-content">
+			<div class="edit-header">
+				<h1>오픈뱅킹 계좌 연결</h1>
+				<p>오픈뱅킹 인증을 통해 내 계좌를 불러올 수 있습니다.</p>
+			</div>
+
+            <button type="button" onclick="openAuthPopup()">🔐 오픈뱅킹 인증</button>
+            <br><br>
+            <button type="button" onclick="loadAccounts()">📂 계좌 목록 가져오기</button>
+
+            <!-- 계좌 목록 출력 예정 -->
+            <div id="account-list">
+                <!-- JS or Thymeleaf로 계좌 목록 출력 예정 -->
+            </div>
+			
+			<!-- 계좌 저장 버튼 -->
+			<div style="text-align: center; margin-top: 20px;">
+			    <button type="button" onclick="saveAccounts()">💾 계좌 저장</button>
+			</div>
+        </main>
+    </div>
+	<script>
+		
+		let accountList = [];
+		
+		function loadAccounts() {
+		    fetchAccountsWithToken();
+		}
+	
+	function openAuthPopup() {
+	    const popup = window.open(
+	        '/openbanking/mock-auth',
+	        'openbankingAuth',
+	        'width=500,height=500,top=100,left=100'
+	    );
+
+	    // 팝업이 닫히면 자동 새로고침
+	    const timer = setInterval(() => {
+	        if (popup.closed) {
+	            clearInterval(timer);
+	            location.reload(); // 인증 토큰 확인 위해 새로고침
+	        }
+	    }, 500);
+	}
+	
+	function fetchAccountsWithToken() {
+	    const token = sessionStorage.getItem('access_token');
+
+	    fetch(`/openbanking/fetchAccounts?access_token=${token}`)
+	        .then(res => res.json())
+	        .then(data => {
+	            const listDiv = document.getElementById("account-list");
+	            listDiv.innerHTML = "";
+
+	            if (data.error) {
+	                listDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
+	                return;
+	            }
+				
+				accountList = data.res_list; 
+
+	            const title = document.createElement("h3");
+	            title.innerText = `${data.user_name}님의 계좌 목록`;
+	            listDiv.appendChild(title);
+
+	            data.res_list.forEach(acc => {
+	                const div = document.createElement("div");
+	                div.innerText = `🏦 ${acc.bank_name} / ${acc.account_num_masked}`;
+	                listDiv.appendChild(div);
+	            });
+	        });
+	}
+	
+	window.addEventListener('message', function(event) {
+	    if (event.data.type === 'MOCK_AUTH_SUCCESS') {
+	        alert("모의 인증 완료! 계좌 정보를 불러옵니다.");
+	        fetchAccountsWithToken();  
+	    }
+	});
+	
+	function saveAccounts() {
+	    const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+	    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
+
+	    fetch("/openbanking/saveAccounts", {
+	        method: "POST",
+	        headers: {
+	            "Content-Type": "application/json",
+	            [header]: token  // CSRF 토큰 포함
+	        },
+	        body: JSON.stringify(accountList),
+	        credentials: "include"
+	    })
+	    .then(res => res.text())
+	    .then(msg => alert(msg));
+	}
+	</script>
+	
+</body>
+
+
+</html>

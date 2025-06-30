@@ -52,6 +52,17 @@ public class MypageController {
 	private final ExpenseService expenseService;
 	private final MypageService mypageService;
 	
+	
+	//오픈뱅킹 API 적용 페이지
+	@GetMapping("/openbanking")
+	public String openbanking() {
+		log.info("MypageController openbanking()");
+		
+		return "/mypage/mypage_openbanking2";
+	}
+	
+	
+	
 	// 회원정보 수정 페이지
 	@GetMapping("/update")
 	public String update(HttpSession session, Model model, MemberDTO memberDTO) {
