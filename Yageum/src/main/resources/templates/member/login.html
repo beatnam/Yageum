@@ -29,13 +29,11 @@
 			<div class="input-group">
 				<input type="password" name="memberPasswd" class="input-field" placeholder="PW" required>
 			</div>
-
-			<div class="button-group">
+			<div class="button-group-single">
 				<a th:href="${naverUrl}">
 					<button type="button" class="btn-naver">NAVER</button></a>
-				<button type="button" class="btn-kakao"
-					th:onclick="|location.href='@{/oauth2/authorization/kakao}'|">카카오</button>
 			</div>
+
 
 			<div class="checkbox-group">
 				<input type="checkbox" id="keepLogin" name="keepLogin">

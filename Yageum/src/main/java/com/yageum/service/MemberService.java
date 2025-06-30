@@ -37,7 +37,6 @@ public class MemberService {
 		memberDTO.setMemberPasswd(encodedPassword);
 		memberDTO.setMemberConsent(true);
 		memberDTO.setCreateDate(LocalDate.now());
-		// 이렇게 해줘도 되는지?
 		memberDTO.setMemberRole("USER");
 		memberDTO.setMemberState("정상");
 		memberDTO.setMemberIsFirst(true);
