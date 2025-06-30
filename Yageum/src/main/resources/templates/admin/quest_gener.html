@@ -21,8 +21,7 @@
 					<tr>
 						<td>퀘스트 이름<span class="required">*</span></td>
 						<td>
-							<input type="text" name="questName" id="questName" class="form-input"
-								placeholder="퀘스트 이름을 입력하세요" required>
+							<input type="text" name="questName" id="questName" class="form-input" placeholder="퀘스트 이름을 입력하세요" required>
 						</td>
 					</tr>
 					<tr>
@@ -31,7 +30,7 @@
 							<div class="category-group">
 								<select name="questTypeIn" id="mainCategory" class="form-select" required>
 									<option value="">퀘스트 유형 선택</option>
-									<option value="2">연속 출석</option>
+									<option value="2" selected>연속 출석</option>
 									<option value="3">연속 작성</option>
 									<option value="4">~이하 사용(절약)</option>
 									<option value="5">~이상 저축(저금)</option>
@@ -44,14 +43,9 @@
 						<td>카테고리<span class="required">*</span></td>
 						<td>
 							<div class="category-group">
-								<select name="cmIn" id="categoryMain" class="form-select"
-									onchange="LoadcsIn(this.value)">
+								<select name="cmIn" id="categoryMain" class="form-select" onchange="LoadcsIn(this.value)">
 									<option value="">절약, 저축인 경우</option>
-									<option th:each="categoryMainDTO : ${categoryMainList}"
-										th:value="${categoryMainDTO.cmIn}" th:text="${categoryMainDTO.cmName}"></option>
-								</select>
-								<select name="csIn" id="subCategory" class="form-select">
-
+									<option th:each="categoryMainDTO : ${categoryMainList}" th:value="${categoryMainDTO.cmIn}" th:text="${categoryMainDTO.cmName}"></option>
 								</select>
 							</div>
 						</td>
@@ -60,15 +54,13 @@
 					<tr>
 						<td>목표치<span class="required">*</span></td>
 						<td>
-							<input type="number" name="goalValue" id="targetValue" class="form-input"
-								placeholder="목표치를 입력하세요" min="1" required>
+							<input type="number" name="goalValue" id="targetValue" class="form-input" placeholder="목표치를 입력하세요" min="1" required>
 						</td>
 					</tr>
 					<tr>
 						<td>보상<span class="required">*</span></td>
 						<td>
-							<input type="number" name="rewardValue" id="reward" class="form-input"
-								placeholder="보상을 입력하세요" min="0" required>
+							<input type="number" name="rewardValue" id="reward" class="form-input" placeholder="보상을 입력하세요" min="0" required>
 						</td>
 					</tr>
 					<tr>
@@ -91,78 +83,31 @@
 		</form>
 	</div>
 
+	<!-- 카테고리 활성/비활성화 스크립트 -->
 	<script>
-		function LoadcsIn(cmIn) {
-			const $subCategorySelect = $('#subCategory');
+		document.addEventListener("DOMContentLoaded", function () {
+			const questTypeSelect = document.getElementById('mainCategory');
+			const categorySelect = document.getElementById('categoryMain');
 
-			// 초기화
-			$subCategorySelect.html('<option value="">상위 카테고리를 선택하세요.</option>');
-
-			if (cmIn) {
-				// 로딩 상태 표시
-				$subCategorySelect.html('<option value="">로딩 중...</option>').prop('disabled', true);
-
-				$.ajax({
-					type: "GET",
-					url: '/admin/categorySelect',
-					data: {'cmIn': cmIn},
-					dataType: 'json',
-					timeout: 10000, // 10초 타임아웃 설정
-					beforeSend: function () {
-						console.log("Ajax 요청 시작:", cmIn);
-					},
-					success: function (result) {
-						console.log("Ajax 응답 성공:", result);
-
-						// 옵션 초기화 및 기본 옵션 추가
-						$subCategorySelect.empty().append('<option value="">하위 카테고리를 선택하세요.</option>');
-
-						// 결과가 배열인지 확인
-						if (Array.isArray(result) && result.length > 0) {
-							$.each(result, function (index, item) {
-								if (item.csIn && item.csName) {
-									$subCategorySelect.append('<option value="' + item.csIn + '">' + item.csName + '</option>');
-								}
-							});
-						} else {
-							$subCategorySelect.append('<option value="">하위 카테고리가 없습니다.</option>');
-						}
-
-						// 로딩 상태 해제
-						$subCategorySelect.prop('disabled', false);
-					},
-					error: function (xhr, status, error) {
-						console.error("Ajax 에러 발생:");
-						console.error("Status:", status);
-						console.error("Error:", error);
-						console.error("Response:", xhr.responseText);
-
-						// 에러 상태 표시
-						$subCategorySelect.html('<option value="">오류가 발생했습니다.</option>').prop('disabled', false);
-
-						// 구체적인 에러 메시지
-						let errorMessage = "서브 카테고리를 불러오는 중 오류가 발생했습니다.";
-						if (status === 'timeout') {
-							errorMessage += " (요청 시간 초과)";
-						} else if (status === 'error') {
-							errorMessage += " (서버 오류: " + xhr.status + ")";
-						} else if (status === 'abort') {
-							errorMessage += " (요청 취소됨)";
-						}
-
-						alert(errorMessage);
-					},
-					complete: function () {
-						console.log("Ajax 요청 완료");
-					}
-				});
-			} else {
-				// cmIn이 비어있을 때
-				$subCategorySelect.html('<option value="">상위 카테고리를 선택하세요.</option>').prop('disabled', false);
+			function toggleCategoryDisabled() {
+				const selectedValue = questTypeSelect.value.trim();
+				if (selectedValue === '2' || selectedValue === '3') {
+					categorySelect.disabled = true;
+					categorySelect.value = '';
+				} else {
+					categorySelect.disabled = false;
+				}
 			}
-		}
+
+			// 초기 로딩 시 처리
+			toggleCategoryDisabled();
+
+			// 선택 변경 시 처리
+			questTypeSelect.addEventListener('change', toggleCategoryDisabled);
+		});
 	</script>
 
+	<!-- 퀘스트 전송/취소 스크립트 -->
 	<script>
 		function submitQuest(event) {
 			event.preventDefault();
@@ -189,14 +134,9 @@
 				contentType: false,
 				success: function (response) {
 					alert('퀘스트가 성공적으로 생성되었습니다.');
-
-					// 부모 창 갱신
 					if (window.opener && !window.opener.closed) {
-						window.opener.location.reload();  // 부모 페이지 전체 새로고침
-						// 또는 opener의 특정 함수 호출 가능
+						window.opener.location.reload();
 					}
-
-					// 팝업 닫기
 					window.close();
 				},
 				error: function (xhr, status, error) {
@@ -205,12 +145,12 @@
 				}
 			});
 		}
-		function cancelQuest(){
-					
-					if(confirm('페이지를 닫으시겠습니까?')){
-						window.close();
-					}
-				}
+
+		function cancelQuest() {
+			if (confirm('페이지를 닫으시겠습니까?')) {
+				window.close();
+			}
+		}
 	</script>
 </body>
 
