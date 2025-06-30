@@ -91,6 +91,16 @@
             AND save_created_date BETWEEN #{startOfMonth} AND #{endOfMonth}
     </update>
     
+    <update id="updateSavingsPlan2" parameterType="map">
+        UPDATE savings_plan
+        SET
+            save_name = #{saveName},
+            save_amount = #{saveAmount},
+            save_created_date = #{saveCreatedDate},
+            save_target_date = #{saveTargetDate}
+        WHERE save_in = #{saveIn} AND member_in = #{memberIn}
+    </update>
+    
     <select id="planChack" resultType="Integer">
 		SELECT EXISTS(
 		    SELECT 1
@@ -173,17 +183,19 @@
 	</select>
 	
 	<select id="getIncomeCategoriesBySavingsPlanId" resultType="map">
-        SELECT
-            cm.cm_name AS categoryName,
-            SUM(e.expense_sum) AS amount
-        FROM expense e
-        JOIN category_sub cs ON e.cs_in = cs.cs_in
-        JOIN category_main cm ON cs.cm_in = cm.cm_in
-        WHERE e.member_in = #{memberIn}
-          AND MONTH(e.expense_date) = #{month}
-          AND YEAR(e.expense_date) = #{year}
-          AND e.expense_type = FALSE GROUP BY cm.cm_name
-    </select>
+	    SELECT
+	        cm.cm_name AS categoryName,
+	        SUM(e.expense_sum) AS amount,
+	        e.expense_memo AS memo
+	    FROM expense e
+	    JOIN category_sub cs ON e.cs_in = cs.cs_in
+	    JOIN category_main cm ON cs.cm_in = cm.cm_in
+	    WHERE e.member_in = #{memberIn}
+	      AND MONTH(e.expense_date) = #{month}
+	      AND YEAR(e.expense_date) = #{year}
+	      AND e.expense_type = FALSE
+	    GROUP BY cm.cm_name, e.expense_memo
+	</select>
 
     <select id="getExpenseCategoriesBySavingsPlanId" resultType="map">
         SELECT
@@ -197,8 +209,37 @@
           AND YEAR(e.expense_date) = #{year}
           AND e.expense_type = TRUE GROUP BY cm.cm_name
     </select>
+    
+    <select id="getIncomeCategoriesForMonth" resultType="map">
+    SELECT
+        expense_memo AS categoryName,  expense_sum AS amount
+    FROM
+        expense
+    WHERE
+        member_in = #{memberIn}
+        AND YEAR(expense_date) = #{year}
+        AND MONTH(expense_date) = #{month}
+        AND expense_type = FALSE        ORDER BY
+        expense_date ASC, expense_in ASC
+    </select>
 	
-	
+	    <select id="findSavingsPlanByDateRange" resultType="com.yageum.domain.SavingsPlanDTO">
+        SELECT
+            save_in AS saveIn,
+            member_in AS memberIn,
+            save_name AS saveName,
+            save_amount AS saveAmount,
+            save_created_date AS saveCreatedDate,
+            save_target_date AS saveTargetDate
+        FROM savings_plan
+        WHERE member_in = #{memberIn}
+        AND save_created_date = #{saveCreatedDate}
+        AND save_target_date = #{saveTargetDate}
+        LIMIT 1
+    </select>
+    
+    
+    
 	
 	
 	

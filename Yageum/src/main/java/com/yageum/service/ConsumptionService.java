@@ -18,8 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.SavingsDetail;
+import com.yageum.domain.SavingsPlanDTO;
 import com.yageum.mapper.ConsumptionMapper;
 import com.yageum.mapper.ExpenseMapper;
+import com.yageum.mapper.SavingsDetailMapper;
 import com.yageum.mapper.SavingsPlanMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,7 @@ public class ConsumptionService {
     private final ExpenseMapper expenseMapper;
     private final SavingsPlanMapper savingsPlanMapper;
     private final ConsumptionMapper consumptionMapper;
+    private final SavingsDetailMapper savingsDetailMapper;
 
     // member_id(String)를 사용하여 member_in(int) 조회
     public Integer getMemberInByMemberId(String memberId) {
@@ -700,6 +704,93 @@ public class ConsumptionService {
             log.info("해당 월에 저장된 예산 계획이 없습니다: memberIn=" + memberIn + ", month=" + month + ", year=" + year);
         }
         return result;
+    }
+    
+    public Map<String, Object> loadBudgetPlan(Integer memberIn, int year, int month) {
+        Map<String, Object> responseData = new HashMap<>();
+
+        try {
+            Map<String, Object> savingsPlan = savingsPlanMapper.findSavingsPlanByMonthAndYear(memberIn, month, year);
+            if (savingsPlan == null) {
+                savingsPlan = new HashMap<>();
+            }
+            responseData.put("savingsPlan", savingsPlan);
+
+            List<Map<String, Object>> incomeCategories = savingsPlanMapper.getIncomeCategoriesBySavingsPlanId(memberIn, month, year);
+            responseData.put("incomeCategories", incomeCategories);
+
+            return responseData;
+
+        } catch (Exception e) {
+            log.info("예산 로드 중 오류 발생: {}"+ e.getMessage()+ e);
+            throw new RuntimeException("예산 로드 중 오류가 발생했습니다.", e);
+        }
+    }
+    
+    @Transactional
+    public Map<String, Object> saveBudgetPlanAndDetails(
+            Integer memberIn, // memberIn을 서비스로 전달받습니다.
+            String saveName,
+            LocalDate saveCreatedDate,
+            LocalDate saveTargetDate,
+            Integer saveAmount,
+            List<SavingsDetail> expenseDetails) { // 지출 상세 목록 추가
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 1. 기존 SavingsPlan이 있는지 확인
+            // SavingsPlanDTO 대신 SavingsPlan 모델을 사용한다고 가정
+            SavingsPlanDTO existingPlan = savingsPlanMapper.findSavingsPlanByDateRange(memberIn, saveCreatedDate, saveTargetDate);
+
+            Integer saveIn;
+            if (existingPlan != null) {
+                // 2. 기존 플랜이 있으면 업데이트하고, 기존 상세 지출 내역 삭제 후 새로 삽입
+                saveIn = existingPlan.getSaveIn();
+                savingsPlanMapper.updateSavingsPlan2(
+                        saveIn, memberIn, saveName, saveCreatedDate, saveTargetDate, saveAmount);
+                
+                // 기존 상세 지출 내역 삭제
+                savingsDetailMapper.deleteSavingsDetailsBySaveIn(saveIn);
+                response.put("message", "기존 예산이 업데이트되었습니다.");
+
+            } else {
+                // 3. 새 플랜이면 삽입
+                // insertSavingsPlan은 saveIn을 반환하지 않으므로, getSaveIn을 호출해야 함
+                // 또는 Mapper에 useGeneratedKeys="true" keyProperty="saveIn"를 추가하여 DTO에 바로 저장되도록 변경
+                savingsPlanMapper.insertSavingsPlan(
+                        memberIn, saveName, saveCreatedDate, saveTargetDate, saveAmount);
+                
+                // 새로 삽입된 savings_plan의 save_in 값을 가져옵니다.
+                // 이 부분은 SavingsPlanMapper.xml의 insertSavingsPlan 쿼리에
+                // useGeneratedKeys="true" keyProperty="saveIn"를 추가하여 SavingsPlan 객체에 바로 saveIn이 설정되도록 하거나,
+                // 아니면 별도의 selectKey 또는 getSaveIn 메서드를 사용해야 합니다.
+                // 편의상, 지금은 month와 year를 통해 조회하는 방식으로 진행합니다.
+                saveIn = savingsPlanMapper.getSaveIn(memberIn, saveCreatedDate.getYear(), saveCreatedDate.getMonthValue());
+
+                if (saveIn == null) {
+                    throw new RuntimeException("새로 저장된 SavingsPlan의 save_in 값을 가져오지 못했습니다.");
+                }
+                response.put("message", "새로운 예산이 저장되었습니다.");
+            }
+
+            // 4. 지출 상세 항목 저장
+            if (saveIn != null && expenseDetails != null && !expenseDetails.isEmpty()) {
+                for (SavingsDetail detail : expenseDetails) {
+                    detail.setSaveIn(saveIn); // 각 상세 항목에 save_in 설정
+                }
+                savingsDetailMapper.insertSavingsDetailsBatch(expenseDetails); // 배치 삽입
+                response.put("message", response.get("message") + " 지출 상세 항목도 저장되었습니다.");
+            }
+
+            response.put("success", true);
+            response.put("savingsPlanId", saveIn); // 프론트엔드에서 필요할 수 있는 save_in 값 반환
+            return response;
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "예산 및 지출 상세 항목 저장/업데이트 중 오류 발생: " + e.getMessage());
+            return response;
+        }
     }
     
 }

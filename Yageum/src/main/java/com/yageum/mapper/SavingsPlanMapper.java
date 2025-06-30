@@ -36,6 +36,13 @@ public interface SavingsPlanMapper {
             @Param("saveAmount") Integer saveAmount,
             @Param("startOfMonth") LocalDate startOfMonth,
             @Param("endOfMonth") LocalDate endOfMonth);
+    
+    int updateSavingsPlan2(@Param("saveIn") Integer saveIn,
+            @Param("memberIn") Integer memberIn,
+            @Param("saveName") String saveName,
+            @Param("saveCreatedDate") LocalDate saveCreatedDate,
+            @Param("saveTargetDate") LocalDate saveTargetDate,
+            @Param("saveAmount") Integer saveAmount);
 
 	int planChack(@Param("memberIn") Integer memberIn);
 
@@ -66,6 +73,15 @@ public interface SavingsPlanMapper {
     List<Map<String, Object>> getIncomeCategoriesBySavingsPlanId(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
 
     List<Map<String, Object>> getExpenseCategoriesBySavingsPlanId(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
-
+    
+    List<Map<String, Object>> getIncomeCategoriesForMonth(
+            @Param("memberIn") Integer memberIn,
+            @Param("year") int year,
+            @Param("month") int month);
+    
+    SavingsPlanDTO findSavingsPlanByDateRange(@Param("memberIn") Integer memberIn,
+            @Param("saveCreatedDate") LocalDate saveCreatedDate,
+            @Param("saveTargetDate") LocalDate saveTargetDate);
+    
 	
 }

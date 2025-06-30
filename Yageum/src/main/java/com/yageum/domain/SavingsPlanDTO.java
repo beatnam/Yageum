@@ -12,7 +12,7 @@ import lombok.ToString;
 @Setter
 public class SavingsPlanDTO {
 	
-    private int saveId;
+    private int saveIn;
     private int memberId;
     private String saveName;
     private LocalDate saveCreatedDate;
