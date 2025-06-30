@@ -30,21 +30,29 @@ function addIncome() {
 
 function addExpense() {
     const categorySelect = document.getElementById('expense-category');
-    const memoInput = document.getElementById('expense-memo-input'); // ⭐ 추가된 부분
+    // ⭐ 삭제: const memoInput = document.getElementById('expense-memo-input');
     const amountInput = document.getElementById('expense-amount-input');
-    const name = categorySelect.value;
-    const memo = memoInput.value; // ⭐ 추가된 부분
+    
+    const name = categorySelect.options[categorySelect.selectedIndex].textContent;
+    // ⭐ 삭제: const memo = memoInput.value;
     const amount = parseInt(amountInput.value);
 
-    if (name && !isNaN(amount) && amount > 0) {
-        expenses.push({ name, amount, memo }); // ⭐ memo 추가
+    // 지출 카테고리가 선택되었는지 확인
+    if (!name) { 
+        alert('지출 카테고리를 선택해주세요.');
+        return;
+    }
+
+    if (!isNaN(amount) && amount > 0) {
+        // ⭐ memo 필드 제거: expenses.push({ name, amount, memo }); -> expenses.push({ name, amount });
+        expenses.push({ name, amount }); 
         updateExpenseList();
         updateTotals();
-        categorySelect.value = '';
-        memoInput.value = ''; // ⭐ 메모 입력 필드 초기화
+        categorySelect.value = ''; // 선택된 카테고리 초기화
+        // ⭐ 삭제: memoInput.value = ''; 
         amountInput.value = '';
     } else {
-        alert('지출 카테고리와 유효한 금액을 입력해주세요.');
+        alert('유효한 금액을 입력해주세요.'); // 알림 메시지 수정
     }
 }
 
@@ -62,9 +70,8 @@ function updateIncomeList() {
             const div = document.createElement('div');
             div.className = 'category-item';
 
-            // ⭐ 수입 메모를 표시하도록 수정
+            // ⭐ 수입 메모를 표시하도록 수정 (기존과 동일하게 유지)
             const displayText = item.memo && item.memo.trim() !== '' ? `${item.memo}` : item.name; 
-            // 만약 '카테고리 이름 (메모)' 형식으로 원하면 `item.name && item.memo && item.memo.trim() !== '' ? `${item.name} (${item.memo})` : item.name` 사용
 
             div.innerHTML = `
                 <span class="category-name">${displayText}</span>
@@ -91,8 +98,8 @@ function updateExpenseList() {
             const div = document.createElement('div');
             div.className = 'category-item';
 
-            // ⭐ 이 부분이 추가/수정되었습니다. item.memo가 있으면 함께 표시합니다.
-            const displayText = item.memo && item.memo.trim() !== '' ? `${item.name} (${item.memo})` : item.name;
+            // ⭐ 지출에서는 item.memo를 사용하지 않습니다.
+            const displayText = item.name; // 이제 지출은 메모 없이 카테고리 이름만 표시
 
             div.innerHTML = `
                 <span class="category-name">${displayText}</span>
@@ -111,12 +118,8 @@ function updateIncomeAmount(index, newValue) {
     if (!isNaN(amount) && amount >= 0) { // 0이상의 유효한 숫자인지 확인
         incomes[index].amount = amount;
         updateTotals(); // 총액 업데이트
-        // 리스트를 다시 그릴 필요는 없지만, 금액 형식을 다시 적용하려면 호출 가능
-        // updateIncomeList(); // 이 함수를 호출하면 입력 포커스가 사라지므로 주의
     } else {
         alert('유효한 수입 금액을 입력해주세요.');
-        // 잘못된 값이 입력되면 이전 값으로 되돌리는 로직을 추가할 수도 있습니다.
-        // 예: event.target.value = incomes[index].amount;
     }
 }
 
@@ -125,10 +128,8 @@ function updateExpenseAmount(index, newValue) {
     if (!isNaN(amount) && amount >= 0) { // 0이상의 유효한 숫자인지 확인
         expenses[index].amount = amount;
         updateTotals(); // 총액 업데이트
-        // updateExpenseList(); // 이 함수를 호출하면 입력 포커스가 사라지므로 주의
     } else {
         alert('유효한 지출 금액을 입력해주세요.');
-        // 예: event.target.value = expenses[index].amount;
     }
 }
 
@@ -164,54 +165,46 @@ function removeExpense(index) {
 
 function toggleEditMode(buttonElement, index, type) {
     const parentDiv = buttonElement.closest('.category-item');
-    const amountDisplayElement = parentDiv.querySelector('.category-amount'); // 현재 금액을 표시하는 span 또는 input
+    const amountDisplayElement = parentDiv.querySelector('.category-amount'); 
 
-    // input 필드가 이미 존재하면 (즉, 이미 편집 모드라면)
     if (amountDisplayElement.tagName === 'INPUT') {
-        amountDisplayElement.blur(); // 강제로 blur 이벤트를 발생시켜 저장 로직 실행
+        amountDisplayElement.blur(); 
         return;
     }
 
     const originalAmount = parseInt(amountDisplayElement.dataset.originalValue);
 
-    // input 요소 생성
     const input = document.createElement('input');
     input.type = 'number';
-    input.className = 'category-amount-input'; // CSS 스타일링을 위함
-    input.value = originalAmount; // 현재 금액을 초기값으로 설정
+    input.className = 'category-amount-input'; 
+    input.value = originalAmount; 
 
-    // 기존 <span>을 <input>으로 교체
     parentDiv.replaceChild(input, amountDisplayElement);
-    input.focus(); // 생성된 input 필드에 포커스
+    input.focus(); 
 
-    // input 필드에서 포커스를 잃었을 때 (편집 완료 시)
     input.onblur = () => {
         let newAmount = parseInt(input.value);
 
-        // 유효성 검사: 숫자가 아니거나 음수이면 알림 후 원본 값으로 되돌림
         if (isNaN(newAmount) || newAmount < 0) {
             alert('유효한 금액(0 이상)을 입력해주세요.');
-            newAmount = originalAmount; // 원본 값으로 되돌림
+            newAmount = originalAmount; 
         }
 
-        // 해당 배열 업데이트
         if (type === 'income') {
             incomes[index].amount = newAmount;
         } else {
             expenses[index].amount = newAmount;
         }
 
-        updateTotals(); // 총액 업데이트
+        updateTotals(); 
 
-        // <input>을 다시 <span>으로 교체
         const newAmountSpan = document.createElement('span');
         newAmountSpan.className = 'category-amount';
         newAmountSpan.textContent = `₩${newAmount.toLocaleString('ko-KR')}`;
-        newAmountSpan.dataset.originalValue = newAmount; // 업데이트된 값을 data 속성에 저장
+        newAmountSpan.dataset.originalValue = newAmount; 
         parentDiv.replaceChild(newAmountSpan, input);
     };
 
-    // Enter 키를 눌렀을 때 blur 이벤트 발생 (편집 완료)
     input.onkeydown = (event) => {
         if (event.key === 'Enter') {
             input.blur();
@@ -225,8 +218,8 @@ function populateMonthSelect() {
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
 
-    const startYear = currentYear - 2; // 현재 연도 기준 2년 전
-    const endYear = currentYear + 2;   // 현재 연도 기준 2년 후
+    const startYear = currentYear - 2; 
+    const endYear = currentYear + 2;   
 
     for (let year = startYear; year <= endYear; year++) {
         for (let month = 0; month < 12; month++) {
@@ -238,14 +231,13 @@ function populateMonthSelect() {
             option.textContent = optionText;
 
             if (year === currentYear && month === currentMonth) {
-                option.selected = true; // 현재 월을 기본 선택
+                option.selected = true; 
             }
             select.appendChild(option);
         }
     }
 }
 
-// CSRF 토큰을 포함한 AJAX 요청 헬퍼 함수
 async function fetchWithCsrf(url, options) {
     options.headers = {
         ...options.headers,
@@ -269,7 +261,7 @@ async function saveBudget() {
     const lastDayOfMonth = `${year}-${month}-${new Date(parseInt(year), parseInt(month), 0).getDate()}`;
 
     const totalIncome = incomes.reduce((sum, item) => sum + item.amount, 0);
-    const saveAmount = totalIncome; // 총 수입으로 저장
+    const saveAmount = totalIncome; 
 
     if (!budgetName || incomes.length === 0 || expenses.length === 0) {
         alert('모든 필수 항목(예산 목표명, 수입/지출 목록)을 입력해주세요.');
@@ -281,13 +273,12 @@ async function saveBudget() {
         return;
     }
 
-    // ⭐ 변경된 부분: SavingsPlan 데이터와 expenses 배열을 하나의 객체로 묶어서 전송
     const payload = {
         saveName: budgetName,
         saveCreatedDate: firstDayOfMonth, 
         saveTargetDate: lastDayOfMonth,
         saveAmount: saveAmount,
-        expenseDetails: expenses // 현재 expenses 배열을 그대로 전송
+        expenseDetails: expenses 
     };
 
     let shouldProceedToSave = true;
@@ -299,7 +290,6 @@ async function saveBudget() {
         });
 
         if (!checkResponse.ok) {
-            // ... (기존 에러 처리 로직)
             if (checkResponse.status === 403) {
                 throw new Error('인증 오류: 세션이 만료되었거나 접근 권한이 없습니다. 다시 로그인해주세요.');
             }
@@ -324,11 +314,10 @@ async function saveBudget() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(payload) // ⭐ payload 객체를 JSON 문자열로 변환하여 전송
+                body: JSON.stringify(payload) 
             });
 
             if (!saveResponse.ok) {
-                // ... (기존 에러 처리 로직)
                 if (saveResponse.status === 403) {
                     throw new Error('인증 오류: 세션이 만료되었거나 접근 권한이 없습니다. 다시 로그인해주세요.');
                 }
@@ -341,7 +330,6 @@ async function saveBudget() {
             const result = await saveResponse.json();
             if (result.success) {
                 alert(result.message + ' 💾');
-                // 저장 성공 후, 다음 페이지로 이동할지 묻는 로직
                 if (confirm('소비분석 페이지로 가시겠습니까?')) {
                     window.location.href = '/consumption/efeedback';
                 }
@@ -394,29 +382,28 @@ async function loadBudgetForSelectedMonth() {
 
 		    document.getElementById('budget-goal-name').value = savingsPlan.saveName || '';
 
-		    // ⭐ incomes 맵핑 시 memo 필드 추가
+		    // 수입 항목 맵핑: memo 필드 포함 (백엔드에서 memo를 반환할 경우)
 		    incomes = incomeCategories.map(item => ({ 
 		        name: item.categoryName, 
 		        amount: item.amount,
 		        memo: item.memo // 백엔드에서 'memo'라는 키로 반환된다고 가정
 		    }));
 
-		    // expenses는 이미 memo를 포함하고 있으므로 변경 없음
+		    // ⭐ 지출 항목 맵핑: memo 필드를 포함하지 않습니다.
 		    expenses = expenseCategories.map(item => ({ 
 		        name: item.categoryName, 
-		        amount: item.amount, 
-		        memo: item.memo // 백엔드에서 'memo'라는 키로 반환된다고 가정
+		        amount: item.amount 
+		        // memo: item.memo // 삭제: 지출에는 메모 필드를 사용하지 않습니다.
 		    }));
 
         } else {
-            // 데이터가 없거나 로드 실패 시 초기화
             console.log("저장된 예산 데이터가 없습니다: " + (data.message || "알 수 없는 응답"));
             incomes = [];
             expenses = [];
             document.getElementById('budget-goal-name').value = '';
         }
         updateIncomeList();
-        updateExpenseList(); // expenses가 비어있으므로 지출 목록은 비어있게 표시됩니다.
+        updateExpenseList(); 
         updateTotals();
         
     } catch (error) {
@@ -431,15 +418,12 @@ async function loadBudgetForSelectedMonth() {
  */
 async function populateExpenseCategories() {
     const selectElement = document.getElementById('expense-category');
-    // 초기 "카테고리를 선택하세요" 옵션 유지
     selectElement.innerHTML = '<option value="">카테고리를 선택하세요</option>'; 
 
     try {
-        const response = await fetch('/consumption/api/expense-categories', { // 기존 API 엔드포인트 사용
+        const response = await fetch('/consumption/api/expense-categories', { 
             method: 'GET',
             headers: {
-                // CSRF 토큰은 GET 요청에 항상 필요하지 않을 수 있지만, 백엔드 설정에 따라 추가 가능
-                // [csrfHeader]: csrfToken
             }
         });
 
@@ -449,11 +433,10 @@ async function populateExpenseCategories() {
 
         const categories = await response.json();
 
-        // 받아온 카테고리 데이터를 기반으로 <option> 태그 동적 생성
         categories.forEach(category => {
             const option = document.createElement('option');
-            option.value = category.cmIn; // 카테고리 번호를 value로 설정
-            option.textContent = category.cmName; // 카테고리 이름을 텍스트로 설정
+            option.value = category.cmIn; 
+            option.textContent = category.cmName; 
             selectElement.appendChild(option);
         });
     } catch (error) {
@@ -463,7 +446,7 @@ async function populateExpenseCategories() {
 }
 
 async function loadBudgetForSelectedMonth() {
-    console.log("loadBudgetForSelectedMonth 함수 호출됨"); // 호출 확인용 로그
+    console.log("loadBudgetForSelectedMonth 함수 호출됨"); 
 
     const selectedMonth = document.getElementById('budget-month-select').value;
     if (!selectedMonth) {
@@ -475,11 +458,10 @@ async function loadBudgetForSelectedMonth() {
     const firstDayOfMonth = `${year}-${month}-01`;
     const lastDayOfMonth = `${year}-${month}-${new Date(parseInt(year), parseInt(month), 0).getDate()}`;
 
-    // 이전에 "떴다"고 하셨던 getSavingsPlanForMonth 엔드포인트 사용
     const loadUrl = `/consumption/getSavingsPlanForMonth?startOfMonth=${firstDayOfMonth}&endOfMonth=${lastDayOfMonth}`; 
 
     try {
-        const response = await fetchWithCsrf(loadUrl, { // fetchWithCsrf 사용
+        const response = await fetchWithCsrf(loadUrl, { 
             method: 'GET'
         });
 
@@ -506,24 +488,23 @@ async function loadBudgetForSelectedMonth() {
         const data = await response.json();
         
         if (data.success && data.data) {
-            const savingsPlan = data.data.savingsPlan || {}; // null 방지
-            const incomeCategories = data.data.incomeCategories || []; // null 방지
-            const expenseCategories = data.data.expenseCategories || []; // null 방지
+            const savingsPlan = data.data.savingsPlan || {}; 
+            const incomeCategories = data.data.incomeCategories || []; 
+            const expenseCategories = data.data.expenseCategories || []; 
 
             document.getElementById('budget-goal-name').value = savingsPlan.saveName || '';
             
-            // 수입 항목 맵핑: memo 필드 포함
+            // 수입 항목 맵핑: memo 필드 포함 (백엔드에서 memo를 반환할 경우)
             incomes = incomeCategories.map(item => ({ 
                 name: item.categoryName, 
                 amount: item.amount,
                 memo: item.memo // 백엔드에서 'memo'라는 키로 반환된다고 가정
             }));
             
-            // 지출 항목 맵핑: memo 필드 포함
+            // ⭐ 지출 항목 맵핑: memo 필드를 포함하지 않습니다.
             expenses = expenseCategories.map(item => ({ 
                 name: item.categoryName, 
-                amount: item.amount,
-                memo: item.memo // 백엔드에서 'memo'라는 키로 반환된다고 가정
+                amount: item.amount
             }));
 
         } else {
@@ -544,11 +525,18 @@ async function loadBudgetForSelectedMonth() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-	console.log("DOMContentLoaded 이벤트 발생");
+    console.log("DOMContentLoaded 이벤트 발생");
     populateMonthSelect();
     loadBudgetForSelectedMonth(); 
-    populateExpenseCategories(); // 추가된 함수 호출
+    populateExpenseCategories(); 
     
+    const addExpenseButton = document.getElementById('add-expense-button');
+    if (addExpenseButton) { 
+        addExpenseButton.addEventListener('click', addExpense);
+    } else {
+        console.error("Error: 'add-expense-button' element not found. Please check your HTML.");
+    }
+	
     document.getElementById('budget-month-select').addEventListener('change', loadBudgetForSelectedMonth);
 
     updateIncomeList();
