@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko"  xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">>
 
 <head>
 	<meta charset="UTF-8">
@@ -17,74 +18,38 @@
 	<!-- 헤더 -->
 	<div th:replace="fragments/header :: header"></div>
 
+	
+	
 	<div class="accountbook-container">
 		<div th:replace="fragments/m_sidebar :: m_sidebar"></div>
 
 		<main class="accountbook-main-content">
 			<h1>결제 수단 관리</h1>
+			
+			<!-- 버튼 영역 -->
+			<div class="global-controls">
+			        <button class="btn btn-edit">편집</button>
+			        <button class="btn btn-add">추가</button>
+			        <button id="globalDeleteBtn" class="btn btn-delete" style="display: none;">삭제</button>
+			        <button class="btn btn-cancel" style="display: none;">취소</button>
+		    </div>
 
 			<!-- 계좌 섹션 -->
 			<section class="payment-section" data-section="account">
 				<div class="section-header">
-					<h2 class="section-title">💰 계좌 & 현금</h2>
-					<div class="section-controls">
-						<button class="btn btn-edit">편집</button>
-						<button class="btn btn-add">추가</button>
-						<button class="btn btn-use" style="display: none;">사용</button>
-						<button class="btn btn-delete" style="display: none;">삭제</button>
-						<button class="btn btn-cancel" style="display: none;">취소</button>
-					</div>
+					<h2 class="section-title">💰 계좌</h2>
 				</div>
 				<ul class="payment-list">
-					<li class="payment-item">
+					<li class="payment-item" th:each="account : ${accountList}" th:attr="data-id=${account.accountIn}" data-type="account">
 						<div class="checkbox-container">
 							<input type="checkbox" class="select-checkbox">
 							<div class="payment-info">
-								<div class="payment-name">KB Star★ 통장</div>
-								<div class="payment-details">KB국민은행 • ****-****-****-1234</div>
+								<div class="payment-name" th:text="${account.accountName}">통장이름</div>
+								<div class="payment-details"
+									th:text="${account.bankName + ' • ' + account.accountNum}">은행 • 계좌번호</div>
 							</div>
 						</div>
-						<span class="payment-status status-active">사용중</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">더나은미래통장</div>
-								<div class="payment-details">우리은행 • ****-****-****-5678</div>
-							</div>
-						</div>
-						<span class="payment-status status-active">사용중</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">솔편한 입출금통장</div>
-								<div class="payment-details">신한은행 • ****-****-****-9012</div>
-							</div>
-						</div>
-						<span class="payment-status status-active">사용중</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">우리신세대 저축예금</div>
-								<div class="payment-details">우리은행 • ****-****-****-3456</div>
-							</div>
-						</div>
-						<span class="payment-status status-inactive">미사용</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">듀얼K 입출금통장</div>
-								<div class="payment-details">KB국민은행 • ****-****-****-7890</div>
-							</div>
-						</div>
-						<span class="payment-status status-active">사용중</span>
+<!--						<span class="payment-status status-active">사용중</span>-->
 					</li>
 				</ul>
 			</section>
@@ -93,34 +58,18 @@
 			<section class="payment-section" data-section="credit">
 				<div class="section-header">
 					<h2 class="section-title">💳 신용카드</h2>
-					<div class="section-controls">
-						<button class="btn btn-edit">편집</button>
-						<button class="btn btn-add">추가</button>
-						<button class="btn btn-use" style="display: none;">사용</button>
-						<button class="btn btn-delete" style="display: none;">삭제</button>
-						<button class="btn btn-cancel" style="display: none;">취소</button>
-					</div>
 				</div>
 				<ul class="payment-list">
-					<li class="payment-item">
+					<li class="payment-item" th:each="card : ${cardList}" th:if="${card.methodIn == 1}" th:attr="data-id=${card.cardIn}" data-type="credit">
 						<div class="checkbox-container">
 							<input type="checkbox" class="select-checkbox">
 							<div class="payment-info">
-								<div class="payment-name">케이뱅크 체크카드</div>
-								<div class="payment-details">케이뱅크 • **** **** **** 1234</div>
+								<div class="payment-name" th:text="${card.cardName}">카드이름</div>
+								<div class="payment-details"
+								     th:text="${card.cardCompany.ccName + ' • ' + card.cardNum}">회사 • 카드번호</div>
 							</div>
 						</div>
-						<span class="payment-status status-active">사용중</span>
-					</li>
-					<li class="payment-item">
-						<div class="checkbox-container">
-							<input type="checkbox" class="select-checkbox">
-							<div class="payment-info">
-								<div class="payment-name">네이버삼성카드</div>
-								<div class="payment-details">삼성카드 • **** **** **** 5678</div>
-							</div>
-						</div>
-						<span class="payment-status status-active">사용중</span>
+<!--						<span class="payment-status status-active">사용중</span>-->
 					</li>
 				</ul>
 			</section>
@@ -129,27 +78,24 @@
 			<section class="payment-section" data-section="debit">
 				<div class="section-header">
 					<h2 class="section-title">💴 체크카드</h2>
-					<div class="section-controls">
-						<button class="btn btn-edit">편집</button>
-						<button class="btn btn-add">추가</button>
-						<button class="btn btn-use" style="display: none;">사용</button>
-						<button class="btn btn-delete" style="display: none;">삭제</button>
-						<button class="btn btn-cancel" style="display: none;">취소</button>
-					</div>
 				</div>
 				<ul class="payment-list">
-					<li class="payment-item">
+					<li class="payment-item" th:each="card : ${cardList}" th:if="${card.methodIn == 2}" th:attr="data-id=${card.cardIn}" data-type="check">
 						<div class="checkbox-container">
 							<input type="checkbox" class="select-checkbox">
 							<div class="payment-info">
-								<div class="payment-name">현대카드 M</div>
-								<div class="payment-details">현대카드 • **** **** **** 9012</div>
+								<div class="payment-name" th:text="${card.cardName}">카드이름</div>
+								<div class="payment-details"
+								     th:text="${card.cardCompany.ccName + ' • ' + card.cardNum}">회사 • 카드번호</div>
 							</div>
 						</div>
-						<span class="payment-status status-active">사용중</span>
+<!--						<span class="payment-status status-active">사용중</span>-->
 					</li>
 				</ul>
 			</section>
+			<form id="deleteForm" method="post" action="/mypage/mdelete">
+			    <input type="hidden" name="_csrf" th:value="${_csrf.token}" th:name="${_csrf.parameterName}" />
+			</form>
 		</main>
 	</div>
 
@@ -157,89 +103,78 @@
 	<div th:replace="fragments/footer :: footer"></div>
 
 <script>
-		// 편집 모드 토글 기능 (새로 추가된 JavaScript)
-		document.addEventListener('DOMContentLoaded', function() {
-			const sections = document.querySelectorAll('.payment-section');
-			
-			sections.forEach(section => {
-				const editBtn = section.querySelector('.btn-edit');
-				const deleteBtn = section.querySelector('.btn-delete');
-				const addBtn = section.querySelector('.btn-add');
-				const useBtn = section.querySelector('.btn-use');
-				const cancelBtn = section.querySelector('.btn-cancel');
-				const checkboxes = section.querySelectorAll('.select-checkbox');
+	document.addEventListener('DOMContentLoaded', function() {
+	    const sections = document.querySelectorAll('.payment-section');
+	    const editBtn = document.querySelector('.btn-edit');
+	    const deleteBtn = document.querySelector('.btn-delete');
+	    const addBtn = document.querySelector('.btn-add');
+	    const cancelBtn = document.querySelector('.btn-cancel');
 
-				// 편집 버튼 클릭 시 - 편집 모드 활성화
-				editBtn.addEventListener('click', function () {
-					section.classList.add('edit-mode');
-					editBtn.style.display = 'none';
-					addBtn.style.display = 'none';
-					useBtn.style.display = 'inline-block';
-					deleteBtn.style.display = 'inline-block';
-					cancelBtn.style.display = 'inline-block';
-					
-					// 모든 체크박스 해제
-					checkboxes.forEach(checkbox => {
-						checkbox.checked = false;
-					});
-				});
-				
-				// 취소 버튼 클릭 시 - 편집 모드 비활성화
-				cancelBtn.addEventListener('click', function() {
-					section.classList.remove('edit-mode');
-					editBtn.style.display = 'inline-block';
-					addBtn.style.display = 'inline-block';
-					useBtn.style.display = 'none';
-					deleteBtn.style.display = 'none';
-					cancelBtn.style.display = 'none';
-					
-					// 모든 체크박스 해제
-					checkboxes.forEach(checkbox => {
-						checkbox.checked = false;
-					});
-				});
-				
-				// 추가 버튼 클릭 시
-				addBtn.addEventListener('click', function() {
-					window.location.href = '/mypage/minsert';
-				});
-				
-				// 삭제 버튼 클릭 시 - 편집 모드에서만 작동
-				deleteBtn.addEventListener('click', function() {
-					const checkedBoxes = section.querySelectorAll('.select-checkbox:checked');
-					if (checkedBoxes.length === 0) {
-						alert('삭제할 항목을 선택해주세요.');
-						return;
-					}
-					
-					if (confirm(`선택한 ${checkedBoxes.length}개의 결제 수단을 삭제하시겠습니까?`)) {
-						checkedBoxes.forEach(checkbox => {
-							checkbox.closest('.payment-item').remove();
-						});
-						
-						// 삭제 후 편집 모드 유지
-						alert('선택한 결제 수단이 삭제되었습니다.');
-					}
-				});
-			useBtn.addEventListener('click', function () {
-				const checked = section.querySelectorAll('.select-checkbox:checked');
-				if (checked.length === 0) {
-					alert('변경할 항목을 선택해주세요.');
-					return;
-				}
-				checked.forEach(cb => {
-					const status = cb.closest('.payment-item').querySelector('.payment-status');
-					if (status.classList.contains('status-active')) {
-						status.textContent = '미사용';
-						status.classList.replace('status-active', 'status-inactive');
-					} else {
-						status.textContent = '사용중';
-						status.classList.replace('status-inactive', 'status-active');
-					}
-				});
-				alert('선택한 항목의 상태가 변경되었습니다.');
-			});
-		});
+	    const allCheckboxes = document.querySelectorAll('.select-checkbox');
+
+	    // 편집 모드 ON
+	    editBtn.addEventListener('click', function () {
+	        sections.forEach(section => section.classList.add('edit-mode'));
+	        editBtn.style.display = 'none';
+	        addBtn.style.display = 'none';
+	        deleteBtn.style.display = 'inline-block';
+	        cancelBtn.style.display = 'inline-block';
+	        allCheckboxes.forEach(cb => cb.checked = false);
+	    });
+
+	    // 편집 모드 OFF
+	    cancelBtn.addEventListener('click', function () {
+	        sections.forEach(section => section.classList.remove('edit-mode'));
+	        editBtn.style.display = 'inline-block';
+	        addBtn.style.display = 'inline-block';
+	        deleteBtn.style.display = 'none';
+	        cancelBtn.style.display = 'none';
+	        allCheckboxes.forEach(cb => cb.checked = false);
+	    });
+
+	    // 추가 버튼 → 기존처럼 이동
+	    addBtn.addEventListener('click', function () {
+	        window.location.href = '/mypage/minsert';
+	    });
+	});
+	
+	document.getElementById('globalDeleteBtn').addEventListener('click', function () {
+	    const checked = document.querySelectorAll('.select-checkbox:checked');
+	    if (checked.length === 0) {
+	        alert("삭제할 항목을 선택해주세요.");
+	        return;
+	    }
+
+	    if (!confirm("선택한 항목을 삭제하시겠습니까?")) return;
+
+	    const form = document.getElementById('deleteForm');
+
+	    // 기존 input 정리
+	    while (form.children.length > 1) {
+	        form.removeChild(form.lastChild);
+	    }
+
+	    // 선택 항목의 id/type 추가
+	    checked.forEach(cb => {
+	        const item = cb.closest('.payment-item');
+	        const id = item.getAttribute('data-id');
+	        const type = item.getAttribute('data-type');
+
+	        const idInput = document.createElement("input");
+	        idInput.type = "hidden";
+	        idInput.name = "ids";
+	        idInput.value = id;
+
+	        const typeInput = document.createElement("input");
+	        typeInput.type = "hidden";
+	        typeInput.name = "types";
+	        typeInput.value = type;
+
+	        form.appendChild(idInput);
+	        form.appendChild(typeInput);
+	    });
+
+	    form.submit();
 	});
 	</script>
 </body>

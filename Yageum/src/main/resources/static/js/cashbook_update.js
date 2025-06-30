@@ -46,7 +46,7 @@
 		                data.forEach(card => {
 		                    const option = document.createElement("option");
 		                    option.value = card.cardIn;
-		                    option.textContent = card.cardName;
+		                    option.textContent = card.ccName + " " + card.cardName;
 		                    if (String(card.cardIn) === selectedCardIn) {
 		                        option.selected = true;
 		                    }

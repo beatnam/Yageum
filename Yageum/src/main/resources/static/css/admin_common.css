@@ -287,3 +287,58 @@
         .pagination a:hover {
             background-color: #f0f0f0;
         }
+		
+		/* 추가 스타일 */
+				.notice-title {
+					text-align: left;
+					max-width: 300px;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+
+				.pin-icon {
+					color: #ff6b6b;
+					margin-right: 5px;
+				}
+
+				.category-tag.important {
+					background-color: #dc3545;
+				}
+
+				.category-tag.event {
+					background-color: #28a745;
+				}
+
+				.status-badge {
+					padding: 3px 8px;
+					border-radius: 12px;
+					font-size: 12px;
+					font-weight: bold;
+				}
+
+				.status-badge.active {
+					background-color: #d4edda;
+					color: #155724;
+				}
+
+				.status-badge.inactive {
+					background-color: #f8d7da;
+					color: #721c24;
+				}
+
+				.filter-group {
+					display: flex;
+					align-items: center;
+					gap: 15px;
+					flex-wrap: wrap;
+				}
+
+				.filter-group label {
+					font-weight: bold;
+					margin-right: 5px;
+				}
+
+				.filter-select {
+					margin-right: 10px;
+				}

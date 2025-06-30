@@ -1,0 +1,176 @@
+* {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: "Gowun Dodum", sans-serif;
+      }
+
+      body {
+          background-color: #f5f5f5;
+          color: #4E342E;
+          min-height: 100vh;
+          padding: 20px;
+      }
+
+      /* ---------- 컨테이너 ---------- */
+      .detail-container {
+          background-color: white;
+          border-radius: 12px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          max-width: 800px;
+          margin: 0 auto;
+          overflow: hidden;
+          animation: fadeIn 0.3s ease-out;
+      }
+
+      @keyframes fadeIn {
+          from {
+              opacity: 0;
+              transform: translateY(20px);
+          }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+
+      /* ---------- 헤더 ---------- */
+      .detail-header {
+          background-color: #FFD44D;
+          color: #4E342E;
+          padding: 25px;
+          border-bottom: 3px solid #FFC6C7;
+      }
+
+      .detail-title {
+          font-size: 24px;
+          font-weight: bold;
+          font-family: "Black Han Sans", sans-serif;
+          margin-bottom: 15px;
+          line-height: 1.4;
+      }
+
+      .detail-meta {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          flex-wrap: wrap;
+      }
+
+      .notice-number {
+          background-color: #4E342E;
+          color: white;
+          padding: 6px 12px;
+          border-radius: 15px;
+          font-size: 13px;
+          font-weight: bold;
+          min-width: 40px;
+          text-align: center;
+      }
+
+      .notice-date {
+          color: #666;
+          font-size: 14px;
+          font-weight: 500;
+      }
+
+      /* ---------- 본문 ---------- */
+      .detail-body {
+          background-color: #FFF9E5;
+          padding: 30px;
+      }
+
+      .detail-content {
+          background-color: white;
+          border-radius: 8px;
+          padding: 30px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+          line-height: 1.8;
+          font-size: 16px;
+          min-height: 300px;
+          white-space: pre-wrap; /* 줄바꿈 유지 */
+      }
+
+      /* ---------- 하단 버튼 ---------- */
+      .detail-footer {
+          background-color: white;
+          padding: 20px 30px;
+          border-top: 1px solid #e0e0e0;
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+      }
+
+      .btn {
+          border: none;
+          padding: 12px 25px;
+          border-radius: 25px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          transition: all 0.3s;
+      }
+
+      .btn-primary {
+          background-color: #4E342E;
+          color: white;
+      }
+
+      .btn-primary:hover {
+          background-color: #333;
+          transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+          background-color: #FFD44D;
+          color: #4E342E;
+      }
+
+      .btn-secondary:hover {
+          background-color: #FFC6C7;
+          transform: translateY(-1px);
+      }
+
+      /* ---------- 반응형 ---------- */
+      @media (max-width: 768px) {
+          body {
+              padding: 10px;
+          }
+          
+          .detail-container {
+              margin: 0;
+          }
+          
+          .detail-header {
+              padding: 20px;
+          }
+          
+          .detail-title {
+              font-size: 20px;
+          }
+          
+          .detail-meta {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 10px;
+          }
+          
+          .detail-body {
+              padding: 20px;
+          }
+          
+          .detail-content {
+              padding: 20px;
+              font-size: 15px;
+          }
+          
+          .detail-footer {
+              padding: 15px 20px;
+              flex-direction: column;
+              align-items: center;
+          }
+      }

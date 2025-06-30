@@ -31,7 +31,7 @@
                 <div class="date-navigation">
                     <button class="date-nav-btn" onclick="previousDay()">◀</button>
                     <div class="current-date">
-                        <span class="date-text" id="currentDate"><!--여기에 화면에서 누른 날짜 출력됨--></span>
+                        <span class="date-text" id="currentDate"></span>
                     </div>
                     <button class="date-nav-btn" onclick="nextDay()">▶</button>
                 </div>
@@ -42,8 +42,8 @@
 				        <div class="transaction-icon" th:text="${e.expenseType} ? '💸' : '💰'">💰</div>
 
 				        <div class="transaction-info">
-				            <div class="transaction-name" th:text="${e.expenseMemo}">아이템 이름</div>
-				            <div class="transaction-method" th:text="${e.expenseContent}">결제 수단 또는 출처</div>
+				            <div class="transaction-name" th:text="${e.expenseMemo}"></div>
+				            <div class="transaction-method" th:text="${e.expenseContent}"></div>
 				        </div>
 
 				        <div class="transaction-amount"

@@ -37,7 +37,7 @@
 					    <div class="transaction-icon" th:text="${expense.expenseType} ? '💸' : '💰'">💰</div>
 						<span class="amount"
 						      th:classappend="${expense.expenseType} ? ' expense' : ' income'"
-						      th:text="|${expense.expenseType ? '-' : '+'}${#numbers.formatInteger(expense.expenseSum, 3, 'COMMA')}|">
+						      th:text="|${expense.expenseType ? '- ' : '+ '}${#numbers.formatInteger(expense.expenseSum, 3, 'COMMA')} 원|">
 						</span>
 					</div>
 

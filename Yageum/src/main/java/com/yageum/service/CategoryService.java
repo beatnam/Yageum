@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
-import com.yageum.entity.Member;
+import com.yageum.mapper.CategorySubMapper;
 import com.yageum.repository.CategoryMainRepository;
 import com.yageum.repository.CategorySubRepository;
 
@@ -23,7 +23,7 @@ public class CategoryService {
 	
 	private final CategoryMainRepository categoryMainRepository;
 	private final CategorySubRepository categorySubRepository;
-	
+	private final CategorySubMapper categorySubMapper;
 	//카테고리 메인
 	public List<CategoryMain> cateMFindAll() {
 		log.info("CategoryService cateMFindAll()");
@@ -110,6 +110,14 @@ public class CategoryService {
 	}
 	public void delete2(CategorySub cateFound) {
 		categorySubRepository.delete(cateFound);
+	}
+
+
+	public void deleteAll(int cmIn) {
+		
+		categorySubMapper.delete(cmIn);
+		
+		
 	}
 
 

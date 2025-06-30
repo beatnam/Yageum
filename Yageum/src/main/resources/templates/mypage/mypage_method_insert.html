@@ -24,62 +24,83 @@
 			<h1>내 카드 추가</h1>
 			
 			<div class="card-form-container">
-				<form id="cardAddForm">
-					<!-- 카드번호 -->
-					<div class="form-group">
-						<label class="form-label required">카드번호</label>
-						<div class="card-number-group">
-							<input type="text" class="form-input card-number-input" id="card1" maxlength="4" placeholder="1234">
-							<input type="text" class="form-input card-number-input masked" id="card2" maxlength="4" placeholder="••••">
-							<input type="text" class="form-input card-number-input masked" id="card3" maxlength="4" placeholder="••••">
-							<input type="text" class="form-input card-number-input" id="card4" maxlength="4" placeholder="1234">
-						</div>
-						<div class="error-message" id="cardNumberError"></div>
-					</div>
+				<form id="cardAddForm" action="/mypage/minsertPro" method="post" onsubmit="return validateForm()">
+				    <!-- 카드번호 -->
+				    <div class="form-group">
+				        <label class="form-label required">카드번호</label>
+				        <div class="card-number-group">
+				            <input type="text" class="form-input card-number-input" id="card1" name="card1" maxlength="4" placeholder="1234">
+				            <input type="text" class="form-input card-number-input masked" id="card2" name="card2" maxlength="4" placeholder="••••">
+				            <input type="text" class="form-input card-number-input masked" id="card3" name="card3" maxlength="4" placeholder="••••">
+				            <input type="text" class="form-input card-number-input" id="card4" name="card4" maxlength="4" placeholder="1234">
+				        </div>
+				        <div class="error-message" id="cardNumberError"></div>
+				    </div>
 
-					<!-- 유효기간 -->
-					<div class="form-group">
-						<label class="form-label required">유효기간</label>
-						<div class="expiry-group">
-							<input type="text" class="form-input expiry-input" id="expiryMM" maxlength="2" placeholder="MM">
-							<span class="expiry-slash">/</span>
-							<input type="text" class="form-input expiry-input" id="expiryYY" maxlength="2" placeholder="YY">
-						</div>
-						<div class="error-message" id="expiryError"></div>
-					</div>
+				    <!-- 유효기간 -->
+				    <div class="form-group">
+				        <label class="form-label required">유효기간</label>
+				        <div class="expiry-group">
+				            <input type="text" class="form-input expiry-input" id="expiryMM" name="expiryMM" maxlength="2" placeholder="MM">
+				            <span class="expiry-slash">/</span>
+				            <input type="text" class="form-input expiry-input" id="expiryYY" name="expiryYY" maxlength="2" placeholder="YY">
+				        </div>
+				        <div class="error-message" id="expiryError"></div>
+				    </div>
 
-					<!-- 소유자명 -->
-					<div class="form-group">
-						<label class="form-label required">소유자명</label>
-						<input type="text" class="form-input" id="cardHolder" placeholder="카드 소유자 이름을 입력하세요">
-						<div class="error-message" id="cardHolderError"></div>
-					</div>
+				    <!-- 소유자명 -->
+				    <div class="form-group">
+				        <label class="form-label required">소유자명</label>
+				        <input type="text" class="form-input" id="cardHolder" name="cardHolder" placeholder="카드 소유자 이름을 입력하세요">
+				        <div class="error-message" id="cardHolderError"></div>
+				    </div>
 
-					<!-- 보안코드(CVC) -->
-					<div class="form-group">
-						<label class="form-label required">보안코드(CVC)</label>
-						<div class="cvc-group">
-							<input type="text" class="form-input cvc-input" id="cvc" maxlength="3" placeholder="•••">
-							<span class="cvc-hint">* 3글자만 입력하세요</span>
-						</div>
-						<div class="error-message" id="cvcError"></div>
-					</div>
+				    <!-- 보안코드(CVC) -->
+				    <div class="form-group">
+				        <label class="form-label required">보안코드(CVC)</label>
+				        <div class="cvc-group">
+				            <input type="text" class="form-input cvc-input" id="cvc" name="cvc" maxlength="3" placeholder="•••">
+				            <span class="cvc-hint">* 3글자만 입력하세요</span>
+				        </div>
+				        <div class="error-message" id="cvcError"></div>
+				    </div>
 
-					<!-- 카드이름 -->
-					<div class="form-group">
-						<label class="form-label required">카드이름</label>
-						<input type="text" class="form-input" id="cardName" placeholder="예: 삼성카드, 신한카드 등">
-						<div class="error-message" id="cardNameError"></div>
-					</div>
+				    <!-- 카드회사 선택 -->
+				    <div class="form-group">
+				        <label class="form-label required">카드회사</label>
+				        <select id="cardCompany" name="cardCompany" class="form-input">
+				            <option value="">카드사를 선택하세요</option>
+				            <option th:each="company : ${companyList}"
+				                    th:value="${company.ccIn}"
+				                    th:text="${company.ccName}">
+				            </option>
+				        </select>
+				        <div class="error-message" id="cardCompanyError"></div>
+				    </div>
 
-					<!-- 카드별칭 -->
-					<div class="form-group">
-						<label class="form-label">카드별칭</label>
-						<input type="text" class="form-input" id="cardAlias" placeholder="개인적으로 사용할 별칭 (선택사항)">
-					</div>
+				    <!-- 카드 유형 선택 -->
+				    <div class="form-group">
+				        <label class="form-label required">카드 유형</label>
+				        <select id="cardType" name="cardType" class="form-input">
+				            <option value="">카드 유형을 선택하세요</option>
+				            <option value="1">신용카드</option>
+				            <option value="2">체크카드</option>
+				        </select>
+				        <div class="error-message" id="cardTypeError"></div>
+				    </div>
 
-					<!-- 저장 버튼 -->
-					<button type="submit" class="save-button">저장하기</button>
+				    <!-- 카드이름 -->
+				    <div class="form-group">
+				        <label class="form-label required">카드이름</label>
+				        <input type="text" class="form-input" id="cardName" name="cardName" placeholder="예: 삼성카드, 신한카드 등">
+				        <div class="error-message" id="cardNameError"></div>
+				    </div>
+
+				    <!-- CSRF 토큰 -->
+				    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+				    <!-- 저장 버튼 -->
+				    <button type="submit" class="save-button">저장하기</button>
 				</form>
 			</div>
 		</main>
@@ -88,152 +109,165 @@
 	<!-- 푸터 -->
 	<div th:replace="fragments/footer :: footer"></div>
 
-<script>
-			// 카드 추가 폼 유효성 검사 및 기능 (새로 추가된 JavaScript)
-		document.addEventListener('DOMContentLoaded', function() {
-			const form = document.getElementById('cardAddForm');
-			const cardInputs = document.querySelectorAll('.card-number-input');
-			const expiryInputs = document.querySelectorAll('.expiry-input');
-			
-			// 카드번호 입력 시 자동 포커스 이동
-			cardInputs.forEach((input, index) => {
-				input.addEventListener('input', function(e) {
-					// 숫자만 입력 허용
-					this.value = this.value.replace(/[^0-9]/g, '');
-					
-					// 4자리 입력 시 다음 필드로 자동 이동
-					if (this.value.length === 4 && index < cardInputs.length - 1) {
-						cardInputs[index + 1].focus();
-					}
-				});
+	<script>
+	  // 카드번호 자동 이동
+	  const cardInputs = document.querySelectorAll('.card-number-input');
+	  cardInputs.forEach((input, index) => {
+	    input.addEventListener('input', function () {
+	      this.value = this.value.replace(/[^0-9]/g, '');
+	      if (this.value.length === 4 && index < cardInputs.length - 1) {
+	        cardInputs[index + 1].focus();
+	      }
+	    });
+	    input.addEventListener('keydown', function (e) {
+	      if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+	        cardInputs[index - 1].focus();
+	      }
+	    });
+	  });
 
-				// 백스페이스 키 처리
-				input.addEventListener('keydown', function(e) {
-					if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
-						cardInputs[index - 1].focus();
-					}
-				});
-			});
+	  // 유효기간 입력 자동 이동
+	  const expiryInputs = document.querySelectorAll('.expiry-input');
+	  expiryInputs.forEach((input, index) => {
+	    input.addEventListener('input', function () {
+	      this.value = this.value.replace(/[^0-9]/g, '');
+	      if (this.value.length === 2 && index === 0) {
+	        expiryInputs[1].focus();
+	      }
+	    });
+	    input.addEventListener('keydown', function (e) {
+	      if (e.key === 'Backspace' && this.value.length === 0 && index === 1) {
+	        expiryInputs[0].focus();
+	      }
+	    });
+	  });
 
-			// 유효기간 입력 처리
-			expiryInputs.forEach((input, index) => {
-				input.addEventListener('input', function(e) {
-					this.value = this.value.replace(/[^0-9]/g, '');
-					
-					if (this.value.length === 2 && index === 0) {
-						expiryInputs[1].focus();
-					}
-				});
+	  // CVC 숫자만 입력
+	  document.getElementById('cvc').addEventListener('input', function () {
+	    this.value = this.value.replace(/[^0-9]/g, '');
+	  });
 
-				input.addEventListener('keydown', function(e) {
-					if (e.key === 'Backspace' && this.value.length === 0 && index === 1) {
-						expiryInputs[0].focus();
-					}
-				});
-			});
+	  // 폼 유효성 검사 함수
+	  function validateForm() {
+	    let isValid = true;
 
-			// CVC 입력 처리 (숫자만)
-			document.getElementById('cvc').addEventListener('input', function(e) {
-				this.value = this.value.replace(/[^0-9]/g, '');
-			});
+	    const expiryMM = document.querySelector('input[name="expiryMM"]');
+	    const expiryYY = document.querySelector('input[name="expiryYY"]');
+	    const cardHolder = document.querySelector('input[name="cardHolder"]');
+	    const cvc = document.querySelector('input[name="cvc"]');
+	    const cardType = document.querySelector('select[name="cardType"]');
+	    const cardName = document.querySelector('input[name="cardName"]');
+	    const cardInputs = document.querySelectorAll('.card-number-input');
 
-			// 폼 제출 처리
-			form.addEventListener('submit', function(e) {
-				e.preventDefault();
-				
-				if (validateForm()) {
-					// 폼 데이터 수집
-					const formData = {
-						cardNumber: Array.from(cardInputs).map(input => input.value).join(''),
-						expiryMonth: document.getElementById('expiryMM').value,
-						expiryYear: document.getElementById('expiryYY').value,
-						cardHolder: document.getElementById('cardHolder').value,
-						cvc: document.getElementById('cvc').value,
-						cardName: document.getElementById('cardName').value,
-						cardAlias: document.getElementById('cardAlias').value
-					};
-					
-					console.log('카드 정보:', formData);
-					alert('카드가 성공적으로 추가되었습니다!');
-					
-					// 결제 수단 페이지로 이동 (실제로는 페이지 리다이렉트 구현)
-					// window.location.href = '/payment-methods';
-				}
-			});
+	    const cardNumber = Array.from(cardInputs).map(input => input.value).join('');
+	    if (cardNumber.length !== 16) {
+	      showError('cardNumberError', '카드번호 16자리를 모두 입력해주세요.');
+	      isValid = false;
+	    } else {
+	      hideError('cardNumberError');
+	    }
 
-			// 폼 유효성 검사
-			function validateForm() {
-				let isValid = true;
-				
-				// 카드번호 검사
-				const cardNumber = Array.from(cardInputs).map(input => input.value).join('');
-				if (cardNumber.length !== 16) {
-					showError('cardNumberError', '카드번호 16자리를 모두 입력해주세요.');
-					cardInputs.forEach(input => input.classList.add('error'));
-					isValid = false;
-				} else {
-					hideError('cardNumberError');
-					cardInputs.forEach(input => input.classList.remove('error'));
-				}
+	    if (!expiryMM.value || !expiryYY.value || expiryMM.value < 1 || expiryMM.value > 12) {
+	      showError('expiryError', '올바른 유효기간을 입력해주세요.');
+	      isValid = false;
+	    } else {
+	      hideError('expiryError');
+	    }
 
-				// 유효기간 검사
-				const month = document.getElementById('expiryMM').value;
-				const year = document.getElementById('expiryYY').value;
-				if (!month || !year || month < 1 || month > 12) {
-					showError('expiryError', '올바른 유효기간을 입력해주세요.');
-					expiryInputs.forEach(input => input.classList.add('error'));
-					isValid = false;
-				} else {
-					hideError('expiryError');
-					expiryInputs.forEach(input => input.classList.remove('error'));
-				}
+	    if (!cardHolder.value.trim()) {
+	      showError('cardHolderError', '소유자명을 입력해주세요.');
+	      isValid = false;
+	    } else {
+	      hideError('cardHolderError');
+	    }
 
-				// 소유자명 검사
-				const cardHolder = document.getElementById('cardHolder').value.trim();
-				if (!cardHolder) {
-					showError('cardHolderError', '소유자명을 입력해주세요.');
-					document.getElementById('cardHolder').classList.add('error');
-					isValid = false;
-				} else {
-					hideError('cardHolderError');
-					document.getElementById('cardHolder').classList.remove('error');
-				}
+	    if (cvc.value.length !== 3) {
+	      showError('cvcError', 'CVC 3자리를 입력해주세요.');
+	      isValid = false;
+	    } else {
+	      hideError('cvcError');
+	    }
 
-				// CVC 검사
-				const cvc = document.getElementById('cvc').value;
-				if (cvc.length !== 3) {
-					showError('cvcError', '보안코드 3자리를 입력해주세요.');
-					document.getElementById('cvc').classList.add('error');
-					isValid = false;
-				} else {
-					hideError('cvcError');
-					document.getElementById('cvc').classList.remove('error');
-				}
+	    if (!cardType.value) {
+	      showError('cardTypeError', '카드 유형을 선택해주세요.');
+	      isValid = false;
+	    } else {
+	      hideError('cardTypeError');
+	    }
 
-				// 카드이름 검사
-				const cardName = document.getElementById('cardName').value.trim();
-				if (!cardName) {
-					showError('cardNameError', '카드이름을 입력해주세요.');
-					document.getElementById('cardName').classList.add('error');
-					isValid = false;
-				} else {
-					hideError('cardNameError');
-					document.getElementById('cardName').classList.remove('error');
-				}
+	    if (!cardName.value.trim()) {
+	      showError('cardNameError', '카드이름을 입력해주세요.');
+	      isValid = false;
+	    } else {
+	      hideError('cardNameError');
+	    }
 
-				return isValid;
-			}
+	    return isValid;
+	  }
 
-			// 에러 메시지 표시
-			function showError(elementId, message) {
-				document.getElementById(elementId).textContent = message;
-			}
+	  // 에러 메시지 출력/제거 함수
+	  function showError(id, message) {
+	    document.getElementById(id).textContent = message;
+	  }
+	  function hideError(id) {
+	    document.getElementById(id).textContent = '';
+	  }
+	  
+	  const bankNameMap = {
+		"Kb Kookmin Card Co., Ltd.": "27",
+	      "KB Kookmin Card": "27",
+	      "Kookmin Card": "27",
+	      "Shinhan Card": "28",
+	      "Samsung Card": "29",
+	      "Hyundai Card": "30",
+	      "Lotte Card": "31",
+	      "Hana Card": "32",
+	      "Woori Card": "33",
+	      "NH Nonghyup Card": "34",
+	      "Citi": "35",
+	      "Citibank": "35",
+	      "IBK": "36",
+	      "SC First Bank": "37",
+	      "SC Bank": "37",
+	      "KakaoBank": "38",
+	      "Toss Bank": "39",
+	      "Suhyup Bank": "40",
+	      "K Bank": "41"
+	    };
 
-			// 에러 메시지 숨기기
-			function hideError(elementId) {
-				document.getElementById(elementId).textContent = '';
-			}
-		});
+	    const cardCompanySelect = document.getElementById('cardCompany');
+
+	    cardInputs.forEach(input => {
+	      input.addEventListener('input', async () => {
+	        const fullNumber = Array.from(cardInputs).map(i => i.value).join('');
+	        if (fullNumber.length >= 6) {
+	          const bin = fullNumber.substring(0, 6);
+	          try {
+	            const res = await fetch(`/mypage/binlookup/${bin}`);
+	            if (!res.ok) throw new Error("BIN 조회 실패");
+
+	            const data = await res.json();
+	            const bankName = data.bank?.name;
+	            console.log("조회된 카드사명:", bankName);
+
+	            const matchedValue = bankNameMap[bankName];
+	            if (matchedValue) {
+	              cardCompanySelect.value = matchedValue;
+	              console.log("자동 선택된 cc_in 값:", matchedValue);
+	            } else {
+	              console.warn("매칭 실패:", bankName);
+	            }
+	          } catch (e) {
+	            console.error("BIN API 오류:", e);
+	          }
+	        }
+	      });
+	    });
+	    
+
+	    // DOM 로드 후 실행
+	    //document.addEventListener('DOMContentLoaded', autoDetectCardCompany);
+	</script>
 	</script>
 </body>
 

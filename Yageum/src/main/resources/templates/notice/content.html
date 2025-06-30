@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 상세보기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&display=swap" rel="stylesheet">
+    <link href="../css/notice_content.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="detail-container">
+        <!-- 헤더 -->
+        <div class="detail-header">
+            <h1 class="detail-title" th:text="${notice.noticeSubject}"></h1>
+            <div class="detail-meta">
+                <span class="notice-number" th:text="${notice.noticeIn}"></span>
+                <span class="notice-date" th:text="${notice.noticeDate}"></span>
+            </div>
+        </div>
+
+        <!-- 본문 -->
+        <div class="detail-body">
+            <div class="detail-content" th:text="${notice.noticeContent}">
+
+            </div>
+        </div>
+
+        <!-- 하단 버튼 -->
+        <div class="detail-footer">
+            <a href="/notice/main" class="btn btn-secondary">📋 목록으로</a>
+            <button class="btn btn-primary" onclick="history.back()">← 뒤로가기</button>
+        </div>
+    </div>
+
+    <script>
+        // ESC 키로 목록으로 돌아가기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                history.back();
+            }
+        });
+
+        // 페이지 로드 애니메이션
+        window.addEventListener('load', function() {
+            document.querySelector('.detail-container').style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

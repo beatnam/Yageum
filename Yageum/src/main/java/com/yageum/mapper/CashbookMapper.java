@@ -23,7 +23,11 @@ public interface CashbookMapper {
 
    List<Map<String, Object>> getDailyIncomeExpense(@Param("memberIn") int memberIn, @Param("start") LocalDate start, @Param("end") LocalDate end);
 
-    
+//   List<ExpenseDTO> getMonthList(@Param("memberIn") int memberIn, @Param("start") LocalDate start, @Param("end") LocalDate end);
+
+   List<ExpenseDTO> searchExpense(Map<String, Object> paramMap);
+
+
     
     
     
