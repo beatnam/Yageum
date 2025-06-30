@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.yageum.service.ConsumptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.SavingsPlanDTO;
 import com.yageum.service.ChatGPTClient;
 
@@ -550,7 +551,35 @@ public class ConsumptionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+    
+    @GetMapping("/getSavingsPlanForMonth")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getSavingsPlanForMonth(
+            @RequestParam("startOfMonth") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate startOfMonth,
+            @RequestParam("endOfMonth") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate endOfMonth,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Integer memberIn = consumptionService.getMemberInByMemberId(userDetails.getUsername());
+        if (memberIn == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            Map<String, Object> savingsPlanData = consumptionService.getSavingsPlanAndCategoriesByMonth(memberIn, startOfMonth, endOfMonth);
+            
+            if (savingsPlanData != null && !savingsPlanData.isEmpty()) {
+                return ResponseEntity.ok(Map.of("success", true, "data", savingsPlanData));
+            } else {
+                return ResponseEntity.ok(Map.of("success", false, "message", "선택된 월에 저장된 예산이 없습니다."));
+            }
+        } catch (Exception e) {
+            log.severe("getSavingsPlanForMonth API 오류: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false, "message", "예산 로드 중 오류가 발생했습니다."));
+        }
+    }
+    
+    
     @PostMapping("/bplannerPro")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> bplannerPro(
@@ -981,5 +1010,16 @@ public class ConsumptionController {
             return new ResponseEntity<>("{\"status\": \"error\", \"message\": \"서버 오류로 인해 삭제에 실패했습니다.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping("/api/expense-categories")
+    public ResponseEntity<List<CategoryMainDTO>> getAllExpenseCategories() {
+        List<CategoryMainDTO> categories = consumptionService.getAllExpenseCategories();
+        return ResponseEntity.ok(categories);
+    }
+    
+    
+    
+    
+    
     
 }

@@ -17,6 +17,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yageum.domain.CategoryMainDTO;
 import com.yageum.mapper.ConsumptionMapper;
 import com.yageum.mapper.ExpenseMapper;
 import com.yageum.mapper.SavingsPlanMapper;
@@ -666,6 +667,39 @@ public class ConsumptionService {
         }
         int deletedRows = consumptionMapper.deleteConsumptionFeedback(conInId);
         return deletedRows > 0;
+    }
+    
+    public List<CategoryMainDTO> getAllExpenseCategories() {
+        return savingsPlanMapper.getAllExpenseCategories();
+    }
+
+    // 월별 예산 및 카테고리 정보 가져오기
+    public Map<String, Object> getSavingsPlanAndCategoriesByMonth(Integer memberIn, LocalDate startOfMonth, LocalDate endOfMonth) {
+        log.info("ConsumptionService getSavingsPlanAndCategoriesByMonth() 호출: memberIn={}, startOfMonth={}, endOfMonth={}" + memberIn + startOfMonth + endOfMonth);
+
+        Map<String, Object> result = new HashMap<>();
+
+        // 1. 해당 월의 SavingsPlan 조회
+        int month = startOfMonth.getMonthValue();
+        int year = startOfMonth.getYear();
+        Map<String, Object> savingsPlan = savingsPlanMapper.findSavingsPlanByMonthAndYear(memberIn, month, year);
+
+        if (savingsPlan != null && !savingsPlan.isEmpty()) {
+            // Integer saveIn = (Integer) savingsPlan.get("save_in"); // save_in 필드가 Map에 포함되어야 합니다.
+
+            // ⭐ 변경된 부분: saveIn 대신 memberIn, month, year를 전달합니다.
+            // 2. 수입 카테고리 조회
+            List<Map<String, Object>> incomeCategories = savingsPlanMapper.getIncomeCategoriesBySavingsPlanId(memberIn, month, year);
+            // 3. 지출 카테고리 조회
+            List<Map<String, Object>> expenseCategories = savingsPlanMapper.getExpenseCategoriesBySavingsPlanId(memberIn, month, year);
+
+            result.put("savingsPlan", savingsPlan);
+            result.put("incomeCategories", incomeCategories);
+            result.put("expenseCategories", expenseCategories);
+        } else {
+            log.info("해당 월에 저장된 예산 계획이 없습니다: memberIn=" + memberIn + ", month=" + month + ", year=" + year);
+        }
+        return result;
     }
     
 }

@@ -166,6 +166,40 @@
         ORDER BY save_created_date DESC, save_in DESC
         LIMIT 1
     </select>
+    
+	<select id="getAllExpenseCategories" resultType="com.yageum.domain.CategoryMainDTO">
+	    SELECT cm_in AS cmIn, cm_name AS cmName
+	    FROM category_main
+	</select>
+	
+	<select id="getIncomeCategoriesBySavingsPlanId" resultType="map">
+        SELECT
+            cm.cm_name AS categoryName,
+            SUM(e.expense_sum) AS amount
+        FROM expense e
+        JOIN category_sub cs ON e.cs_in = cs.cs_in
+        JOIN category_main cm ON cs.cm_in = cm.cm_in
+        WHERE e.member_in = #{memberIn}
+          AND MONTH(e.expense_date) = #{month}
+          AND YEAR(e.expense_date) = #{year}
+          AND e.expense_type = FALSE GROUP BY cm.cm_name
+    </select>
+
+    <select id="getExpenseCategoriesBySavingsPlanId" resultType="map">
+        SELECT
+            cm.cm_name AS categoryName,
+            SUM(e.expense_sum) AS amount
+        FROM expense e
+        JOIN category_sub cs ON e.cs_in = cs.cs_in
+        JOIN category_main cm ON cs.cm_in = cm.cm_in
+        WHERE e.member_in = #{memberIn}
+          AND MONTH(e.expense_date) = #{month}
+          AND YEAR(e.expense_date) = #{year}
+          AND e.expense_type = TRUE GROUP BY cm.cm_name
+    </select>
 	
 	
-    </mapper>
+	
+	
+	
+</mapper>

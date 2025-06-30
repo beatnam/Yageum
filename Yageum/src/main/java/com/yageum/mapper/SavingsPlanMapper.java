@@ -3,6 +3,7 @@ package com.yageum.mapper; // 실제 패키지에 맞게 수정하세요
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.SavingsPlanDTO;
 
 import java.time.LocalDate;
@@ -59,5 +60,12 @@ public interface SavingsPlanMapper {
             @Param("saveAmount") Integer saveAmount);
 
     Integer getSaveIn(@Param("memberIn")Integer memberIn,@Param("year") int year,@Param("month") int month);
+
+	List<CategoryMainDTO> getAllExpenseCategories();
+
+    List<Map<String, Object>> getIncomeCategoriesBySavingsPlanId(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
+
+    List<Map<String, Object>> getExpenseCategoriesBySavingsPlanId(@Param("memberIn") Integer memberIn, @Param("month") int month, @Param("year") int year);
+
 	
 }

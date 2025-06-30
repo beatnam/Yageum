@@ -328,10 +328,48 @@ async function loadBudgetForSelectedMonth() {
     }
 }
 
+/**
+ * 백엔드에서 지출 카테고리 목록을 가져와서 <select> 엘리먼트를 채웁니다.
+ * 카테고리 번호를 value로, 카테고리 이름을 텍스트로 사용합니다.
+ */
+async function populateExpenseCategories() {
+    const selectElement = document.getElementById('expense-category');
+    // 초기 "카테고리를 선택하세요" 옵션 유지
+    selectElement.innerHTML = '<option value="">카테고리를 선택하세요</option>'; 
+
+    try {
+        const response = await fetch('/consumption/api/expense-categories', { // 새로 만든 API 엔드포인트
+            method: 'GET',
+            headers: {
+                // CSRF 토큰이 필요하다면 여기에 추가 (GET 요청에는 보통 필요 없음)
+                // [csrfHeader]: csrfToken 
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`카테고리 로드 실패: ${response.status} ${response.statusText}`);
+        }
+
+        const categories = await response.json();
+
+        // 받아온 카테고리 데이터를 기반으로 <option> 태그 동적 생성
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.cmIn; // 카테고리 번호를 value로 설정
+            option.textContent = category.cmName; // 카테고리 이름을 텍스트로 설정
+            selectElement.appendChild(option);
+        });
+    } catch (error) {
+        console.error('지출 카테고리를 불러오는 중 오류 발생:', error);
+        alert('지출 카테고리를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     populateMonthSelect();
     loadBudgetForSelectedMonth(); 
+    populateExpenseCategories(); // 추가된 함수 호출
     
     document.getElementById('budget-month-select').addEventListener('change', loadBudgetForSelectedMonth);
 
