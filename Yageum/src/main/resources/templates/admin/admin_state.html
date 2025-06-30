@@ -91,7 +91,7 @@
             <div class="middle-stats">
                 <div class="stat-card beige">
                     <div class="stat-title">총 가입자 수</div>
-                    <div class="stat-value">123</div>
+                    <div class="stat-value" th:text="${member.size()}" ></div>
                 </div>
                 
                 <div class="stat-card">
@@ -149,6 +149,8 @@
             </div>
         </div>
     </div>
+	
+	
 
     <script>
         // 사이트 설정 하위 메뉴 토글
@@ -195,5 +197,8 @@
 					}
 				}
     </script>
+	
+	
+
 </body>
 </html>

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yageum.domain.BankAccountDTO;
+import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.ItemDTO;
@@ -24,6 +26,8 @@ import com.yageum.entity.Member;
 import com.yageum.repository.CategoryMainRepository;
 import com.yageum.service.AdminService;
 import com.yageum.service.CategoryService;
+import com.yageum.service.ConsumptionService;
+import com.yageum.service.ExpenseService;
 import com.yageum.service.ItemService;
 import com.yageum.service.MemberService;
 import com.yageum.service.NoticeService;
@@ -44,6 +48,8 @@ public class AdminController {
 	private final AdminService adminService;
 	private final ItemService itemService;
 	private final NoticeService noticeService;
+	private final ConsumptionService consumptionService;
+	private final ExpenseService expenseService;
 	
 	//Repository			
 	private final CategoryMainRepository categoryMainRepository;
@@ -97,9 +103,19 @@ public class AdminController {
 	}
 
 	@GetMapping("/state")
-	public String state() {
+	public String state(Model model) {
 		log.info("AdminController state()");
+		List<CategorySub> categorySub = categoryService.cateSFindAll();
+		List<Member> member = memberService.adminInfo();
 
+		
+		
+		
+		
+		
+		model.addAttribute("member", member);
+		model.addAttribute("cateSub", categorySub);
+		
 		return "/admin/admin_state";
 	}
 
@@ -119,9 +135,11 @@ public class AdminController {
 
 		List<CategoryMain> categoryMain = categoryService.cateMFindAll();
 		List<CategorySub> categorySub = categoryService.cateSFindAll();
+//		List<BankAccountDTO> bankAccount = expenseService.getAccountList(memberIn);
+//		List<CardDTO> cardList = expenseService.card();
 		
-		
-		
+//		model.addAttribute("card",cardList);
+//		model.addAttribute("bank",bankAccount);
 		model.addAttribute("cateMain", categoryMain);
 		model.addAttribute("cateSub", categorySub);
 		
