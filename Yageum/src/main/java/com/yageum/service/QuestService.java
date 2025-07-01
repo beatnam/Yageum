@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.yageum.domain.ItemDTO;
 import com.yageum.domain.QuestStateDTO;
 import com.yageum.domain.QuestSuccessDTO;
+import com.yageum.domain.SumSearchDTO;
 import com.yageum.mapper.QuestMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -99,9 +100,19 @@ public class QuestService {
 
 
 
-	public List<QuestStateDTO> listQuestType4() {
+	public List<Map<String, Object>> listQuestType4() {
 		// TODO Auto-generated method stub
 		return questMapper.listQuestType4();
+	}
+
+	public int searchQuestCategory(int questIn) {
+		// TODO Auto-generated method stub
+		return questMapper.searchQuestCategory(questIn);
+	}
+
+	public int sumFromExpense(SumSearchDTO sumSearchDTO) {
+		// TODO Auto-generated method stub
+		return questMapper.sumFromExpense(sumSearchDTO);
 	}
 
 

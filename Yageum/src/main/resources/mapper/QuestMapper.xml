@@ -98,8 +98,8 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where m.member_in = #{memberIn} and quest_type_in = 3;
 	</select>
 
-	<select id="listQuestType4" resultType="com.yageum.domain.QuestStateDTO">
-		select s.member_in, s.quest_in
+	<select id="listQuestType4" resultType="map">
+		select s.member_in, s.quest_in, q.cm_in, q.goal_value, s.qp_in, q.reward_value
 		from quest_state s join quest q
 		on s.quest_in = q.quest_in
 		where q.quest_type_in = 4
@@ -116,5 +116,15 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		set member_reward = member_reward + #{rewardValue}
 		where member_in = #{memberIn}
 	</update>
+
+	<select id="sumFromExpense" resultType="java.lang.Integer">
+		select sum(expense_sum)
+		from expense e join category_sub s
+		on e.cs_in = s.cs_in
+		where member_in = #{memberIn} and s.cm_in = #{cmIn}
+				and month(expense_date) = (select month(end_date)
+										   from quest
+										   where quest_in= #{questIn})
+	</select>
 
 </mapper>

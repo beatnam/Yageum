@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.yageum.domain.ItemDTO;
 import com.yageum.domain.QuestStateDTO;
 import com.yageum.domain.QuestSuccessDTO;
+import com.yageum.domain.SumSearchDTO;
 
 @Mapper
 @Repository
@@ -43,7 +44,11 @@ public interface QuestMapper {
 
 	void memberReward(QuestSuccessDTO questSuccessDTO);
 
-	List<QuestStateDTO> listQuestType4();
+	List<Map<String, Object>> listQuestType4();
+
+	int searchQuestCategory(int questIn);
+
+	int sumFromExpense(SumSearchDTO sumSearchDTO);
 
 	
 
