@@ -270,4 +270,65 @@
 		    border-color: #f7b731; /* 포커스 시 테두리 색상 변경 (주황색 계열) */
 		    box-shadow: 0 0 0 3px rgba(247, 183, 49, 0.3); /* 포커스 시 그림자 효과 */
 		}
+		
+		.category-amount-input {
+		    width: 100px; /* 적절한 너비 설정 */
+		    border: 1px solid #ddd;
+		    border-radius: 4px;
+		    padding: 5px 8px;
+		    font-size: 1em;
+		    text-align: right; /* 금액은 보통 오른쪽 정렬 */
+		    margin-left: auto; /* 오른쪽에 붙도록 */
+		    box-sizing: border-box; /* 패딩 포함 너비 계산 */
+		}
+		
+		/* 포커스 시 스타일 변경 (선택 사항) */
+		.category-amount-input:focus {
+		    border-color: #007bff;
+		    outline: none;
+		    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+		}
+		
+		/* 수정 버튼 스타일 */
+		.edit-btn {
+		    background-color: #007bff; /* 파란색 */
+		    color: white;
+		    border: none;
+		    padding: 5px 10px;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    font-size: 0.8em;
+		    margin-left: 8px;
+		    margin-right: 8px;
+		    transition: background-color 0.2s;
+		}
+		
+		.edit-btn:hover {
+		    background-color: #0056b3;
+		}
+		
+		/* 금액 입력 필드 스타일 */
+		.category-amount-input {
+		    width: 100px; /* 적절한 너비 설정 */
+		    border: 1px solid #ddd;
+		    border-radius: 4px;
+		    padding: 5px 8px;
+		    font-size: 1em;
+		    text-align: right; /* 금액은 보통 오른쪽 정렬 */
+		    margin-left: auto; /* 오른쪽에 붙도록 */
+		    box-sizing: border-box; /* 패딩 포함 너비 계산 */
+		    flex-shrink: 0; /* 공간이 부족해도 줄어들지 않도록 */
+		}
+		
+		/* 금액 표시 span과 input의 정렬을 위해 category-item에 flexbox 적용 */
+		.category-item {
+		    display: flex;
+		    align-items: center; /* 세로 중앙 정렬 */
+		    justify-content: space-between; /* 요소들 간의 공간 분배 */
+		    /* 기존 스타일 유지하면서 flexbox 추가 */
+		}
+		
+		.category-item .category-name {
+		    flex-grow: 1; /* 이름이 가능한 많은 공간을 차지하도록 */
+		}
         

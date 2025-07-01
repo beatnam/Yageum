@@ -366,7 +366,6 @@ public class AdminController {
 
 		if (questDTO.getQuestTypeIn() == 2 || questDTO.getQuestTypeIn() == 3) {
 			questDTO.setCmIn(null);
-			questDTO.setCsIn(null);
 		}
 
 		adminService.updateQuest(questDTO);

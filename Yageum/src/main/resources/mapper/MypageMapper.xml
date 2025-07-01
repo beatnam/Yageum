@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://mybatis.org/mybatis-3/getting-started.html
+src/main/resources/mapper폴더/MemberMapper.xml파일 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yageum.mapper.MypageMapper">
+
+	<delete id = "deleteAccountById" parameterType="int">
+		delete from bank_account
+		where account_in = #{accountIn}
+	</delete>
+	
+	<delete id = "deleteCardById" parameterType="int">
+		delete from card
+		where card_in = #{cardIn}
+	</delete>
+
+	<insert id = "minsertPro" parameterType="com.yageum.entity.Card" useGeneratedKeys="true" keyProperty="cardIn">
+		insert into card
+		 (card_num, card_month, card_year, card_cvc, card_name, card_username, cc_in, method_in, member_in)
+		value 
+		 (#{cardNum}, #{cardMonth}, #{cardYear}, #{cardCvc}, #{cardName}, #{cardUsername},
+		 #{ccIn}, #{methodIn}, #{memberIn})
+	</insert>
+
+	
+
+</mapper>

@@ -46,6 +46,12 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		from member
 	</select>
 
+	<select id="listMemberLastExpense" resultType="com.yageum.domain.ExpenseDTO">
+		select member_in, max(expense_date) as "expense_date"
+		from expense
+		group by member_in
+	</select>
+
 	<update id="updateMemberStraight">
 		update member
 		set member_straight = member_straight + 1
@@ -64,11 +70,6 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where member_in = #{memberIn}
 	</update>
 
-	<select id="listMemberLastExpense" resultType="com.yageum.domain.ExpenseDTO">
-		select member_in, max(expense_date) as "expense_date"
-		from expense
-		group by member_in
-	</select>
 
 	<update id="updateMemberExpense">
 		update member

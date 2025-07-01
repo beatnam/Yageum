@@ -38,36 +38,6 @@ body {
 	box-sizing: border-box;
 }
 
-.button-group {
-	margin: 20px 0;
-	display: flex;
-	gap: 10px;
-}
-
-.btn-naver {
-	background-color: #00c73c;
-	color: white;
-	border: none;
-	padding: 12px 25px;
-	border-radius: 8px;
-	font-size: 16px;
-	font-weight: bold;
-	cursor: pointer;
-	flex: 1;
-}
-
-.btn-kakao {
-	background-color: #4a3728;
-	color: white;
-	border: 2px solid #FFD44D;
-	padding: 12px 25px;
-	border-radius: 8px;
-	font-size: 16px;
-	font-weight: bold;
-	cursor: pointer;
-	flex: 1;
-}
-
 .checkbox-group {
 	margin: 20px 0;
 	text-align: left;
@@ -87,6 +57,33 @@ body {
 	margin-bottom: 20px;
 }
 
+.btn-login:hover {
+	background-color: #f9f9f9;
+}
+
+/* 네이버 버튼 단독 중앙 정렬 */
+.button-group-single {
+	display: flex;
+	justify-content: center;
+	margin: 20px 0;
+}
+
+.btn-naver {
+	background-color: #00c73c;
+	color: white;
+	border: none;
+	padding: 12px 25px;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: bold;
+	cursor: pointer;
+	width: fit-content;
+}
+
+.btn-naver:hover {
+	background-color: #00b33c;
+}
+
 .signup-link {
 	color: #ff6b6b;
 	font-size: 14px;
@@ -100,16 +97,4 @@ body {
 
 .signup-link a:hover {
 	text-decoration: underline;
-}
-
-.btn-naver:hover {
-	background-color: #00b33c;
-}
-
-.btn-kakao:hover {
-	background-color: #3d2f22;
-}
-
-.btn-login:hover {
-	background-color: #f9f9f9;
 }

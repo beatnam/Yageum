@@ -2,13 +2,11 @@ package com.yageum.controller;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,12 +26,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.yageum.service.ConsumptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.SavingsDetail;
 import com.yageum.domain.SavingsPlanDTO;
+import com.yageum.mapper.SavingsPlanMapper;
 import com.yageum.service.ChatGPTClient;
 
 import lombok.RequiredArgsConstructor;
@@ -49,6 +49,7 @@ public class ConsumptionController {
     private final ConsumptionService consumptionService;
     private final ChatGPTClient chatGPTClient;
     private final ObjectMapper objectMapper;
+    private final SavingsPlanMapper savingsPlanMapper;
 
     @GetMapping("/efeedback")
     public String efeedback(Model model) {
@@ -550,50 +551,116 @@ public class ConsumptionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+    
+    @GetMapping("/getSavingsPlanForMonth")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getSavingsPlanForMonth(
+            @RequestParam("startOfMonth") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate startOfMonth,
+            @RequestParam("endOfMonth") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate endOfMonth,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        YearMonth currentYearMonth = YearMonth.now();
+        LocalDate conMonthDate = currentYearMonth.atDay(1);
+        LocalDate today = LocalDate.now();
+	    int year = today.getYear();
+	    int month = today.getMonthValue();
+    	
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Integer memberIn = consumptionService.getMemberInByMemberId(userDetails.getUsername());
+        if (memberIn == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+        	Integer saveIn = consumptionService.getSaveIn(memberIn, year, month);
+            Map<String, Object> savingsPlanData = consumptionService.getSavingsPlanAndCategoriesByMonth(memberIn, saveIn, startOfMonth, endOfMonth);
+            
+            if (savingsPlanData != null && !savingsPlanData.isEmpty()) {
+                return ResponseEntity.ok(Map.of("success", true, "data", savingsPlanData));
+            } else {
+                return ResponseEntity.ok(Map.of("success", false, "message", "선택된 월에 저장된 예산이 없습니다."));
+            }
+        } catch (Exception e) {
+            log.severe("getSavingsPlanForMonth API 오류: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false, "message", "예산 로드 중 오류가 발생했습니다."));
+        }
+    }
+    
+    
     @PostMapping("/bplannerPro")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> bplannerPro(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody Map<String, Object> budgetData
-    ) {
-        Map<String, Object> response = new HashMap<>();
-        log.info("ConsumptionController bplannerPro() 호출 - 예산 저장/업데이트 요청");
+    public ResponseEntity<Map<String, Object>> saveBudgetPlanner(
+            @RequestBody Map<String, Object> payload,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String memberId = userDetails.getUsername();
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId);
+
+        if (memberIn == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                 .body(Map.of("success", false, "message", "사용자 정보를 찾을 수 없습니다."));
+        }
 
         try {
-            if (userDetails == null) {
-                response.put("success", false);
-                response.put("message", "로그인된 사용자 정보를 찾을 수 없습니다.");
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            String saveName = (String) payload.get("saveName");
+            LocalDate saveCreatedDate = LocalDate.parse((String) payload.get("saveCreatedDate"));
+            LocalDate saveTargetDate = LocalDate.parse((String) payload.get("saveTargetDate"));
+            Integer saveAmount = (Integer) payload.get("saveAmount");
+
+            List<Map<String, Object>> expenseDetailsMaps = (List<Map<String, Object>>) payload.get("expenseDetails");
+            List<SavingsDetail> expenseDetails = new ArrayList<>();
+
+            // ⭐ 추가된 부분: 카테고리 이름과 ID 매핑을 위한 Map 생성
+            List<CategoryMainDTO> allExpenseCategories = consumptionService.getAllExpenseCategories();
+            Map<String, Integer> categoryNameToIdMap = new HashMap<>();
+            for (CategoryMainDTO category : allExpenseCategories) {
+                categoryNameToIdMap.put(category.getCmName(), category.getCmIn());
             }
-            String memberIdStr = userDetails.getUsername();
-            Integer memberIn = consumptionService.getMemberInByMemberId(memberIdStr);
 
-            if (memberIn == null) {
-                response.put("success", false);
-                response.put("message", "회원 고유 번호를 찾을 수 없습니다.");
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            if (expenseDetailsMaps != null) {
+                for (Map<String, Object> item : expenseDetailsMaps) {
+                    SavingsDetail detail = new SavingsDetail();
+                    Object nameOrCmIn = item.get("name"); // 이 필드에 카테고리 이름("식비") 또는 ID(1)가 올 수 있음
+
+                    Integer cmIn = null;
+                    if (nameOrCmIn instanceof Integer) {
+                        // 이미 Integer 타입으로 넘어온 경우 (새로 추가된 항목일 가능성)
+                        cmIn = (Integer) nameOrCmIn;
+                    } else if (nameOrCmIn instanceof String) {
+                        // String 타입으로 넘어온 경우 (불러온 기존 항목일 가능성)
+                        String categoryName = (String) nameOrCmIn;
+                        cmIn = categoryNameToIdMap.get(categoryName); // 이름으로 ID 조회
+
+                        if (cmIn == null) {
+                            // 매핑되는 카테고리 ID를 찾을 수 없는 경우 경고 로그를 남기고 다음 항목으로 넘어갑니다.
+                            log.warning("알 수 없는 카테고리 이름이 감지되었습니다. 스킵합니다: " + categoryName);
+                            continue; // 이 항목은 저장하지 않고 건너뜁니다.
+                        }
+                    } else {
+                        // 예상치 못한 타입인 경우 (로그 남기고 스킵)
+                        log.warning("expenseDetails의 'name' 필드에서 예상치 못한 타입이 감지되었습니다. 스킵합니다: " + nameOrCmIn);
+                        continue; // 이 항목은 저장하지 않고 건너뜁니다.
+                    }
+
+                    detail.setCmIn(cmIn); // 최종적으로 결정된 cmIn 설정
+                    detail.setSdCost((Integer) item.get("amount"));
+                    detail.setSdDate(saveCreatedDate); // 예산 설정일 사용
+                    expenseDetails.add(detail);
+                }
             }
 
-            boolean success = consumptionService.saveOrUpdateSavingsPlan(memberIn, budgetData);
+            Map<String, Object> result = consumptionService.saveBudgetPlanAndDetails(
+                    memberIn, saveName, saveCreatedDate, saveTargetDate, saveAmount, expenseDetails);
 
-            if (success) {
-                log.info("회원 ID {}의 예산 저장/업데이트 성공" + memberIn);
-                response.put("success", true);
-                response.put("message", "예산이 성공적으로 저장/업데이트 되었습니다.");
-                return new ResponseEntity<>(response, HttpStatus.OK);
+            if ((Boolean) result.get("success")) {
+                return ResponseEntity.ok(result);
             } else {
-                log.info("회원 ID {}의 예산 저장/업데이트 실패" + memberIn);
-                response.put("success", false);
-                response.put("message", "예산 저장/업데이트에 실패했습니다.");
-                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
             }
-
         } catch (Exception e) {
-            log.info("예산 저장/업데이트 중 오류 발생: {}" + e.getMessage() + e);
-            response.put("success", false);
-            response.put("message", "예산 저장/업데이트 중 서버 오류가 발생했습니다.");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            log.severe("예산 및 지출 상세 저장 중 오류 발생: " + e.getMessage()); // log.error 대신 log.severe 사용 (기존 코드와 일관성)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(Map.of("success", false, "message", "예산 및 지출 상세 저장 중 오류 발생: " + e.getMessage()));
         }
     }
     
@@ -980,6 +1047,38 @@ public class ConsumptionController {
             log.info("피드백 삭제 중 예외 발생 - conInId: {}"+ conInId+ e);
             return new ResponseEntity<>("{\"status\": \"error\", \"message\": \"서버 오류로 인해 삭제에 실패했습니다.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @GetMapping("/api/expense-categories")
+    public ResponseEntity<List<CategoryMainDTO>> getAllExpenseCategories() {
+        List<CategoryMainDTO> categories = consumptionService.getAllExpenseCategories();
+        return ResponseEntity.ok(categories);
+    }
+    @GetMapping("/loadBudgetPlan")
+    public ResponseEntity<Map<String, Object>> loadBudgetPlan(
+            @RequestParam("year") int year,
+            @RequestParam("month") int month,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        String memberId = userDetails.getUsername(); // 현재 로그인한 사용자의 ID를 가져옴
+        Integer memberIn = consumptionService.getMemberInByMemberId(memberId); // memberId로 memberIn 조회
+
+        if (memberIn == null) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "사용자 정보를 찾을 수 없습니다."), HttpStatus.UNAUTHORIZED);
+        }
+
+        try {
+            Map<String, Object> budgetPlanData = consumptionService.loadBudgetPlan(memberIn, year, month);
+            return new ResponseEntity<>(budgetPlanData, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "예산 로드 중 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping("/api/income-categories")
+    public ResponseEntity<List<CategorySubDTO>> getAllIncomeCategories() {
+        List<CategorySubDTO> incomeCategories = consumptionService.getAllIncomeCategories();
+        return ResponseEntity.ok(incomeCategories);
     }
     
 }
