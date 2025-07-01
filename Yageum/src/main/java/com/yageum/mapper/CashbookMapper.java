@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.ExpenseDTO;
 import com.yageum.entity.BankAccount;
 
@@ -26,6 +27,8 @@ public interface CashbookMapper {
 //   List<ExpenseDTO> getMonthList(@Param("memberIn") int memberIn, @Param("start") LocalDate start, @Param("end") LocalDate end);
 
    List<ExpenseDTO> searchExpense(Map<String, Object> paramMap);
+
+List<BankAccountDTO> accountAll();
 
 
     

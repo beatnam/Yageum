@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.yageum.domain.BankAccountDTO;
-import com.yageum.domain.CardDTO;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.ItemDTO;
 import com.yageum.domain.NoticeDTO;
 import com.yageum.domain.QuestDTO;
+import com.yageum.entity.BankAccount;
+import com.yageum.entity.Card;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
 import com.yageum.entity.Member;
@@ -105,14 +105,19 @@ public class AdminController {
 	@GetMapping("/state")
 	public String state(Model model) {
 		log.info("AdminController state()");
+	//
 		List<CategorySub> categorySub = categoryService.cateSFindAll();
 		List<Member> member = memberService.adminInfo();
-
+		List<BankAccount> bankAccount = expenseService.accountAll();
+//		log.info(bankAccount.toString());
+		List<Card> cardList = expenseService.cardAll();
+//		log.info(cardList.toString());
 		
 		
 		
 		
-		
+		model.addAttribute("card", cardList);
+		model.addAttribute("bank", bankAccount);
 		model.addAttribute("member", member);
 		model.addAttribute("cateSub", categorySub);
 		
@@ -135,11 +140,7 @@ public class AdminController {
 
 		List<CategoryMain> categoryMain = categoryService.cateMFindAll();
 		List<CategorySub> categorySub = categoryService.cateSFindAll();
-//		List<BankAccountDTO> bankAccount = expenseService.getAccountList(memberIn);
-//		List<CardDTO> cardList = expenseService.card();
 		
-//		model.addAttribute("card",cardList);
-//		model.addAttribute("bank",bankAccount);
 		model.addAttribute("cateMain", categoryMain);
 		model.addAttribute("cateSub", categorySub);
 		
