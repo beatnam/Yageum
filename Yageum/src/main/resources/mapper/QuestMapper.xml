@@ -44,6 +44,8 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where s.quest_in in (select s.quest_in from quest_state where
 		s.member_in =
 		#{memberIn})
+
+		order by s.qp_in
 	</select>
 
 	<select id="listItem" resultType="com.yageum.domain.ItemDTO">
@@ -85,7 +87,7 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		on m.member_in = s.member_in
 		where m.member_in = #{memberIn} and quest_type_in = 2;
 	</select>
-	
+
 	<select id="listQuestType3" resultType="map">
 		select m.member_in, s.quest_in, member_expense, q.goal_value, s.qp_in,
 		q.reward_value
@@ -96,12 +98,19 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where m.member_in = #{memberIn} and quest_type_in = 3;
 	</select>
 
+	<select id="listQuestType4" resultType="com.yageum.domain.QuestStateDTO">
+		select s.member_in, s.quest_in
+		from quest_state s join quest q
+		on s.quest_in = q.quest_in
+		where q.quest_type_in = 4
+	</select>
+
 	<update id="successQuestType">
 		update quest_state
-		set qp_in = 3
+		set qp_in = 3 , qs_success_date = #{qsSuccessDate}
 		where member_in = #{memberIn} and quest_in = #{questIn}
 	</update>
-	
+
 	<update id="memberReward">
 		update member
 		set member_reward = member_reward + #{rewardValue}

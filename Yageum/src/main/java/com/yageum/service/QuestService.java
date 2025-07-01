@@ -35,17 +35,17 @@ public class QuestService {
 	}
 
 	public List<Map<Object, Object>> listQuest(int memberIn) {
-		// TODO Auto-generated method stub
+		log.info("QuestService listQuest()");
 		return questMapper.listQuest(memberIn);
 	}
 
 	public List<Map<Object, Object>> myQuest(int memberIn) {
-		// TODO Auto-generated method stub
+		log.info("QuestService myQuest()");
 		return questMapper.myQuest(memberIn);
 	}
 
 	public List<ItemDTO> listItem() {
-
+		log.info("QuestService listItem()");
 		return questMapper.listItem();
 
 	}
@@ -97,9 +97,13 @@ public class QuestService {
 		return questMapper.listQuestType3(memberIn);
 	}
 
-	public void successQuestType3(QuestSuccessDTO questSuccessDTO) {
+
+
+	public List<QuestStateDTO> listQuestType4() {
 		// TODO Auto-generated method stub
-		
+		return questMapper.listQuestType4();
 	}
+
+
 
 }

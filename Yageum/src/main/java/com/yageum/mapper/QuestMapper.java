@@ -43,6 +43,8 @@ public interface QuestMapper {
 
 	void memberReward(QuestSuccessDTO questSuccessDTO);
 
+	List<QuestStateDTO> listQuestType4();
+
 	
 
 }
