@@ -50,8 +50,8 @@
        	$('#editButton').click(function(){
 				const formData = $('#editForm').serialize();
 				$.post('/admin/notice_updatePro', formData, function(response){	
-						window.opener.location.reload();
-						alert("공지사항이 등록되었습니다.");
+						//window.opener.location.reload();
+						//alert("공지사항이 등록되었습니다.");
 						window.close();
 							
 				}).fail(function(){
