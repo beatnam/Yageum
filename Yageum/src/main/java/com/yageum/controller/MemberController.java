@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import com.yageum.config.MyUserDetailsService;
@@ -58,6 +59,29 @@ public class MemberController {
 	@Value("${naver.client-secret}")
 	private String nClientSecret;
 
+	// 아이디 중복 검사
+	@ResponseBody
+	@GetMapping("/idCheck")
+	public String idCheck(@RequestParam("id") String id) {
+		
+		MemberDTO memberDTO = memberService.infoMember(id);
+		String result = "";
+		if (memberDTO != null) {
+			// 아이디 있음, 아이디 중복
+			result = "아이디 중복";
+			result = "iddup";
+			return result;
+		} else {
+			// 아이디 없음, 해당 아이디 사용 가능
+			result = "아이디 사용 가능";
+			result = "idok";
+		}
+		// 결과값 리턴
+		return result;	
+	}
+	
+	
+	
 	// 네이버 로그인 URL을 만들면서
 	@GetMapping("/login")
 	public String login(Model model, HttpSession session,

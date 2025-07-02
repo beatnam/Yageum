@@ -71,10 +71,12 @@ public class ScheduleController {
 
 	@Scheduled(cron = "1 0 0 1 * *")
 	public void successType4() {
-		// 4유형(절약)을 수행하는 멤버 번호 및 퀘스트 번호, 카테고리 번호, 목표치를 갖고옴
+		// 4유형(절약)을 수행하는 멤버의 관련 정보들을 Map에 담아 리스트로 저장
 		List<Map<String, Object>> memberQuest4 = questService.listQuestType4();
-
+		
+		// 반복문으로 각 멤버의 각 값을 변수에 담아서 DTO에 담기~
 		for (int i = 0; i < memberQuest4.size(); i++) {
+			
 			int categoryMain = (Integer) memberQuest4.get(i).get("cm_in");
 			int memberIn = (Integer) memberQuest4.get(i).get("member_in");
 			int goalValue = (Integer) memberQuest4.get(i).get("goal_value");
@@ -102,6 +104,6 @@ public class ScheduleController {
 
 		}
 
-	}
+	}// 절약 퀘스트 스케줄러
 
 }
