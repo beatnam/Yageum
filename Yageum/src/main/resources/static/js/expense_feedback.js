@@ -255,9 +255,11 @@ function showNotification(message, type = 'info') {
 // 30초마다 무작위 통찰 알림 표시
 setInterval(() => {
     const insights = [
-        "💡 팁: 이번 주 식비가 예산을 초과했어요!",
-        "🎯 목표까지 67,000원 더 절약하면 달성!",
-        "📊 지난 달 대비 교통비 15% 절약 중!"
+        "💡 팁: 포인트카드를 사용해서 절약해보세요!",
+        "🎯 목표까지 달성은 성취감 뿐만 아니라 여유도 가져다 줘요!",
+        "📊 야금야금을 사용하는 것만으로 절약 중!",
+		" 좋은 습관은 합리적인 소비를 하는것! ",
+		" 행복한 소비습관은 무조건 아끼는 것 보다 효율적이에요! "
     ];
     const randomInsight = insights[Math.floor(Math.random() * insights.length)];
     showNotification(randomInsight);
