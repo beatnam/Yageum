@@ -32,6 +32,8 @@ const validation = {
 				this.hideError('memberId');
 				return true;
 			},
+			
+			
 
 			validateName(name) {
 				if (!name.trim()) {
