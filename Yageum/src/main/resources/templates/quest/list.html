@@ -45,27 +45,27 @@
 					</thead>
 					<tbody id="questTableBody">
 						<tr th:each="quest : ${questList}" th:classappend="${!quest['is_valid']} ? ' invalid-row'">
-							<form th:action="@{/quest/acceptQuest}" method="post" th:object="${quest}">
-								<td th:text="${quest['quest_in']}"></td>
-								<td class="quest-name" th:text="${quest['quest_name']}"></td>
-								<td th:text="${quest['quest_type_name']}"></td>
-								<td th:text="${quest['goal_value']}">원</td>
-								<td class="quest-reward" th:text="${quest['reward_value']}">포인트</td>
-								<td class="quest-period"
-									th:text="${quest['start_date']} + ' ~ ' + ${quest['end_date']}">기간</td>
-								<td class="quest-isValid" th:text="${quest['is_valid']} ? '가능한 퀘스트' : '기간 만료 퀘스트'"></td>
+							<td th:text="${quest['quest_in']}"></td>
+							<td class="quest-name" th:text="${quest['quest_name']}"></td>
+							<td th:text="${quest['quest_type_name']}"></td>
+							<td th:text="${quest['goal_value']}">원</td>
+							<td class="quest-reward" th:text="${quest['reward_value']}">포인트</td>
+							<td class="quest-period" th:text="${quest['start_date']} + ' ~ ' + ${quest['end_date']}">기간
+							</td>
+							<td class="quest-isValid" th:text="${quest['is_valid']} ? '가능한 퀘스트' : '기간 만료 퀘스트'"></td>
 
-								<!-- 조건부 버튼 렌더링 -->
-								<td class="quest-status">
+							<!-- 버튼만 form 안에 위치 -->
+							<td class="quest-status">
+								<form th:action="@{/quest/acceptQuest}" method="post">
 									<input type="hidden" name="questIn" th:value="${quest['quest_in']}" />
-									<button type="submit" class="action-btn" th:if="${quest['is_valid']}">퀘스트
-										수락</button>
-								</td>
-								<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
-
-							</form>
+									<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+									<button type="submit" class="action-btn" onclick="return confirm('퀘스트를 수락하시겠습니까?')"
+										th:if="${quest['is_valid']}">퀘스트 수락</button>
+								</form>
+							</td>
 						</tr>
 					</tbody>
+
 				</table>
 			</div>
 
@@ -79,9 +79,8 @@
 				<span class="progress-dot"></span>
 			</div>
 		</div>
-
-
 	</div>
+
 	<div th:replace="fragments/footer :: footer"></div>
 
 	<script>
@@ -89,7 +88,17 @@
 			if (confirm('로그아웃 하시겠습니까?')) {
 				window.location.href = '/logout';
 			}
-		}</script>
+		}
+
+		function accept(button) {
+			if (confirm('수락하시겠습니까?')) {
+				const form = button.closest('form');
+				if (form) {
+					form.submit();
+				}
+			}
+		}
+	</script>
 </body>
 
 </html>

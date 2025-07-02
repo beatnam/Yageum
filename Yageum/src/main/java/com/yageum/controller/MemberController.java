@@ -63,6 +63,7 @@ public class MemberController {
 	@ResponseBody
 	@GetMapping("/idCheck")
 	public String idCheck(@RequestParam("id") String id) {
+		log.info("MemberController idCheck()");
 		
 		MemberDTO memberDTO = memberService.infoMember(id);
 		String result = "";
@@ -75,6 +76,48 @@ public class MemberController {
 			// 아이디 없음, 해당 아이디 사용 가능
 			result = "아이디 사용 가능";
 			result = "idok";
+		}
+		// 결과값 리턴
+		return result;	
+	}
+	
+	@ResponseBody
+	@GetMapping("/emailCheck")
+	public String emailCheck(@RequestParam("email") String email) {
+		log.info("MemberController idCheck()");
+		
+		MemberDTO memberDTO = memberService.infoMember2(email);
+		String result = "";
+		if (memberDTO != null) {
+			// 아이디 있음, 아이디 중복
+			result = "이메일 중복";
+			result = "emaildup";
+			return result;
+		} else {
+			// 아이디 없음, 해당 아이디 사용 가능
+			result = "이메일 사용 가능";
+			result = "emailok";
+		}
+		// 결과값 리턴
+		return result;	
+	}
+	
+	@ResponseBody
+	@GetMapping("/phoneCheck")
+	public String phoneCheck(@RequestParam("phone") String phone) {
+		log.info("MemberController idCheck()");
+		
+		MemberDTO memberDTO = memberService.infoMember3(phone);
+		String result = "";
+		if (memberDTO != null) {
+			// 아이디 있음, 아이디 중복
+			result = "휴대폰 중복";
+			result = "phonedup";
+			return result;
+		} else {
+			// 아이디 없음, 해당 아이디 사용 가능
+			result = "이메일 사용 가능";
+			result = "phoneok";
 		}
 		// 결과값 리턴
 		return result;	
