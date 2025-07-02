@@ -58,7 +58,7 @@
 								<!-- 조건부 버튼 렌더링 -->
 								<td class="quest-status">
 									<input type="hidden" name="questIn" th:value="${quest['quest_in']}" />
-									<button type="submit" class="action-btn edit" th:if="${quest['is_valid']}">퀘스트
+									<button type="submit" class="action-btn" th:if="${quest['is_valid']}">퀘스트
 										수락</button>
 								</td>
 								<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">

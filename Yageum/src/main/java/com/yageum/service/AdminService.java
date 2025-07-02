@@ -63,4 +63,9 @@ public class AdminService {
 		return adminMapper.listQuest();
 	}
 
+	public void changeQuestStateVaild() {
+		adminMapper.changeQuestStateVaild();
+		
+	}
+
 }

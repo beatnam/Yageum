@@ -160,7 +160,7 @@
                 currentYear--;
             }
             
-            generateCalendar(currentYear, currentMonth);
+            fetchTransactionData(currentYear, currentMonth);
         }
 
 		

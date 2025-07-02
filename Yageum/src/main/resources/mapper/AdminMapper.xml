@@ -19,10 +19,10 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	</select>
 
 	<insert id="insertQuest" parameterType="com.yageum.domain.QuestDTO">
-		insert into quest(quest_name, quest_type_in, cm_in, cs_in, goal_value,
+		insert into quest(quest_name, quest_type_in, cm_in, goal_value,
 		reward_value, start_date, end_date, is_valid)
 		values(#{questName},
-		#{questTypeIn},#{cmIn},#{csIn},#{goalValue},#{rewardValue},#{startDate},
+		#{questTypeIn},#{cmIn},#{goalValue},#{rewardValue},#{startDate},
 		#{endDate}, #{isValid})
 	</insert>
 
@@ -39,26 +39,35 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		from quest
 		where quest_in = #{questIn}
 	</select>
-	
-	<update id = "updateQuest"  parameterType="com.yageum.domain.QuestDTO">
+
+	<update id="updateQuest" parameterType="com.yageum.domain.QuestDTO">
 		update quest
-		set quest_name = #{questName} , quest_type_in = #{questTypeIn}, cm_in = #{cmIn}, cs_in = #{csIn},
-		    goal_value = #{goalValue}, reward_value = #{rewardValue}, start_date = #{startDate},
-		    end_date = #{endDate} 
-		where quest_in = #{questIn}	
+		set quest_name = #{questName} , quest_type_in = #{questTypeIn}, cm_in =
+		#{cmIn},
+		goal_value = #{goalValue}, reward_value = #{rewardValue}, start_date =
+		#{startDate},
+		end_date = #{endDate}
+		where quest_in = #{questIn}
 	</update>
 
-	<delete id = "deleteQuest" parameterType="com.yageum.domain.QuestDTO">
+	<delete id="deleteQuest" parameterType="com.yageum.domain.QuestDTO">
 		delete from quest
 		where quest_in = #{questIn}
-	
+
 	</delete>
-	
-	
-	<update id = "changeQuestValid">
+
+
+	<update id="changeQuestValid">
 		update quest
 		set is_valid = false
 		where end_date &lt; (select CURDATE())
-	
+
+	</update>
+
+	<update id="changeQuestStateVaild"> 
+		UPDATE quest_state 
+		SET qp_in = 5 
+		WHERE quest_in IN 
+				(SELECT quest_in FROM quest WHERE end_date $lt; CURDATE())
 	</update>
 </mapper>
