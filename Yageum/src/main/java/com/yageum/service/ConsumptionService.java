@@ -17,8 +17,13 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yageum.domain.CategoryMainDTO;
+import com.yageum.domain.CategorySubDTO;
+import com.yageum.domain.SavingsDetail;
+import com.yageum.domain.SavingsPlanDTO;
 import com.yageum.mapper.ConsumptionMapper;
 import com.yageum.mapper.ExpenseMapper;
+import com.yageum.mapper.SavingsDetailMapper;
 import com.yageum.mapper.SavingsPlanMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +39,7 @@ public class ConsumptionService {
     private final ExpenseMapper expenseMapper;
     private final SavingsPlanMapper savingsPlanMapper;
     private final ConsumptionMapper consumptionMapper;
+    private final SavingsDetailMapper savingsDetailMapper;
 
     // member_id(String)를 사용하여 member_in(int) 조회
     public Integer getMemberInByMemberId(String memberId) {
@@ -265,17 +271,20 @@ public class ConsumptionService {
     private static final Map<Integer, String> MAIN_CATEGORY_NAMES = new HashMap<>();
     static {
         MAIN_CATEGORY_NAMES.put(1, "식비");
-        MAIN_CATEGORY_NAMES.put(2, "주거/통신");
-        MAIN_CATEGORY_NAMES.put(3, "교통");
-        MAIN_CATEGORY_NAMES.put(4, "건강/의료");
-        MAIN_CATEGORY_NAMES.put(5, "교육/자기계발");
-        MAIN_CATEGORY_NAMES.put(6, "문화/여가");
+        MAIN_CATEGORY_NAMES.put(2, "주거비");
+        MAIN_CATEGORY_NAMES.put(3, "교통비");
+        MAIN_CATEGORY_NAMES.put(4, "의료비");
+        MAIN_CATEGORY_NAMES.put(5, "교육비");
+        MAIN_CATEGORY_NAMES.put(6, "여가/문화");
         MAIN_CATEGORY_NAMES.put(7, "의류/미용");
-        MAIN_CATEGORY_NAMES.put(8, "금융");
-        MAIN_CATEGORY_NAMES.put(9, "가전/가구");
-        MAIN_CATEGORY_NAMES.put(10, "생활용품");
-        MAIN_CATEGORY_NAMES.put(11, "경조사/기부");
-        MAIN_CATEGORY_NAMES.put(12, "기타");
+        MAIN_CATEGORY_NAMES.put(8, "통신비");
+        MAIN_CATEGORY_NAMES.put(9, "보험/금융");
+        MAIN_CATEGORY_NAMES.put(10, "가전/가구");
+        MAIN_CATEGORY_NAMES.put(11, "생활용품");
+        MAIN_CATEGORY_NAMES.put(12, "사회활동/경조사");
+        MAIN_CATEGORY_NAMES.put(13, "기타");
+        MAIN_CATEGORY_NAMES.put(14, "수입");
+        MAIN_CATEGORY_NAMES.put(18, "헬스");
     }
     private static final Map<String, Integer> SUB_TO_MAIN_CATEGORY_MAP = new HashMap<>();
     static {
@@ -283,16 +292,16 @@ public class ConsumptionService {
         SUB_TO_MAIN_CATEGORY_MAP.put("식료품", 1);
         SUB_TO_MAIN_CATEGORY_MAP.put("카페/디저트", 1);
         SUB_TO_MAIN_CATEGORY_MAP.put("배달음식", 1);
+        SUB_TO_MAIN_CATEGORY_MAP.put("편의점", 1);
 
         SUB_TO_MAIN_CATEGORY_MAP.put("월세/전세", 2);
         SUB_TO_MAIN_CATEGORY_MAP.put("관리비", 2);
         SUB_TO_MAIN_CATEGORY_MAP.put("전기/수도/가스", 2);
         SUB_TO_MAIN_CATEGORY_MAP.put("인터넷/TV", 2);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("대중교통", 3);
+        SUB_TO_MAIN_CATEGORY_MAP.put("대중교통", 4); 
         SUB_TO_MAIN_CATEGORY_MAP.put("주유비", 3);
         SUB_TO_MAIN_CATEGORY_MAP.put("택시비", 3);
-        SUB_TO_MAIN_CATEGORY_MAP.put("자동차 유지비", 3);
 
         SUB_TO_MAIN_CATEGORY_MAP.put("병원비", 4);
         SUB_TO_MAIN_CATEGORY_MAP.put("약국", 4);
@@ -308,24 +317,43 @@ public class ConsumptionService {
         SUB_TO_MAIN_CATEGORY_MAP.put("영화/공연", 6);
         SUB_TO_MAIN_CATEGORY_MAP.put("게임/취미", 6);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("의류", 7);
         SUB_TO_MAIN_CATEGORY_MAP.put("미용실/네일", 7);
         SUB_TO_MAIN_CATEGORY_MAP.put("화장품", 7);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("보험료", 8);
-        SUB_TO_MAIN_CATEGORY_MAP.put("저축/투자", 8);
-        SUB_TO_MAIN_CATEGORY_MAP.put("대출 상환", 8);
+        SUB_TO_MAIN_CATEGORY_MAP.put("통신비", 8);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("가전제품", 9);
-        SUB_TO_MAIN_CATEGORY_MAP.put("가구/인테리어", 9);
+        SUB_TO_MAIN_CATEGORY_MAP.put("보험료", 9);
+        SUB_TO_MAIN_CATEGORY_MAP.put("저축/투자", 9);
+        SUB_TO_MAIN_CATEGORY_MAP.put("대출 상환", 9);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("생활용품", 10);
+        SUB_TO_MAIN_CATEGORY_MAP.put("가전제품", 10);
+        SUB_TO_MAIN_CATEGORY_MAP.put("가구/인테리어", 10);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("경조사비", 11);
-        SUB_TO_MAIN_CATEGORY_MAP.put("기부/후원", 11);
+        SUB_TO_MAIN_CATEGORY_MAP.put("생활용품", 11);
 
-        SUB_TO_MAIN_CATEGORY_MAP.put("기타 지출", 12);
+        SUB_TO_MAIN_CATEGORY_MAP.put("경조사비", 12);
+        SUB_TO_MAIN_CATEGORY_MAP.put("기부/후원", 12);
+
+        SUB_TO_MAIN_CATEGORY_MAP.put("기타 지출", 13);
+
+        SUB_TO_MAIN_CATEGORY_MAP.put("급여", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("용돈", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("사업 수입", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("금융소득", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("기타 수입", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("상여금", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("환급금/보조금", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("부수입", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("아르바이트", 14);
+        SUB_TO_MAIN_CATEGORY_MAP.put("중고거래 판매금", 14);
+
+        SUB_TO_MAIN_CATEGORY_MAP.put("닭가슴살", 18);
+        SUB_TO_MAIN_CATEGORY_MAP.put("단백질쉐이크", 18);
+        SUB_TO_MAIN_CATEGORY_MAP.put("헬스장이용비", 18);
+        SUB_TO_MAIN_CATEGORY_MAP.put("보충제", 18);
+        SUB_TO_MAIN_CATEGORY_MAP.put("헬스용복압벨트", 18);
     }
+    
     public String analyzeCategoryExpenses(List<Map<String, Object>> categoryExpenses) {
         StringBuilder insightsText = new StringBuilder();
 
@@ -645,5 +673,130 @@ public class ConsumptionService {
         int deletedRows = consumptionMapper.deleteConsumptionFeedback(conInId);
         return deletedRows > 0;
     }
+    
+    public List<CategoryMainDTO> getAllExpenseCategories() {
+        return savingsPlanMapper.getAllExpenseCategories();
+    }
+
+    // 월별 예산 및 카테고리 정보 가져오기
+    public Map<String, Object> getSavingsPlanAndCategoriesByMonth(Integer memberIn, Integer saveIn, LocalDate startOfMonth, LocalDate endOfMonth) {
+        log.info("ConsumptionService getSavingsPlanAndCategoriesByMonth() 호출: memberIn={}, startOfMonth={}, endOfMonth={}" + memberIn + startOfMonth + endOfMonth);
+
+        Map<String, Object> result = new HashMap<>();
+
+        // 1. 해당 월의 SavingsPlan 조회
+        int month = startOfMonth.getMonthValue();
+        int year = startOfMonth.getYear();
+        Map<String, Object> savingsPlan = savingsPlanMapper.findSavingsPlanByMonthAndYear(memberIn, month, year);
+
+        if (savingsPlan != null && !savingsPlan.isEmpty()) {
+            // Integer saveIn = (Integer) savingsPlan.get("save_in"); // save_in 필드가 Map에 포함되어야 합니다.
+
+            // ⭐ 변경된 부분: saveIn 대신 memberIn, month, year를 전달합니다.
+            // 2. 수입 카테고리 조회
+            List<Map<String, Object>> incomeCategories = savingsPlanMapper.getIncomeCategoriesBySavingsPlanId(memberIn, month, year);
+            // 3. 지출 카테고리 조회
+            List<Map<String, Object>> expenseCategories = savingsPlanMapper.getExpenseCategoriesBySavingsPlanId(saveIn, month, year);
+
+            result.put("savingsPlan", savingsPlan);
+            result.put("incomeCategories", incomeCategories);
+            result.put("expenseCategories", expenseCategories);
+        } else {
+            log.info("해당 월에 저장된 예산 계획이 없습니다: memberIn=" + memberIn + ", month=" + month + ", year=" + year);
+        }
+        return result;
+    }
+    
+    public Map<String, Object> loadBudgetPlan(Integer memberIn, int year, int month) {
+        Map<String, Object> responseData = new HashMap<>();
+
+        try {
+            Map<String, Object> savingsPlan = savingsPlanMapper.findSavingsPlanByMonthAndYear(memberIn, month, year);
+            if (savingsPlan == null) {
+                savingsPlan = new HashMap<>();
+            }
+            responseData.put("savingsPlan", savingsPlan);
+
+            List<Map<String, Object>> incomeCategories = savingsPlanMapper.getIncomeCategoriesBySavingsPlanId(memberIn, month, year);
+            responseData.put("incomeCategories", incomeCategories);
+
+            return responseData;
+
+        } catch (Exception e) {
+            log.info("예산 로드 중 오류 발생: {}"+ e.getMessage()+ e);
+            throw new RuntimeException("예산 로드 중 오류가 발생했습니다.", e);
+        }
+    }
+    
+    @Transactional
+    public Map<String, Object> saveBudgetPlanAndDetails(
+            Integer memberIn, // memberIn을 서비스로 전달받습니다.
+            String saveName,
+            LocalDate saveCreatedDate,
+            LocalDate saveTargetDate,
+            Integer saveAmount,
+            List<SavingsDetail> expenseDetails) { // 지출 상세 목록 추가
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 1. 기존 SavingsPlan이 있는지 확인
+            // SavingsPlanDTO 대신 SavingsPlan 모델을 사용한다고 가정
+            SavingsPlanDTO existingPlan = savingsPlanMapper.findSavingsPlanByDateRange(memberIn, saveCreatedDate, saveTargetDate);
+
+            Integer saveIn;
+            if (existingPlan != null) {
+                // 2. 기존 플랜이 있으면 업데이트하고, 기존 상세 지출 내역 삭제 후 새로 삽입
+                saveIn = existingPlan.getSaveIn();
+                savingsPlanMapper.updateSavingsPlan2(
+                        saveIn, memberIn, saveName, saveCreatedDate, saveTargetDate, saveAmount);
+                
+                // 기존 상세 지출 내역 삭제
+                savingsDetailMapper.deleteSavingsDetailsBySaveIn(saveIn);
+                response.put("message", "기존 예산이 업데이트되었습니다.");
+
+            } else {
+                // 3. 새 플랜이면 삽입
+                // insertSavingsPlan은 saveIn을 반환하지 않으므로, getSaveIn을 호출해야 함
+                // 또는 Mapper에 useGeneratedKeys="true" keyProperty="saveIn"를 추가하여 DTO에 바로 저장되도록 변경
+                savingsPlanMapper.insertSavingsPlan(
+                        memberIn, saveName, saveCreatedDate, saveTargetDate, saveAmount);
+                
+                // 새로 삽입된 savings_plan의 save_in 값을 가져옵니다.
+                // 이 부분은 SavingsPlanMapper.xml의 insertSavingsPlan 쿼리에
+                // useGeneratedKeys="true" keyProperty="saveIn"를 추가하여 SavingsPlan 객체에 바로 saveIn이 설정되도록 하거나,
+                // 아니면 별도의 selectKey 또는 getSaveIn 메서드를 사용해야 합니다.
+                // 편의상, 지금은 month와 year를 통해 조회하는 방식으로 진행합니다.
+                saveIn = savingsPlanMapper.getSaveIn(memberIn, saveCreatedDate.getYear(), saveCreatedDate.getMonthValue());
+
+                if (saveIn == null) {
+                    throw new RuntimeException("새로 저장된 SavingsPlan의 save_in 값을 가져오지 못했습니다.");
+                }
+                response.put("message", "새로운 예산이 저장되었습니다.");
+            }
+
+            // 4. 지출 상세 항목 저장
+            if (saveIn != null && expenseDetails != null && !expenseDetails.isEmpty()) {
+                for (SavingsDetail detail : expenseDetails) {
+                    detail.setSaveIn(saveIn); // 각 상세 항목에 save_in 설정
+                }
+                savingsDetailMapper.insertSavingsDetailsBatch(expenseDetails); // 배치 삽입
+                response.put("message", response.get("message") + " 지출 상세 항목도 저장되었습니다.");
+            }
+
+            response.put("success", true);
+            response.put("savingsPlanId", saveIn); // 프론트엔드에서 필요할 수 있는 save_in 값 반환
+            return response;
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "예산 및 지출 상세 항목 저장/업데이트 중 오류 발생: " + e.getMessage());
+            return response;
+        }
+    }
+
+	public List<CategorySubDTO> getAllIncomeCategories() {
+		// TODO Auto-generated method stub
+		return savingsPlanMapper.getAllIncomeCategories();
+	}
     
 }

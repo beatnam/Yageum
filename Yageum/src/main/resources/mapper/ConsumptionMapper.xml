@@ -70,5 +70,7 @@
         SELECT COUNT(*) > 0  
         FROM consumption      WHERE con_in = #{conInId} AND member_in = #{memberIn}
     </select>
-
+	
+	
+	
 </mapper>

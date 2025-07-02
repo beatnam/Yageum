@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yageum.mapper.SavingsDetailMapper">
+
+    <insert id="insertSavingsDetail" parameterType="com.yageum.domain.SavingsDetail" useGeneratedKeys="true" keyProperty="sdIn">
+        INSERT INTO savings_detail (save_in, cm_in, sd_date, sd_cost)
+        VALUES (#{saveIn}, #{cmIn}, #{sdDate}, #{sdCost})
+    </insert>
+
+    <insert id="insertSavingsDetailsBatch" parameterType="java.util.List">
+        INSERT INTO savings_detail (save_in, cm_in, sd_date, sd_cost)
+        VALUES
+        <foreach collection="list" item="detail" separator=",">
+            (#{detail.saveIn}, #{detail.cmIn}, #{detail.sdDate}, #{detail.sdCost})
+        </foreach>
+    </insert>
+
+    <delete id="deleteSavingsDetailsBySaveIn" parameterType="int">
+        DELETE FROM savings_detail
+        WHERE save_in = #{saveIn}
+    </delete>
+
+</mapper>

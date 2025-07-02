@@ -115,6 +115,7 @@ public class ExpenseService {
 //			return cashbookMapper.getMonthList(memberIn, start, end);
 //		}
 
+		// 검색
 		public List<ExpenseDTO> searchExpense(Map<String, Object> paramMap) {
 			log.info("ExpenseService searchExpense() - param: {}", paramMap);
 			return cashbookMapper.searchExpense(paramMap);
