@@ -136,6 +136,11 @@ public class ExpenseService {
 			return cardRepository.findAll();
 		}
 
+		public List<Card> cardByMemberIn(int memberIn) {
+			
+			return cardRepository.findByMemberIn(memberIn);
+		}
+
 
 	  
 

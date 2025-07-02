@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.QuestDTO;
+import com.yageum.domain.QuestStateDTO;
 import com.yageum.mapper.AdminMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -62,5 +63,6 @@ public class AdminService {
 	public List<Map<Object, Object>> listQuest() {
 		return adminMapper.listQuest();
 	}
+
 
 }

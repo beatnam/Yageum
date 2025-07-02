@@ -31,6 +31,7 @@ import com.yageum.service.ExpenseService;
 import com.yageum.service.ItemService;
 import com.yageum.service.MemberService;
 import com.yageum.service.NoticeService;
+import com.yageum.service.QuestService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -50,6 +51,7 @@ public class AdminController {
 	private final NoticeService noticeService;
 	private final ConsumptionService consumptionService;
 	private final ExpenseService expenseService;
+	private final QuestService questService;
 	
 	//Repository			
 	private final CategoryMainRepository categoryMainRepository;
@@ -72,7 +74,26 @@ public class AdminController {
 	public String user_update(@RequestParam("memberId") String memberId, Model model) {
 		log.info("AdminController user_detail()");
 		Optional<Member> member = memberService.findByMemberId(memberId);
-
+		
+		
+		//퀘스트, 카드, 계좌 정보 가지고 오기
+		if(member.isPresent()) {
+			Member member2 = member.get();
+			
+			int memberIn = member2.getMemberIn();
+			
+			List<BankAccount> memberBank = expenseService.getAccountList(memberIn);
+			List<Card> memberCard = expenseService.cardByMemberIn(memberIn);
+			List<Map<Object, Object>> memberQuest = questService.listQuest(memberIn);
+			
+			model.addAttribute("quest", memberQuest);
+			model.addAttribute("bank", memberBank);
+			model.addAttribute("card" ,memberCard);
+		}else {
+			log.info("받아온 유저가 없습니다");
+		}
+		
+		
 		
 		log.info("가지고 온 값" + member.toString() + "===================");
 		
