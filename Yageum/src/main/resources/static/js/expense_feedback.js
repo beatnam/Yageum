@@ -2,7 +2,6 @@
 
 $(document).ready(function() {
     // CSRF 토큰 및 헤더 설정 (jQuery AJAX setup)
-    // HTML 파일의 <meta name="_csrf" ...> 태그에서 값을 가져옵니다.
     const csrfToken = $('meta[name="_csrf"]').attr('content');
     const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
     if (csrfToken && csrfHeader) {
@@ -18,17 +17,18 @@ $(document).ready(function() {
         success: function(response) {
             if (response === 0) {
                 $('#budgetAlertModal').css('display', 'flex');
-                $('#analysisContent').css('display', 'none');
+                // #analysisContent는 현재 HTML에 없는 ID이므로 주석 처리하거나 제거
+                // $('#analysisContent').css('display', 'none');
             } else {
                 $('#budgetAlertModal').css('display', 'none');
-                $('#analysisContent').css('display', 'block');
+                // $('#analysisContent').css('display', 'block');
             }
         },
         error: function(xhr, status, error) {
             console.error("'/checkPlan' 호출 중 오류 발생:", error);
             alert("예산 설정 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
             $('#budgetAlertModal').css('display', 'flex');
-            $('#analysisContent').css('display', 'none');
+            // $('#analysisContent').css('display', 'none');
         }
     });
 
@@ -43,11 +43,26 @@ $(document).ready(function() {
     });
 
     // '전반적으로 분석하기' 버튼에 이벤트 리스너 연결
-    // HTML에 `generateNewGoalsBtn` ID를 가진 버튼이 있어야 합니다.
+    // HTML의 해당 버튼에 id="generateNewGoalsBtn"를 추가해야 합니다.
     const generateGoalsBtn = document.getElementById('generateNewGoalsBtn');
     if (generateGoalsBtn) {
         generateGoalsBtn.addEventListener('click', generateNewGoals);
+    } else {
+        // ID가 없을 경우 클래스 선택자로 연결 (HTML 수정이 어렵다면 임시 방편)
+        // 이 경우, 버튼이 하나만 있어야 예상대로 동작합니다.
+        // $(".progress-section .btn").on('click', generateNewGoals);
+        console.warn("ID 'generateNewGoalsBtn'을 가진 버튼을 찾을 수 없습니다. HTML을 확인해주세요.");
     }
+
+    // DOM이 완전히 로드된 후 애니메이션 및 피드백 호출
+    // $(document).ready()는 DOMContentLoaded와 유사하므로,
+    // 이 블록 안에서 모든 초기화 작업을 수행하는 것이 일관성 있습니다.
+    animateScore();
+    animateProgressBars();
+    createProgressChart(); // 이 함수는 현재 콘솔 로그만 출력합니다.
+    animateCards();
+    fetchChatGptFeedback(); // 페이지 로드 시 피드백 가져오기
+
 });
 
 // 예산 설정 페이지로 리다이렉트 함수 (모달 버튼용)
@@ -60,20 +75,24 @@ function createProgressChart() {
     console.log("createProgressChart 함수가 호출되었습니다. (이 함수 내부에 차트 로직을 구현해야 합니다.)");
 }
 
+/*
+// DOMContentLoaded 리스너는 $(document).ready()와 중복되므로 제거하거나,
+// jQuery를 사용하지 않는 경우에만 사용합니다.
 document.addEventListener("DOMContentLoaded", function () {
     animateScore();
-    animateProgressBars();
-    createProgressChart(); // 이 함수는 현재 콘솔 로그만 출력합니다.
+    animateProgressBars(); // 이 부분은 $(document).ready()에서 호출되므로 중복될 수 있습니다.
+    createProgressChart();
     animateCards();
 
-    fetchChatGptFeedback(); // 페이지 로드 시 피드백 가져오기
+    fetchChatGptFeedback();
 });
+*/
 
 function animateScore() {
     const scoreElement = document.getElementById('overallScore');
     const targetScore = parseInt(scoreElement.innerText, 10);
     if (isNaN(targetScore)) {
-        console.warn("overallScore가 유효한 숫자가 아닙니다. 애니메이션을 건너뜀.");
+        console.warn("overallScore가 유효한 숫자가 아닙니다. 애니메이션을 건너뜜.");
         scoreElement.textContent = "0"; // 기본값 설정
         return;
     }
@@ -92,14 +111,22 @@ function animateScore() {
 }
 
 function animateProgressBars() {
+    // HTML에서 th:style로 설정된 width 값을 가져와 애니메이션
     const progressBars = document.querySelectorAll('.progress-fill');
     progressBars.forEach((bar, index) => {
-        const initialWidth = bar.style.width; // HTML에서 이미 설정된 width 값을 가져옴
-        bar.style.width = '0%'; // 초기화
+        // bar.style.width는 현재 계산된 스타일 (예: "75px")을 반환할 수 있으므로,
+        // CSS에서 설정된 width 값 (예: "75%")을 정확히 가져오기 위해 data 속성을 활용하거나,
+        // 아니면 computed style을 사용해야 합니다.
+        // 여기서는 HTML에 th:style로 %가 직접 들어가기 때문에, 그 값을 초기화하고 애니메이션하는 방식이 적합합니다.
+
+        // 초기 너비를 0%로 설정하여 애니메이션 시작
+        const initialWidth = bar.style.width; // '75%'와 같은 값 (Thymeleaf에서 설정된 값)
+        bar.style.width = '0%'; // 애니메이션을 위해 0으로 초기화
+
         setTimeout(() => {
-            bar.style.transition = 'width 2s ease-in-out'; // 애니메이션 추가
-            bar.style.width = initialWidth; // 원래 너비로 복원
-        }, 100 + (index * 200));
+            bar.style.transition = 'width 2s ease-in-out'; // 애니메이션 효과 추가
+            bar.style.width = initialWidth; // 원래 너비로 애니메이션
+        }, 100 + (index * 200)); // 각 진행 바마다 약간의 지연을 줘서 순차적으로 보이게
     });
 }
 
@@ -134,7 +161,7 @@ async function generateNewGoals(event) {
 
     console.log("컨트롤러로 전송할 AI 피드백 내용:", aiFeedback);
 
-    // ⭐ CSRF 토큰과 헤더 이름을 HTML 메타 태그에서 가져옵니다.
+    // CSRF 토큰과 헤더 이름을 HTML 메타 태그에서 가져옵니다.
     const csrfToken = $('meta[name="_csrf"]').attr('content');
     const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
 
@@ -150,14 +177,12 @@ async function generateNewGoals(event) {
     try {
         const response = await fetch('/consumption/efeedset', {
             method: 'POST',
-            // ⭐ 수정된 headers 객체를 사용합니다.
             headers: headers,
             body: JSON.stringify({
                 feedbackContent: aiFeedback
             })
         });
         if (!response.ok) {
-            // ... (기존 에러 처리 로직 동일) ...
             const errorResult = await response.json().catch(() => {
                 return response.text().then(text => ({ message: text || '알 수 없는 서버 오류' }));
             });

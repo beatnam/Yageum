@@ -8,20 +8,21 @@
         FROM member
         WHERE member_id = #{memberId}
     </select>
-
+    
     <select id="getCategoryExpenseByMemberId" resultType="map">
 	    SELECT
-	        c.cs_name AS category_name,
+	        cm.cm_name AS category_name,
 	        SUM(e.expense_sum) AS total_expense
 	    FROM expense e
-	    JOIN category_sub c ON e.cs_in = c.cs_in
+	    JOIN category_sub cs ON e.cs_in = cs.cs_in
+	    JOIN category_main cm ON cs.cm_in = cm.cm_in
 	    WHERE e.expense_date &gt;= CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE)
 	      AND e.expense_date &lt; DATE_ADD(CAST(DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AS DATE), INTERVAL 1 MONTH)
 	      AND e.expense_type = 1
 	      AND e.member_in = #{memberIn}
-	    GROUP BY c.cs_name
+	    GROUP BY cm.cm_name
 	    ORDER BY total_expense DESC
-    </select>
+	</select>
 
     <select id="getExpenseByLastMonth" resultType="map">
 	    SELECT

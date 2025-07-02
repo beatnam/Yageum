@@ -70,6 +70,15 @@ public class ConsumptionController {
         }
 
         List<Map<String, Object>> currentMonthCategoryExpenses = consumptionService.getCategoryExpenseByMemberId(memberIn);
+        // --- 1. 현재 월 지출 내역 로그 (이 로그의 출력이 필요합니다!) ---
+        log.info("현재 월 카테고리 지출 내역 (currentMonthCategoryExpenses): {}"+","+ currentMonthCategoryExpenses);
+
+
+        // --- 1. 카테고리별 예산 데이터 가져오기 시작 ---
+        Map<String, Integer> categoryBudgets = consumptionService.getCategoryBudgetsByMemberIn(memberIn); // 새로운 서비스 메서드
+        // --- 1. 카테고리별 예산 데이터 로그 (이 로그의 출력이 필요합니다!) ---
+        log.info("카테고리별 예산 데이터 (categoryBudgets): {}"+","+ categoryBudgets);
+        // --- 1. 카테고리별 예산 데이터 가져오기 끝 ---
 
         int totalExpense = currentMonthCategoryExpenses.stream()
             .mapToInt(expense -> {
@@ -105,48 +114,78 @@ public class ConsumptionController {
                 totalExpenseForCategory = ((Number) totalExpenseObj).intValue();
             }
 
+            // --- 2. 예산과 지출 비교 로직 추가 시작 ---
+            int budgetForCategory = categoryBudgets.getOrDefault(categoryName, 0); // 해당 카테고리 예산 가져오기
+            
+            // Log.info 구문 수정 완료!
+            log.info("처리 중 - 카테고리: {}, 총 지출: {}, 해당 카테고리 예산: {}"+","+ categoryName+","+ totalExpenseForCategory+","+ budgetForCategory);
+            
             String icon = "💡";
             String title = categoryName != null ? categoryName + " 지출" : "기타 지출";
             String status = "정보";
             String statusClass = "info";
-            String description = categoryName + "에 총 " + totalExpenseForCategory + "원 지출했습니다.";
+            String description = ""; // 초기화
 
             if (categoryName != null) {
-                switch (categoryName) {
-                    case "식비":
-                        icon = "🍽️";
-                        if (totalExpenseForCategory > 70000) {
-                            status = "주의";
-                            statusClass = "warning";
-                            description = "이번 달 식비가 " + totalExpenseForCategory + "원으로 높은 편입니다. 외식을 줄여보세요.";
-                        } else {
-                            status = "양호";
-                            statusClass = "good";
-                            description = "이번 달 식비는 " + totalExpenseForCategory + "원으로 잘 관리되고 있습니다.";
-                        }
-                        break;
-                    case "교통비":
-                        icon = "🚗";
-                        status = "절약";
+                if (budgetForCategory > 0) { // 예산이 설정된 경우
+                    if (totalExpenseForCategory > budgetForCategory) {
+                        status = "예산 초과";
+                        statusClass = "danger";
+                        description = String.format("이번 달 %s 지출이 예산 %d원을 %d원 초과했습니다. (%d원 지출)",
+                                            categoryName, budgetForCategory, (totalExpenseForCategory - budgetForCategory), totalExpenseForCategory);
+                        icon = "⚠️";
+                    } else if (totalExpenseForCategory <= budgetForCategory * 0.8) { // 예산의 80% 이하 사용
+                        status = "예산 절약";
                         statusClass = "good";
-                        description = "대중교통 이용으로 교통비를 효율적으로 관리하고 있습니다. " + totalExpenseForCategory + "원 지출.";
-                        break;
-                    case "쇼핑":
-                        icon = "🛍️";
-                        if (totalExpenseForCategory > 150000) {
-                            status = "개선 필요";
-                            statusClass = "danger";
-                            description = "이번 달 쇼핑 지출이 " + totalExpenseForCategory + "원으로 많습니다. 충동구매를 주의하세요.";
-                        } else {
-                            status = "양호";
+                        description = String.format("이번 달 %s 지출이 예산 %d원보다 적습니다. (%d원 지출)",
+                                            categoryName, budgetForCategory, totalExpenseForCategory);
+                        icon = "💰";
+                    } else { // 예산 범위 내
+                        status = "예산 내";
+                        statusClass = "info";
+                        description = String.format("이번 달 %s 지출은 예산 %d원 범위 내에 있습니다. (%d원 지출)",
+                                            categoryName, budgetForCategory, totalExpenseForCategory);
+                        icon = "✔️";
+                    }
+                } else { // 예산이 설정되지 않은 경우 기존 로직 유지
+                    description = categoryName + "에 총 " + totalExpenseForCategory + "원 지출했습니다.";
+                    switch (categoryName) {
+                        case "식비":
+                            icon = "🍽️";
+                            if (totalExpenseForCategory > 70000) {
+                                status = "주의";
+                                statusClass = "warning";
+                                description = "이번 달 식비가 " + totalExpenseForCategory + "원으로 높은 편입니다. 외식을 줄여보세요.";
+                            } else {
+                                status = "양호";
+                                statusClass = "good";
+                                description = "이번 달 식비는 " + totalExpenseForCategory + "원으로 잘 관리되고 있습니다.";
+                            }
+                            break;
+                        case "교통비":
+                            icon = "🚗";
+                            status = "절약";
                             statusClass = "good";
-                            description = "이번 달 쇼핑 지출은 " + totalExpenseForCategory + "원으로 적절합니다.";
-                        }
-                        break;
-                    default:
-                        break;
+                            description = "대중교통 이용으로 교통비를 효율적으로 관리하고 있습니다. " + totalExpenseForCategory + "원 지출.";
+                            break;
+                        case "쇼핑":
+                            icon = "🛍️";
+                            if (totalExpenseForCategory > 150000) {
+                                status = "개선 필요";
+                                statusClass = "danger";
+                                description = "이번 달 쇼핑 지출이 " + totalExpenseForCategory + "원으로 많습니다. 충동구매를 주의하세요.";
+                            } else {
+                                status = "양호";
+                                statusClass = "good";
+                                description = "이번 달 쇼핑 지출은 " + totalExpenseForCategory + "원으로 적절합니다.";
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
+            // --- 2. 예산과 지출 비교 로직 추가 끝 ---
 
             detail.put("icon", icon);
             detail.put("title", title);
@@ -156,10 +195,24 @@ public class ConsumptionController {
             processedFeedbackDetails.add(detail);
         }
 
-        List<Map<String, Object>> progressData = List.of(
-            Map.of("progressText", "식비 절약 45%", "progressPercentage", 45),
-            Map.of("progressText", "비상금 적립 92%", "progressPercentage", 92)
-        );
+        List<Map<String, Object>> progressData = new ArrayList<>(); // 리스트로 초기화
+        // 여기에 카테고리별 예산 대비 지출율을 progressData에 추가할 수 있습니다.
+        for (Map<String, Object> expenseEntry : currentMonthCategoryExpenses) {
+            String categoryName = (String) expenseEntry.get("category_name");
+            int totalExpenseForCategory = 0;
+            Object totalExpenseObj = expenseEntry.get("total_expense");
+            if (totalExpenseObj instanceof Number) {
+                totalExpenseForCategory = ((Number) totalExpenseObj).intValue();
+            }
+            int budgetForCategory = categoryBudgets.getOrDefault(categoryName, 0);
+            
+            if (budgetForCategory > 0) {
+                int progressPercentage = (int) ((double) totalExpenseForCategory / budgetForCategory * 100);
+                progressData.add(Map.of("progressText", String.format("%s 지출율 %d%%", categoryName, progressPercentage),
+                                        "progressPercentage", Math.min(100, progressPercentage))); // 100% 초과 방지
+            }
+        }
+
 
         Map<String, Object> feedbackSummary = new HashMap<>();
         feedbackSummary.put("overallScore", efficiencyScore);
@@ -175,8 +228,12 @@ public class ConsumptionController {
                    : "비상금이 안정적으로 관리되고 있습니다.")
         ));
         feedbackSummary.put("lastMonthAnalysis", lastMonthAnalysis);
-        feedbackSummary.put("progress", progressData);
-
+        feedbackSummary.put("progress", progressData); // 업데이트된 progressData 사용
+        
+        // Log.info 구문 수정 완료!
+        log.info("efeedbackData.progress: {}" +","+ feedbackSummary.get("progress"));
+        
+        
         model.addAttribute("efeedbackData", feedbackSummary);
 
         return "consumption/expense_feedback";
@@ -429,7 +486,8 @@ public class ConsumptionController {
 
             // ChatGPT에 보낼 prompt 생성
             StringBuilder promptBuilder = new StringBuilder();
-            promptBuilder.append("너는 소비 분석 전문가야. 다음 지출 데이터를 바탕으로 따뜻하고 이해하기 쉬운 어조로 자세히 분석하고, 장단점과 개선점을 피드백해줘. 전반적인 소비 패턴에 대한 의견과 평균 지출 대비 소비 사이즈가 어떤지에 대한 의견도 줘. 답변은 최대 300글자 내로 줄바꿈을 포함하여 가독성 있게 작성해줘.\n\n");
+            promptBuilder.append("너는 소비 분석 전문가야. 다음 지출 데이터를 바탕으로 따뜻하고 이해하기 쉬운 어조로 자세히 분석하고, 장단점과 개선점을 피드백해줘."
+            		+ "전반적인 소비 패턴에 대한 의견과 평균 지출 대비 소비 사이즈가 어떤지에 대한 의견도 줘. 답변은 최대 300글자 내로 줄바꿈을 포함하여 가독성 있게 작성해줘.\n\n");
 
             // 선택된 지표에 따라 프롬프트 내용 추가
             if (selectedMetrics.contains("totalExpense")) {

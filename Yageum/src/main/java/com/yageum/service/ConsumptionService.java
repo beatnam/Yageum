@@ -53,6 +53,21 @@ public class ConsumptionService {
         return expenseMapper.getCategoryExpenseByMemberId(memberIn);
     }
 
+    public Map<String, Integer> getCategoryBudgetsByMemberIn(Integer memberIn) {
+        List<Map<String, Object>> budgets = consumptionMapper.getCategoryBudgetsByMemberIn(memberIn);
+        Map<String, Integer> categoryBudgetMap = new HashMap<>();
+        for (Map<String, Object> budget : budgets) {
+            String categoryName = (String) budget.get("cm_name"); // 매퍼 쿼리에서 'cm_name'으로 가져온다고 가정
+            // sd_cost는 INT 타입이므로 직접 캐스팅 가능
+            Integer budgetAmount = (Integer) budget.get("sd_cost"); // 매퍼 쿼리에서 'sd_cost'로 가져온다고 가정
+            if (categoryName != null && budgetAmount != null) {
+                categoryBudgetMap.put(categoryName, budgetAmount);
+            }
+        }
+        return categoryBudgetMap;
+    }
+    
+    
     // 저번 달 소비 수준 분석
     public Map<String, Object> getLastMonthExpenseAnalysis(int memberIn) {
         log.info("ConsumptionService getLastMonthExpenseAnalysis() 호출: memberIn=" + memberIn);

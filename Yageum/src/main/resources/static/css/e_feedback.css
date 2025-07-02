@@ -1,450 +1,524 @@
 @charset "UTF-8";
 
-		.Page-Small-header {
-		    /* 컨테이너 배경 및 모양 */
-		    background-color: #4E342E; /* 아주 연한 라벤더 블러시 색상 */
-		    border-radius: 20px; /* 모서리를 둥글게 */
-		    padding: 15px 25px; /* 내부 여백 */
-		    margin: 25px auto; /* 위아래 여백 및 가운데 정렬 */
-		    max-width: 600px; /* 최대 너비 설정 (선택 사항) */
-		    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* 부드럽고 입체적인 그림자 */
-		    text-align: center; /* 텍스트 가운데 정렬 */
-		    display: flex; /* 내부 p 태그 정렬을 위해 flex 사용 */
-		    justify-content: center; /* 가로 중앙 정렬 */
-		    align-items: center; /* 세로 중앙 정렬 */
-		}
-		
-		.Page-Small-header p {
-		    /* 텍스트 스타일 */
-		    font-size: 28px; /* 글자 크기 */
-		    color: #FFF9E5; /* 진한 보라색 (Blue Violet) */
-		    font-weight: bold; /* 글자 굵기 */
-		    letter-spacing: 1.5px; /* 글자 간격 살짝 넓게 */
-		    line-height: 1.4; /* 줄 간격 */
-		    margin: 0; /* p 태그의 기본 margin 제거 */
-		    padding: 0; /* p 태그의 기본 padding 제거 */
-		}
+/* 기존 Page-Small-header 스타일 */
+.Page-Small-header {
+    background-color: #4E342E; /* 아주 연한 라벤더 블러시 색상 */
+    border-radius: 20px; /* 모서리를 둥글게 */
+    padding: 15px 25px; /* 내부 여백 */
+    margin: 25px auto; /* 위아래 여백 및 가운데 정렬 */
+    max-width: 600px; /* 최대 너비 설정 (선택 사항) */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* 부드럽고 입체적인 그림자 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    display: flex; /* 내부 p 태그 정렬을 위해 flex 사용 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+}
 
-		.main-wrapper {
-		    flex-grow: 1;
-		    padding: 20px;
-		    box-sizing: border-box;
-		    background-color: #FFF9E5;
-		}
+.Page-Small-header p {
+    font-size: 28px; /* 글자 크기 */
+    color: #FFF9E5; /* 진한 보라색 (Blue Violet) */
+    font-weight: bold; /* 글자 굵기 */
+    letter-spacing: 1.5px; /* 글자 간격 살짝 넓게 */
+    line-height: 1.4; /* 줄 간격 */
+    margin: 0; /* p 태그의 기본 margin 제거 */
+    padding: 0; /* p 태그의 기본 padding 제거 */
+}
 
-        .container {
-            max-width: 680px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #FFF9E5;
-        }
+/* 기존 main-wrapper 스타일 */
+.main-wrapper {
+    flex-grow: 1;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #FFF9E5;
+}
 
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
+/* 기존 container 스타일 */
+.container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #FFF9E5;
+}
 
-        .header h1 {
-            font-size: 2.5rem;
-            color: #8b4513;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            position: relative;
-            z-index: 1;
-        }
+/* 기존 Keyframes 및 Header 스타일 */
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
 
-        .header p {
-            font-size: 1.1rem;
-            color: #a0522d;
-            position: relative;
-            z-index: 1;
-        }
+.header h1 {
+    font-size: 2.5rem;
+    color: #8b4513;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1;
+}
 
-        .analysis-score {
-            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
-            border: 2px solid #ffd700;
-            position: relative;
-            overflow: hidden;
-        }
+.header p {
+    font-size: 1.1rem;
+    color: #a0522d;
+    position: relative;
+    z-index: 1;
+}
 
-        .score-circle {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: conic-gradient(#ff6b6b 0deg, #ffa500 72deg, #ffd700 144deg, #32cd32 216deg, #32cd32 360deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            position: relative;
-            animation: rotate 3s ease-in-out;
-        }
+/* 기존 analysis-score 스타일 */
+.analysis-score {
+    background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+    border: 2px solid #ffd700;
+    position: relative;
+    overflow: hidden;
+}
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+.score-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: conic-gradient(#ff6b6b 0deg, #ffa500 72deg, #ffd700 144deg, #32cd32 216deg, #32cd32 360deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    position: relative;
+    animation: rotate 3s ease-in-out;
+}
 
-        .score-inner {
-            width: 160px;
-            height: 160px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
-        .score-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #b8860b;
-            margin-bottom: 5px;
-        }
+.score-inner {
+    width: 160px;
+    height: 160px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
 
-        .score-label {
-            font-size: 1rem;
-            color: #666;
-        }
+.score-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #b8860b;
+    margin-bottom: 5px;
+}
 
-        .score-description {
-            font-size: 1.2rem;
-            color: #8b4513;
-            margin-bottom: 10px;
-        }
+.score-label {
+    font-size: 1rem;
+    color: #666;
+}
 
-        .score-subtitle {
-            color: #666;
-            font-size: 1rem;
-        }
+.score-description {
+    font-size: 1.2rem;
+    color: #8b4513;
+    margin-bottom: 10px;
+}
 
-		.feedback-grid {
-		    display: grid;
-		    /* 기존: grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); */
-		    /* 수정: 명시적으로 2개의 동일 너비 열을 생성 */
-		    grid-template-columns: repeat(2, 1fr); 
-		    gap: 25px; /* 기존 간격 유지 */
-		    margin-bottom: 30px;
-		}
-		
-		.feedback-card {
-		    background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
-		    border-radius: 20px;
-		    padding: 25px;
-		    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
-		    border: 2px solid #ffd700;
-		    transition: all 0.3s ease; 
-		    position: relative;
-		    overflow: hidden;
-		    
-		    /* 여기서 너비와 높이 제한을 다시 설정합니다. */
-		    min-height: 200px; 
-		    min-width: 300px;  
-		    max-width: 300px;  /* 이제 이 max-width가 더 잘 적용될 것입니다. */
-		    max-height: 200px; 
-		    
-		    box-sizing: border-box; /* padding과 border가 width/height에 포함되도록 */
-		    
-		    /* 카드 내용을 가운데 정렬하고 싶다면 */
-		    display: flex;
-		    flex-direction: column;
-		    justify-content: center;
-		    align-items: center;
-		    text-align: center;
-		}
+.score-subtitle {
+    color: #666;
+    font-size: 1rem;
+}
 
-        .feedback-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.25);
-        }
+/* 기존 feedback-grid 및 feedback-card 스타일 */
+.feedback-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 명시적으로 2개의 동일 너비 열을 생성 */
+    gap: 25px; /* 기존 간격 유지 */
+    margin-bottom: 30px;
+}
 
-        .feedback-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #ffd700, #ffb347, #ffd700);
-        }
+.feedback-card {
+    background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+    border: 2px solid #ffd700;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 
-        .feedback-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            display: block;
-        }
+    /* 여기서 너비와 높이 제한을 다시 설정합니다. */
+    min-height: 200px;
+    min-width: 300px;
+    max-width: 300px;
+    max-height: 200px;
 
-        .feedback-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #b8860b;
-            margin-bottom: 15px;
-        }
+    box-sizing: border-box; /* padding과 border가 width/height에 포함되도록 */
 
-        .feedback-content {
-            color: #555;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            max-width: 600px;
-        }
+    /* 카드 내용을 가운데 정렬하고 싶다면 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
 
-        .feedback-status {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+.feedback-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.25);
+}
 
-        .status-good {
-            background: #d4edda;
-            color: #155724;
-        }
+.feedback-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ffd700, #ffb347, #ffd700);
+}
 
-        .status-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
+/* 기존 feedback-icon, feedback-title 등 스타일 */
+.feedback-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    display: block;
+}
 
-        .status-danger {
-            background: #f8d7da;
-            color: #721c24;
-        }
+.feedback-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #b8860b;
+    margin-bottom: 15px;
+}
 
-        .recommendations {
-            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
-            border: 2px solid #ffd700;
-        }
+.feedback-content {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    max-width: 600px;
+}
 
-        .recommendations h3 {
-            font-size: 1.5rem;
-            color: #b8860b;
-            margin-bottom: 20px;
-            text-align: center;
-            border-bottom: 2px solid #ffd700;
-            padding-bottom: 10px;
-        }
+.feedback-status {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
 
-        .recommendation-item {
-            background: linear-gradient(135deg, #fffef7 0%, #fff 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-left: 5px solid #ffd700;
-            transition: all 0.3s ease;
-        }
+.status-good {
+    background: #d4edda;
+    color: #155724;
+}
 
-        .recommendation-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-        }
+.status-warning {
+    background: #fff3cd;
+    color: #856404;
+}
 
-        .recommendation-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
+.status-danger {
+    background: #f8d7da;
+    color: #721c24;
+}
 
-        .recommendation-text {
-            display: inline-block;
-            vertical-align: middle;
-            width: calc(100% - 40px);
-        }
+/* 기존 recommendations 스타일 */
+.recommendations {
+    background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+    border: 2px solid #ffd700;
+}
 
-        .recommendation-title {
-            font-weight: bold;
-            color: #8b4513;
-            margin-bottom: 5px;
-        }
+.recommendations h3 {
+    font-size: 1.5rem;
+    color: #b8860b;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #ffd700;
+    padding-bottom: 10px;
+}
 
-        .recommendation-desc {
-            color: #666;
-            font-size: 0.9rem;
-        }
+.recommendation-item {
+    background: linear-gradient(135deg, #fffef7 0%, #fff 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-left: 5px solid #ffd700;
+    transition: all 0.3s ease;
+}
 
-        .progress-section {
-            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
-            border: 2px solid #ffd700;
-        }
+.recommendation-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+}
 
-        .progress-section h3 {
-            font-size: 1.5rem;
-            color: #b8860b;
-            margin-bottom: 20px;
-            text-align: center;
-            border-bottom: 2px solid #ffd700;
-            padding-bottom: 10px;
-        }
+.recommendation-icon {
+    font-size: 1.5rem;
+    margin-right: 10px;
+    vertical-align: middle;
+}
 
-        .progress-item {
-            margin-bottom: 20px;
-        }
+.recommendation-text {
+    display: inline-block;
+    vertical-align: middle;
+    width: calc(100% - 40px);
+}
 
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #8b4513;
-        }
+.recommendation-title {
+    font-weight: bold;
+    color: #8b4513;
+    margin-bottom: 5px;
+}
 
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: #f0e68c;
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-        }
+.recommendation-desc {
+    color: #666;
+    font-size: 0.9rem;
+}
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ffd700, #ffb347);
-            border-radius: 6px;
-            transition: width 2s ease-in-out;
-            position: relative;
-        }
+/* --- 예산 대비 지출 진행률 섹션 스타일 추가 --- */
+.progress-section-container { /* 기존 .progress-section과 명확히 구분 */
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
 
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: progress-shine 2s infinite;
-        }
+.progress-section-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 1.6em;
+}
 
-        @keyframes progress-shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
+/* 각 진행바 아이템 스타일 - feedback-card와 유사하게 */
+.progress-item {
+    background-color: #fff;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column; /* 세로로 쌓이도록 변경 */
+    gap: 10px; /* 텍스트와 바 사이 간격 */
+}
 
-        .goals-section {
-            background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
-            border: 2px solid #ffd700;
-        }
+.progress-item .progress-text {
+    font-weight: bold;
+    color: #555;
+    font-size: 1.1em;
+}
 
-        .goals-section h3 {
-            font-size: 1.5rem;
-            color: #b8860b;
-            margin-bottom: 20px;
-            text-align: center;
-            border-bottom: 2px solid #ffd700;
-            padding-bottom: 10px;
-        }
+.progress-bar-container { /* 기존 .progress-bar와 명확히 구분 */
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+}
 
-        .goal-card {
-            background: linear-gradient(135deg, #fffef7 0%, #fff 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid #f0e68c;
-            transition: all 0.3s ease;
-        }
+.progress-fill { /* 기존 .progress-fill과 명확히 구분 */
+    height: 25px; /* 진행바 높이 */
+    background-color: #4CAF50; /* 기본 채우기 색상 */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 텍스트를 오른쪽으로 정렬 */
+    padding-right: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9em;
+    box-sizing: border-box;
+    /* transition 속성은 JS에서 동적으로 추가되므로 여기에 명시하지 않음 */
+}
 
-        .goal-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
-        }
+/* 퍼센티지 값에 따라 색상 변화 (선택 사항) */
+.progress-fill[style*="width: 100%"] { /* 100% 도달 시 */
+    background-color: #f44336; /* 빨간색 (예산 초과) */
+}
+.progress-fill[style*="width: 9"] { /* 90% 이상 */
+    background-color: #ff9800; /* 주황색 (예산 근접) */
+}
+/* --- 예산 대비 지출 진행률 섹션 스타일 추가 끝 --- */
 
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
 
-        .goal-title {
-            font-weight: bold;
-            color: #8b4513;
-        }
+/* 기존 progress-section (버튼만 있는 곳) - 이 부분은 HTML에서 이름이 겹치지 않게 주의 */
+/* 현재 HTML에서 progress-section이 버튼만 감싸고 있으니, 이 스타일은 버튼에만 적용될 것 같습니다. */
+.progress-section {
+    background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 30px; /* 위쪽 여백 조정 */
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+    border: 2px solid #ffd700;
+}
 
-        .goal-status {
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
+.progress-section h3 { /* 이 h3는 현재 HTML에 없으므로 적용되지 않음 */
+    font-size: 1.5rem;
+    color: #b8860b;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #ffd700;
+    padding-bottom: 10px;
+}
 
-        .btn {
-            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
-            color: #8b4513;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            display: block;
-            margin: 20px auto 0;
-        }
+/* 기존 progress-item, progress-label, progress-bar (이전 HTML에서 사용된 경우) */
+/* 새로운 HTML 구조에서는 progress-item, progress-bar-container, progress-fill이 위에 정의된 스타일을 따릅니다. */
+/* 이 부분은 삭제되거나 사용되지 않을 수 있습니다. */
+/*
+.progress-item {
+    margin-bottom: 20px;
+}
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
-        }
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #8b4513;
+}
 
-        @media (max-width: 768px) {
-            .feedback-grid {
-		        /* 작은 화면에서는 다시 1열로 변경하여 반응형 대응 */
-		        grid-template-columns: 1fr;
-		    }
-            .feedback-card {
-		        /* 작은 화면에서는 너비를 100%로 유연하게 만듭니다. */
-		        min-width: unset; /* 최소 너비 제한 해제 */
-		        max-width: 100%; /* 화면에 꽉 차도록 */
-		    }
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .score-circle {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .score-inner {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .score-number {
-                font-size: 2.5rem;
-            }
-        }
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #f0e68c;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+*/
 
-        .chart-container {
-            height: 300px;
-            margin: 20px 0;
-        }
+/* progress-fill 애니메이션 (기존) - 새로운 progress-fill에는 JS에서 트랜지션이 적용되므로 이 부분은 참고용 */
+/*
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: progress-shine 2s infinite;
+}
 
-        canvas {
-            max-height: 250px !important;
-        }
-        
-        /* 모달 배경 */
+@keyframes progress-shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+*/
+
+/* 기존 goals-section 및 goal-card 스타일 */
+.goals-section {
+    background: linear-gradient(135deg, #fff 0%, #fffef7 100%);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+    border: 2px solid #ffd700;
+}
+
+.goals-section h3 {
+    font-size: 1.5rem;
+    color: #b8860b;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #ffd700;
+    padding-bottom: 10px;
+}
+
+.goal-card {
+    background: linear-gradient(135deg, #fffef7 0%, #fff 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #f0e68c;
+    transition: all 0.3s ease;
+}
+
+.goal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.goal-title {
+    font-weight: bold;
+    color: #8b4513;
+}
+
+.goal-status {
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* 기존 btn 스타일 */
+.btn {
+    background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+    color: #8b4513;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    display: block;
+    margin: 20px auto 0;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* 기존 미디어 쿼리 */
+@media (max-width: 768px) {
+    .feedback-grid {
+        grid-template-columns: 1fr; /* 작은 화면에서는 다시 1열로 변경하여 반응형 대응 */
+    }
+    .feedback-card {
+        min-width: unset; /* 최소 너비 제한 해제 */
+        max-width: 100%; /* 화면에 꽉 차도록 */
+    }
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .score-circle {
+        width: 150px;
+        height: 150px;
+    }
+
+    .score-inner {
+        width: 120px;
+        height: 120px;
+    }
+
+    .score-number {
+        font-size: 2.5rem;
+    }
+}
+
+/* 기존 chart-container 및 canvas 스타일 */
+.chart-container {
+    height: 300px;
+    margin: 20px 0;
+}
+
+canvas {
+    max-height: 250px !important;
+}
+
+/* 기존 모달 관련 스타일 */
 .modal {
     display: none; /* 기본적으로 숨김 */
     position: fixed; /* 화면에 고정 */
@@ -459,7 +533,6 @@
     align-items: center; /* 수직 중앙 정렬 */
 }
 
-/* 모달 내용 상자 */
 .modal-content {
     background-color: #fefefe;
     margin: auto; /* flexbox 사용 시 필요 없을 수도 있음 */
@@ -473,7 +546,6 @@
     position: relative; /* 닫기 버튼 위치 지정을 위해 */
 }
 
-/* 닫기 버튼 */
 .close-button {
     color: #aaa;
     float: right; /* 오른쪽으로 부동 */
@@ -492,7 +564,16 @@
     cursor: pointer;
 }
 
-/* 모달 내 버튼 스타일 (기존 .btn 스타일 활용) */
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
 .modal-content .btn {
     background-color: #007bff; /* 파란색 */
     color: white;
@@ -506,4 +587,33 @@
 
 .modal-content .btn:hover {
     background-color: #0056b3;
+}
+
+/* 로딩 스피너 (JS에서 사용) */
+.loading-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #4CAF50;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Goal status 색상 추가 */
+.goal-status.status-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.goal-status.status-danger {
+    background-color: #f8d7da;
+    color: #721c24;
 }
