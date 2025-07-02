@@ -29,7 +29,7 @@ public class ScheduleController {
 
 	}
 
-	@Scheduled(cron = "58 59 23 * * *")
+	@Scheduled(cron = "59 59 23 * * *")
 	public void loginStraight() {
 		// 매일밤 자정 직전에 최근 로그인 날짜가 오늘과 같은지 비교후 같으면 연속출석 + 1
 		List<MemberDTO> memberList = memberService.listMemberLastLogin();
@@ -44,8 +44,7 @@ public class ScheduleController {
 		}
 	}
 
-	// cron = "0/1 * * * * *"
-	@Scheduled(cron = "58 59 23 * * *")
+	@Scheduled(cron = "0/1 * * * * *")
 	public void expenseStraight() {
 		List<ExpenseDTO> memberExpense = memberService.listMemberLastExpense();
 		
