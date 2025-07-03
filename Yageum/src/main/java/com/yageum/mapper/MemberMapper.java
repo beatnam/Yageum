@@ -33,6 +33,10 @@ public interface MemberMapper {
 	public void updateMemberStraightZero(int memberIn);
 
 	public void updateMemberExpenseZero(int memberIn);
+
+	public MemberDTO infoMember2(String email);
+
+	public MemberDTO infoMember3(String phone);
 	
 
 }

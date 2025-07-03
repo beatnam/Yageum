@@ -117,6 +117,26 @@
 	color: white;
 }
 
+/* 이미지와 유사한 스타일로 수정된 버튼 */
+.action-btn {
+	background-color: #ff7e79;        /* 이미지와 유사한 살구색 */
+	color: white;
+	border: none;
+	padding: 6px 14px;
+	border-radius: 25px;
+	font-size: 12px;
+	font-weight: 500;
+	cursor: pointer;
+	font-family: "맑은 고딕", sans-serif;
+	transition: background-color 0.2s ease;
+	text-align: center;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* 입체감 효과 */
+}
+
+.action-btn:hover {
+	background-color: #ff5f5f;        /* 호버 시 진한 살구 */
+}
+
 /* 진행률 표시 */
 .progress-indicator {
 	text-align: center;
@@ -152,6 +172,7 @@
 	margin-bottom: 20px;
 }
 
+/* 유효하지 않은 항목 스타일 */
 .invalid-row {
 	background-color: #f0f0f0;
 	color: #999;

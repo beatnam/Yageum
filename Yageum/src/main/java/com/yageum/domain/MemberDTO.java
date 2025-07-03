@@ -30,6 +30,7 @@ public class MemberDTO {
 	private int memberReward;
 	private boolean memberIsFirst;
 	private int memberStraight;
+	private int memberExpense;
 
 	//비밀번호 변경용
 	private String newPassword;

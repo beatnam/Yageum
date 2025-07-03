@@ -41,6 +41,8 @@ public class MemberService {
 		memberDTO.setMemberState("정상");
 		memberDTO.setMemberIsFirst(true);
 		memberDTO.setMemberReward(0);
+		memberDTO.setMemberStraight(0);
+		memberDTO.setMemberExpense(0);
 		memberMapper.joinMember(memberDTO);
 
 	}
@@ -63,7 +65,8 @@ public class MemberService {
 		memberDTO.setMemberState("정상");
 		memberDTO.setMemberIsFirst(true);
 		memberDTO.setMemberReward(0);
-
+		memberDTO.setMemberStraight(0);
+		memberDTO.setMemberExpense(0);
 		memberMapper.joinMember(memberDTO);
 	}
 
@@ -151,6 +154,16 @@ public class MemberService {
 
 	public void updateMemberExpenseZero(int memberIn) {
 		memberMapper.updateMemberExpenseZero(memberIn);
+	}
+
+	public MemberDTO infoMember2(String email) {
+		// TODO Auto-generated method stub
+		return memberMapper.infoMember2(email);
+	}
+
+	public MemberDTO infoMember3(String phone) {
+		// TODO Auto-generated method stub
+		return memberMapper.infoMember3(phone);
 	}
 
 	// 관리자 페이지 사용자 권한 부여----------------------------

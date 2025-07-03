@@ -49,7 +49,7 @@ public class Card {
     private int ccIn;
     
     @Column(name = "method_in")
-    private int methodIn;
+    private Integer methodIn;
     
     @ManyToOne
     @JoinColumn(name = "cc_in", insertable = false, updatable = false)
