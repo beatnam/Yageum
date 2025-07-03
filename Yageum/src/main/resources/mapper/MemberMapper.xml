@@ -26,6 +26,18 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where member_id = #{memberId}
 
 	</select>
+	
+	<select id = "infoMember2" resultType="com.yageum.domain.MemberDTO">
+		select *
+		from member
+		where member_email = #{memberEmail}
+	</select>
+	
+	<select id = "infoMember3" resultType="com.yageum.domain.MemberDTO">
+		select *
+		from member
+		where member_phone = #{memberPhone}
+	</select>
 
 	<select id="loginMember" parameterType="String"
 		resultType="com.yageum.domain.MemberDTO">

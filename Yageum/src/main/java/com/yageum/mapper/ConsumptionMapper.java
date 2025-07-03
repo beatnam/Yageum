@@ -27,4 +27,7 @@ public interface ConsumptionMapper {
     boolean checkFeedbackOwnership(@Param("conInId") Integer conInId, @Param("memberIn") Integer memberIn);
 
     int deleteConsumptionFeedback(@Param("conInId") Integer conInId);
+    
+    List<Map<String, Object>> getCategoryBudgetsByMemberIn(@Param("memberIn") Integer memberIn);
+    
 }

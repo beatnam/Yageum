@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
 	<meta charset="UTF-8">
 	<title>야금야금 - 오픈뱅킹 가계부</title>
@@ -8,7 +9,9 @@
 	<!-- Google Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap" rel="stylesheet">
+	<link
+		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
+		rel="stylesheet">
 
 	<link rel="stylesheet" href="../css/common.css">
 	<link rel="stylesheet" href="../css/cashbook_quest.css">
@@ -38,18 +41,20 @@
 					</thead>
 					<tbody id="questTableBody">
 						<tr th:each="itemDTO : ${itemList}">
-							<form th:action="@{/quest/buy_item}" method="post" th:object="${itemDTO}">
-								<td th:text="${itemDTO.itemIn}"></td>
-								<td th:text="${itemDTO.itemName}"></td>
-								<td th:text="${itemDTO.itemPrice} + ' 포인트'"></td>
-								<td>
+							<td th:text="${itemDTO.itemIn}"></td>
+							<td th:text="${itemDTO.itemName}"></td>
+							<td th:text="${itemDTO.itemPrice} + ' 포인트'"></td>
+							<td>
+								<form th:action="@{/quest/buy_item}" method="post">
 									<input type="hidden" name="itemIn" th:value="${itemDTO.itemIn}" />
-									<button type="submit" class="action-btn edit">구매하기</button>
-								</td>
-								<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
-							</form>
+									<input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+									<button type="submit" class="action-btn edit"
+										onclick="return confirm('이 아이템을 구매하시겠습니까?')">구매하기</button>
+								</form>
+							</td>
 						</tr>
 					</tbody>
+
 				</table>
 			</div>
 
@@ -73,6 +78,16 @@
 				window.location.href = '/logout';
 			}
 		}
+
+		function buyItem(button) {
+			if (confirm('이 아이템을 구매하시겠습니까?')) {
+				const form = button.closest('form');
+				if (form) {
+					form.submit();
+				}
+			}
+		}
 	</script>
 </body>
+
 </html>
