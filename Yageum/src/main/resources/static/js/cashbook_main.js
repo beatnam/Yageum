@@ -160,7 +160,7 @@
                 currentYear--;
             }
             
-            generateCalendar(currentYear, currentMonth);
+            fetchTransactionData(currentYear, currentMonth);
         }
 
 		
@@ -200,7 +200,7 @@
  		            const uri = "/notice/main";
 					setTimeout(function(){
 
-					window.open(uri, "popup", "height=540, width=600, scrollbars=yes, resizable=yes"); // 추가 옵션 포함 예시
+					window.open(uri, "popup", "height=685, width=626, scrollbars=yes, resizable=yes"); // 추가 옵션 포함 예시
 					}, 100);
  		        }
 			 	 		       

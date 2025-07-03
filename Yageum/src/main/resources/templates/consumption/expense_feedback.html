@@ -56,6 +56,17 @@
             </div>
         </div>
 
+        <div class="progress-section-container">
+            <h2>예산 대비 지출 현황</h2>
+            <div th:each="progress : ${efeedbackData.progress}" class="progress-item feedback-card">
+                <div class="progress-text" th:text="${progress.progressText}">식비 절약 45%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-fill" th:style="'width: ' + ${progress.progressPercentage} + '%'">
+                        <span th:text="${progress.progressPercentage} + '%'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="goal-card">
             <div class="goal-header">
                 <div class="goal-title">AI 맞춤형 소비 피드백</div>
@@ -67,7 +78,7 @@
         </div>
 
         <div class="progress-section">
-            <button class="btn" onclick="generateNewGoals(event)">전반적으로 분석하기</button>
+            <button class="btn" onclick="generateNewGoals(event)" id="generateNewGoalsBtn">전반적으로 분석하기</button>
         </div>
     </div>
     </div>

@@ -122,19 +122,19 @@
 	                   <tr>
 	                       <td>연결된 계좌 수</td>
 	                       <td>
-	                           <input type="text" class="form-input readonly" value="3개" readonly>
+	                           <input type="text" class="form-input readonly" th:value="${bank.size()}" readonly>
 	                       </td>
 	                   </tr>
 	                   <tr>
 	                       <td>연결된 카드 수</td>
 	                       <td>
-	                           <input type="text" class="form-input readonly" value="2개" readonly>
+	                           <input type="text" class="form-input readonly" th:value="${card.size()}" readonly>
 	                       </td>
 	                   </tr>
 	                   <tr>
 	                       <td>달성한 퀘스트 수</td>
 	                       <td>
-	                           <input type="text" class="form-input readonly" value="47개" readonly>
+	                           <input type="text" class="form-input readonly" th:value="${quest.size()}" readonly>
 	                       </td>
 	                   </tr>
 	               </table>

@@ -14,7 +14,25 @@
         WHERE member_in = #{memberIn}
         ORDER BY con_month DESC, con_in DESC 
     </select>
-
+	
+	<select id="getCategoryBudgetsByMemberIn" resultType="java.util.HashMap">
+	    SELECT
+	        cm.cm_name,
+	        sd.sd_cost
+	    FROM
+	        savings_detail sd
+	    JOIN
+	        category_main cm ON sd.cm_in = cm.cm_in
+	    JOIN
+	        savings_plan s ON sd.save_in = s.save_in
+	    WHERE
+	        s.member_in = #{memberIn}
+	        AND s.save_created_date = CURDATE() - INTERVAL (DAY(CURDATE()) - 1) DAY
+	</select>
+	
+	
+	
+	
     <select id="findConsumptionByMemberAndMonth" resultType="map">
         SELECT
             con_in,

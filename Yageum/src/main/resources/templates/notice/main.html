@@ -87,7 +87,7 @@
 
         // 오늘 하루 보지 않기
         function closeTodayPopup() {
-			alert("클릭");
+			//alert("클릭");
 			const cookieName = "hideLoginPopupToday";
 			const now = new Date();
 			const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0); 
@@ -116,6 +116,29 @@
 			location.href="/notice/content?noticeIn=" + noticeIn;
 			
         }
+		/*
+		window.onload = function() {
+		    // 팝업창의 body 요소 크기를 측정합니다.
+		    // 스크롤 영역을 포함한 실제 콘텐츠 크기를 가져옵니다.
+		    var bodyWidth = document.body.scrollWidth;
+		    var bodyHeight = document.body.scrollHeight;
+
+		    // 부모 창으로 크기 정보를 보냅니다.
+		    // window.opener는 팝업을 연 부모 창을 참조합니다.
+		    if (window.opener) {
+		        // postMessage를 사용하여 부모 창에 메시지를 보냅니다.
+		        // 첫 번째 인자는 보낼 데이터 객체, 두 번째 인자는 대상 origin (보안상 중요)
+		        window.opener.postMessage({
+		            type: 'resizePopup', // 메시지 타입 (부모가 식별하기 위함)
+		            width: bodyWidth,
+		            height: bodyHeight
+		        }, 'http://localhost:8080/cashbook/main'); // 중요: 실제 서비스에서는 '*' 대신 부모 페이지의 정확한 origin (예: 'http://localhost:8080' 또는 'https://yourdomain.com')을 넣어 보안을 강화해야 합니다.
+		    }
+		};
+		
+		*/
+		
+		
     </script>
 </body>
 </html>

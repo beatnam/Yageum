@@ -2,6 +2,7 @@ package com.yageum.service;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,11 +20,13 @@ import lombok.extern.java.Log;
 @Log
 @RequiredArgsConstructor
 public class OpenBankingApiClient {
+	
+	
+   @Value("${openbanking.id}")
+   private String client_id;
    
-//   private String client_id = "본인  client_id";
-//   private String client_secret = "본인 client_secret";
-   private String client_id = "client_id";
-   private String client_secret = "client_secret";
+   @Value("${openbanking.secret}")
+   private String client_secret;
 
    private String redirect_uri = "http://localhost:8080/openbanking/callback";
    private String grant_type = "authorization_code";
