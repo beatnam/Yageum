@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -52,11 +53,15 @@ public class MypageController {
 	private final ExpenseService expenseService;
 	private final MypageService mypageService;
 	
+	@Value("${openbanking.id}")
+	   private String client_id;
 	
 	//오픈뱅킹 API 적용 페이지
 	@GetMapping("/openbanking")
-	public String openbanking() {
+	public String openbanking(Model model) {
 		log.info("MypageController openbanking()");
+		
+		 model.addAttribute("client_id", client_id);
 		
 		return "/mypage/mypage_openbanking";
 	}
