@@ -1,8 +1,13 @@
 package com.yageum.controller;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yageum.domain.CategoryMainDTO;
 import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.ItemDTO;
@@ -128,18 +134,80 @@ public class AdminController {
 		log.info("AdminController state()");
 	//
 		List<CategorySub> categorySub = categoryService.cateSFindAll();
-		List<Member> member = memberService.adminInfo();
+		List<Member> memberList = memberService.adminInfo();
 		List<BankAccount> bankAccount = expenseService.accountAll();
 //		log.info(bankAccount.toString());
 		List<Card> cardList = expenseService.cardAll();
 //		log.info(cardList.toString());
 		
+		//차트 가공
+		
+		try {	//월별 차트 데이터
+		int currentYear = LocalDate.now().getYear(); // 현재 연도 가져오기 (예: 2025)
+
+		// 올해 가입한 회원만 필터링하고, 월별 가입자 수를 집계합니다.
+		Map<Integer, Long> monthlyCounts = memberList.stream()
+				.filter(member -> member.getCreateDate() != null && member.getCreateDate().getYear() == currentYear) // null 체크 및 올해만 필터링
+				.collect(Collectors.groupingBy(
+					member -> member.getCreateDate().getMonthValue(), // 월(1~12) 기준으로 그룹화
+					Collectors.counting() // 각 그룹의 요소(멤버) 수 세기
+				));
+		
+		List<String> monthlyLabels = new ArrayList<>();
+		List<Long> monthlyData = new ArrayList<>();     
+
+		for (int monthNum = 1; monthNum <= 12; monthNum++) {
+			monthlyLabels.add(Month.of(monthNum).getDisplayName(java.time.format.TextStyle.SHORT, Locale.getDefault()));
+			monthlyData.add(monthlyCounts.getOrDefault(monthNum, 0L));
+		}
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		
+		model.addAttribute("monthlyLabelsJson", objectMapper.writeValueAsString(monthlyLabels));
+		model.addAttribute("monthlyDataJson", objectMapper.writeValueAsString(monthlyData));
 		
 		
+		
+		}catch(Exception e ) {
+			e.printStackTrace();
+		}
+
+		
+		
+		try {	//년도 별 차트 
+			Map<Integer, Long> yearlyCounts = memberList.stream() // 'member' 변수 사용
+					.filter(m -> m.getCreateDate() != null) // 'm'은 stream 내부의 개별 Member 객체
+					.collect(Collectors.groupingBy(
+						m -> m.getCreateDate().getYear(),
+						Collectors.counting()
+					));
+
+			List<String> yearlyLabels = new ArrayList<>();
+			List<Long> yearlyData = new ArrayList<>();     
+
+			yearlyCounts.entrySet().stream()
+					.sorted(Map.Entry.comparingByKey())
+					.forEach(entry -> {
+						yearlyLabels.add(entry.getKey() + "년");
+						yearlyData.add(entry.getValue());
+					});
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			model.addAttribute("yearlyLabelsJson", objectMapper.writeValueAsString(yearlyLabels));
+			model.addAttribute("yearlyDataJson", objectMapper.writeValueAsString(yearlyData));
+			
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	
 		
 		model.addAttribute("card", cardList);
 		model.addAttribute("bank", bankAccount);
-		model.addAttribute("member", member);
+		model.addAttribute("member", memberList);
 		model.addAttribute("cateSub", categorySub);
 		
 		return "/admin/admin_state";
