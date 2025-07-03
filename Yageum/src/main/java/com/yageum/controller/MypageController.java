@@ -58,7 +58,7 @@ public class MypageController {
 	public String openbanking() {
 		log.info("MypageController openbanking()");
 		
-		return "/mypage/mypage_openbanking2";
+		return "/mypage/mypage_openbanking";
 	}
 	
 	

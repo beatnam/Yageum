@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오픈뱅킹 연결</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+    <link rel="stylesheet" href="/css/my_page.css">
+    <link rel="stylesheet" href="/css/my_page_openbanking.css">
+	<style>
+		.account-box {
+		    background-color: #fff;
+		    border-radius: 16px;
+		    padding: 30px 40px;
+		    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		    max-width: 400px;
+		    margin: 30px auto;
+		    font-family: 'Gowun Dodum', sans-serif;
+		    color: #333;
+		    text-align: center;
+		}
+
+		.account-box h2 {
+		    font-size: 24px;
+		    margin-bottom: 15px;
+		    font-weight: bold;
+		    color: #222;
+		}
+
+		.account-box p {
+		    margin: 5px 0 10px;
+		    font-size: 16px;
+		}
+
+		.account-list {
+		    list-style: none;
+		    padding: 0;
+		    margin-top: 20px;
+		    display: flex;
+		    flex-direction: column;
+		    gap: 15px;
+		}
+
+		.account-list li {
+		    padding: 10px 12px;
+		    margin-bottom: 8px;
+		    background-color: #f9f9f9;
+		    border-radius: 10px;
+		    display: flex;
+		    justify-content: space-between;
+		    font-size: 15px;
+		}
+
+		.account-card {
+		    background-color: #f4f6f8;
+		    border-radius: 12px;
+		    padding: 15px 20px;
+		    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+		    display: flex;
+		    flex-direction: column;
+		    font-size: 15px;
+		}
+
+		.account-card .bank-name {
+		    font-weight: bold;
+		    color: #333;
+		    font-size: 16px;
+		    margin-bottom: 5px;
+		}
+
+		.account-card .account-num {
+		    color: #555;
+		    font-family: 'Courier New', Courier, monospace;
+		    letter-spacing: 0.5px;
+		    font-size: 14px;
+		}
+	</style>
+</head>
+
+<body>
+    <!-- 헤더 -->
+    <div th:replace="fragments/header :: header"></div>
+
+    <div class="accountbook-container">
+		
+        <!-- 마이페이지 사이드바 -->
+        <div th:replace="fragments/m_sidebar :: m_sidebar"></div>
+
+        <!-- 본문 -->
+        <main class="accountbook-main-content">
+			<div class="edit-header">
+				<h2>오픈뱅킹 계좌 연결</h2>
+				<p>오픈뱅킹 인증을 통해 내 계좌를 불러올 수 있습니다.</p>
+				<br>
+			
+<!--				<h3>access_token : <span th:text="${access_token}"></span></h3>-->
+<!--				<h3>token_type : <span th:text="${map2['token_type']}"></span></h3>-->
+<!--				<h3>expires_in : <span th:text="${map2['expires_in']}"></span></h3>-->
+<!--				<h3>refresh_token : <span th:text="${map2['refresh_token']}"></span></h3>-->
+<!--				<h3>scope : <span th:text="${map2['scope']}"></span></h3>-->
+				<h3>user_seq_no : <span th:text="${map2['user_seq_no']}"></span></h3>
+					
+<!--				<p>확인용 access_token: <span th:text="${access_token}"></span></p>	-->
+				</br>
+				<div class="edit-header">
+				<h2>👤사용자 정보 조회</h2>
+<!--					<h2>user_seq_no : <span th:text="${map2.user_seq_no}"></span></h2>-->
+<!--					<h2>user_ci : <span th:text="${map2.user_ci}"></span></h2>-->
+					<h4>user_name: <span th:text="${map2.user_name}"></span></h4>
+				</div>
+				<div class="account-box">
+				    <h2>💸등록 계좌 조회</h2>
+				    <p>이름: <strong th:text="${map2.user_name}"></strong></p>
+				    <p>총 계좌 수: <strong th:text="${#lists.size(accountList)}"></strong></p>
+					<ul class="account-list">
+					    <li th:each="acc : ${accountList}" class="account-card">
+					        <div class="bank-name" th:text="${acc.bankName}"></div>
+					        <div class="account-num" th:text="${'🪙 계좌번호: ' + acc.accountNum}"></div>
+					    </li>
+					</ul>
+						<!-- 실제 오픈뱅킹에서 등록한 계좌들 -->
+<!--						<tr th:each="account,status:${map2.res_list}">-->
+<!--							<td th:text="${account.account_num_masked}"></td>-->
+<!--							<td th:text="${account.bank_name}"></td>-->
+<!--							<td th:text="${account.account_holder_name}"></td>-->
+<!--						</tr>-->
+            	</div>
+        </main>
+    </div>
+	<script>
+		
+		
+	</script>
+	
+</body>
+
+
+</html>

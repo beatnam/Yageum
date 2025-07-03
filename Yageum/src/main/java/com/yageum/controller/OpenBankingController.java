@@ -30,16 +30,18 @@ import com.yageum.service.MypageService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/openbanking/*")
 public class OpenBankingController {
 	
-	private final MypageMapper mypageMapper;
-	private final MemberRepository memberRepository;
 	private final OpenBankingService openBankingService;
-
+	private final ExpenseService expenseService;
+	private final MemberRepository memberRepository;
+	
 //    private final String CLIENT_ID = "bc683374-e833-4c42-b28f-9b29115656b0";
 //    private final String REDIRECT_URI = "http://localhost:8080/openbanking/callback"; // 실제 등록된 redirect_uri
 //    private final String AUTH_URL = "https://testapi.openbanking.or.kr/oauth/2.0/authorize";
@@ -47,38 +49,91 @@ public class OpenBankingController {
 //    private final String STATE = "20132676"; 
 //    
     
-
-	
-//	응답받을때 콜백주소 http://localhost:8080/callback
 	@GetMapping("/callback")
-	public String callback(@RequestParam Map<String, String> map, Model model) {
+	public String callback(@RequestParam Map<String, String> map, HttpSession session) {
 		// 인증 후 응답 메시지
 		System.out.println(map);
-//		http://localhost:8080/callback?
-//			code=VAcpxt4sJikXPx2KknUx6b8PNhTb6X&
-//			scope=inquiry login transfer&
-//			state=12345678123456781234567812345678
 		
 		// 토큰발급 => 처리 OpenBankingService
 		Map<String, String> map2 = openBankingService.requestToken(map);
 		
-		// model 결과 담아서
-		model.addAttribute("map2", map2);
+		// 세션에 저장
+	    session.setAttribute("access_token", map2.get("access_token"));
+	    session.setAttribute("user_seq_no", map2.get("user_seq_no"));
 		
 		// 이동
-		return "mypage/openbanking";
+		return "redirect:/openbanking/userInfo";
 	}
 	
-	// 사용자 정보 조회
+	
+	
+	@GetMapping("/userInfo")
+	public String getUserInfo(HttpSession session, Model model) {
+	    String accessToken = (String) session.getAttribute("access_token");
+	    String userSeqNo = (String) session.getAttribute("user_seq_no");
+
+	    log.info("access_token: " + accessToken);
+	    log.info("user_seq_no: " + userSeqNo);
+
+	    Map<String, String> param = Map.of(
+	        "access_token", accessToken,
+	        "user_seq_no", userSeqNo
+	    );
+
+	    Map<String, String> userInfo = openBankingService.getUserInfo(param);
+	    model.addAttribute("map2", userInfo);
+	    model.addAttribute("access_token", accessToken); 
+	    model.addAttribute("user_seq_no", userSeqNo);
+	    
+	    String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+		Member member = memberRepository.findByMemberId(memberId);
+		int memberIn = member.getMemberIn();
+		
+		
+		 // 계좌
+	    List<BankAccount> accountList = expenseService.getAccountList(memberIn);
+	    model.addAttribute("accountList", accountList);
+	    
+	    
+	    
+	    return "mypage/mypage_open_result";
+	}
+	
+	
+	
+
+	
+//	@GetMapping("/callback")
+//	public String callback(@RequestParam Map<String, String> map, Model model) {
+//		// 인증 후 응답 메시지
+//		System.out.println(map);
+////			code=VAcpxt4sJikXPx2KknUx6b8PNhTb6X&
+////			scope=inquiry login transfer&
+////			state=12345678123456781234567812345678
+//		
+//		// 토큰발급 => 처리 OpenBankingService
+//		Map<String, String> map2 = openBankingService.requestToken(map);
+//		
+//		// model 결과 담아서
+//		model.addAttribute("map2", map2);
+//		
+//		// 이동
+//		return "redirect:/openbanking/userInfo";
+//	}
+	
+	
+//	// 사용자 정보 조회
 //	@GetMapping("/userInfo")
 //	public String getUserInfo(@RequestParam Map<String, String> map, Model model) {
 //		Map<String, String> map2 = openBankingService.getUserInfo(map);
 //		model.addAttribute("map2", map2);
 //		model.addAttribute("access_token", map.get("access_token"));
 //		
-//		return "user_info";
+//		return "mypage/mypage_openbanking";
 //	}
-    
+//    
+	
+
     
 
 //	@GetMapping("/auth")

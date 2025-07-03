@@ -27,4 +27,10 @@ public class OpenBankingService {
 		return openBankingApiClient.getUserInfo(map);
 	}
 	
+//	등록계좌 조회
+	public Map<String, String> accountList(Map<String, String> map) {
+		
+		return openBankingApiClient.accountList(map);
+	}
+	
 }

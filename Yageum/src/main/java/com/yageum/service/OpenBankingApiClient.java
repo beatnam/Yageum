@@ -22,10 +22,10 @@ public class OpenBankingApiClient {
    
 //   private String client_id = "본인  client_id";
 //   private String client_secret = "본인 client_secret";
-   private String client_id = "59c73009-391c-4f55-bbb3-85689ee80d60";
-   private String client_secret = "730bd98b-632d-44fd-98de-b9b6537251a2";
+   private String client_id = "bc683374-e833-4c42-b28f-9b29115656b0";
+   private String client_secret = "3334c374-3a45-4342-a188-30ca68b27d41";
 
-   private String redirect_uri = "http://localhost:8080/callback";
+   private String redirect_uri = "http://localhost:8080/openbanking/callback";
    private String grant_type = "authorization_code";
    
 //   헤더 정보 관리 클래스
@@ -98,5 +98,38 @@ public class OpenBankingApiClient {
       log.info("사용자 정보조회 map2 : " + map2.toString());
       return map2;
    }
+   
+//	등록계좌 조회
+	public Map<String, String> accountList(Map<String, String> map) {
+		log.info("access_token : " + map.get("access_token"));
+		log.info("user_seq_no : " + map.get("user_seq_no"));
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add("Authorization", "Bearer " + map.get("access_token"));
+		
+		HttpEntity<String> accountList = 
+				new HttpEntity<String>(httpHeaders);
+		//get방식
+		String requestURL = "https://testapi.openbanking.or.kr/v2.0/account/list";
+//		UriComponents uriComponents = UriComponentsBuilder
+//				.fromHttpUrl(requestURL)
+//				.queryParam("user_seq_no", map.get("user_seq_no"))
+//				.build();
+		
+		UriComponents uriComponents = UriComponentsBuilder
+				.fromUriString(requestURL)//문자열 형태 URI
+				.queryParam("user_seq_no", map.get("user_seq_no"))
+				.queryParam("include_cancel_yn", map.get("include_cancel_yn"))
+				.queryParam("sort_order", map.get("sort_order"))
+				.build(true);//URI 인코딩 포함
+		
+		restTemplate = new RestTemplate();
+		
+		Map<String, String> map2 = restTemplate
+				.exchange(uriComponents.toString(), HttpMethod.GET,accountList,Map.class)
+				.getBody();
+		log.info("//등록계좌 조회 map2 : " + map2.toString());
+		return map2;
+	}
+
 
 }

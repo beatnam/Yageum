@@ -13,7 +13,23 @@
 		rel="stylesheet">
     <link rel="stylesheet" href="/css/my_page.css">
     <link rel="stylesheet" href="/css/my_page_openbanking.css">
-</head>
+	<style>
+		.submit-btn {
+		    background-color: #FFD44D;
+		    color: #4E342E;
+		    border: none;
+		    border-radius: 8px;
+		    padding: 12px 20px;
+		    font-family: 'Gowun Dodum', sans-serif;
+		    font-size: 16px;
+		    cursor: pointer;
+		    transition: background-color 0.3s ease;
+		    margin-top: 20px;
+		    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+	</style>
+	
+	</head>
 
 <body>
     <!-- 헤더 -->
@@ -30,97 +46,22 @@
 				<h1>오픈뱅킹 계좌 연결</h1>
 				<p>오픈뱅킹 인증을 통해 내 계좌를 불러올 수 있습니다.</p>
 			</div>
+			<form action="https://testapi.openbanking.or.kr/oauth/2.0/authorize" method="get">
+					<input type="hidden" name="response_type" value="code">
+					<input type="hidden" name="client_id" value="bc683374-e833-4c42-b28f-9b29115656b0">
+					<input type="hidden" name="redirect_uri" value="http://localhost:8080/openbanking/callback">
+					<input type="hidden" name="scope" value="login inquiry transfer">
+					<input type="hidden" name="state" value="12345678123456781234567812345678">
+					<input type="hidden" name="auth_type" value="0">
+					<input type="submit" class="submit-btn" value="인증하고 토큰발급">
+			</form>
 
-            <button type="button" onclick="openAuthPopup()">🔐 오픈뱅킹 인증</button>
-            <br><br>
-            <button type="button" onclick="loadAccounts()">📂 계좌 목록 가져오기</button>
 
-            <!-- 계좌 목록 출력 예정 -->
-            <div id="account-list">
-                <!-- JS or Thymeleaf로 계좌 목록 출력 예정 -->
-            </div>
-			
-			<!-- 계좌 저장 버튼 -->
-			<div style="text-align: center; margin-top: 20px;">
-			    <button type="button" onclick="saveAccounts()">💾 계좌 저장</button>
-			</div>
         </main>
     </div>
 	<script>
 		
-		let accountList = [];
 		
-		function loadAccounts() {
-		    fetchAccountsWithToken();
-		}
-	
-	function openAuthPopup() {
-	    const popup = window.open(
-	        '/openbanking/mock-auth',
-	        'openbankingAuth',
-	        'width=500,height=500,top=100,left=100'
-	    );
-
-	    // 팝업이 닫히면 자동 새로고침
-	    const timer = setInterval(() => {
-	        if (popup.closed) {
-	            clearInterval(timer);
-	            location.reload(); // 인증 토큰 확인 위해 새로고침
-	        }
-	    }, 500);
-	}
-	
-	function fetchAccountsWithToken() {
-	    const token = sessionStorage.getItem('access_token');
-
-	    fetch(`/openbanking/fetchAccounts?access_token=${token}`)
-	        .then(res => res.json())
-	        .then(data => {
-	            const listDiv = document.getElementById("account-list");
-	            listDiv.innerHTML = "";
-
-	            if (data.error) {
-	                listDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
-	                return;
-	            }
-				
-				accountList = data.res_list; 
-
-	            const title = document.createElement("h3");
-	            title.innerText = `${data.user_name}님의 계좌 목록`;
-	            listDiv.appendChild(title);
-
-	            data.res_list.forEach(acc => {
-	                const div = document.createElement("div");
-	                div.innerText = `🏦 ${acc.bank_name} / ${acc.account_num_masked}`;
-	                listDiv.appendChild(div);
-	            });
-	        });
-	}
-	
-	window.addEventListener('message', function(event) {
-	    if (event.data.type === 'MOCK_AUTH_SUCCESS') {
-	        alert("모의 인증 완료! 계좌 정보를 불러옵니다.");
-	        fetchAccountsWithToken();  
-	    }
-	});
-	
-	function saveAccounts() {
-	    const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
-	    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
-
-	    fetch("/openbanking/saveAccounts", {
-	        method: "POST",
-	        headers: {
-	            "Content-Type": "application/json",
-	            [header]: token  // CSRF 토큰 포함
-	        },
-	        body: JSON.stringify(accountList),
-	        credentials: "include"
-	    })
-	    .then(res => res.text())
-	    .then(msg => alert(msg));
-	}
 	</script>
 	
 </body>
