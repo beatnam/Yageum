@@ -22,8 +22,8 @@ public class OpenBankingApiClient {
    
 //   private String client_id = "본인  client_id";
 //   private String client_secret = "본인 client_secret";
-   private String client_id = "bc683374-e833-4c42-b28f-9b29115656b0";
-   private String client_secret = "3334c374-3a45-4342-a188-30ca68b27d41";
+   private String client_id = "client_id";
+   private String client_secret = "client_secret";
 
    private String redirect_uri = "http://localhost:8080/openbanking/callback";
    private String grant_type = "authorization_code";
