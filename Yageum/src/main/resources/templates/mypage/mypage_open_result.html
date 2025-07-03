@@ -98,12 +98,6 @@
 				<h2>오픈뱅킹 계좌 연결</h2>
 				<p>오픈뱅킹 인증을 통해 내 계좌를 불러올 수 있습니다.</p>
 				<br>
-			
-<!--				<h3>access_token : <span th:text="${access_token}"></span></h3>-->
-<!--				<h3>token_type : <span th:text="${map2['token_type']}"></span></h3>-->
-<!--				<h3>expires_in : <span th:text="${map2['expires_in']}"></span></h3>-->
-<!--				<h3>refresh_token : <span th:text="${map2['refresh_token']}"></span></h3>-->
-<!--				<h3>scope : <span th:text="${map2['scope']}"></span></h3>-->
 				<h3>user_seq_no : <span th:text="${map2['user_seq_no']}"></span></h3>
 					
 <!--				<p>확인용 access_token: <span th:text="${access_token}"></span></p>	-->
@@ -124,12 +118,6 @@
 					        <div class="account-num" th:text="${'🪙 계좌번호: ' + acc.accountNum}"></div>
 					    </li>
 					</ul>
-						<!-- 실제 오픈뱅킹에서 등록한 계좌들 -->
-<!--						<tr th:each="account,status:${map2.res_list}">-->
-<!--							<td th:text="${account.account_num_masked}"></td>-->
-<!--							<td th:text="${account.bank_name}"></td>-->
-<!--							<td th:text="${account.account_holder_name}"></td>-->
-<!--						</tr>-->
             	</div>
         </main>
     </div>
