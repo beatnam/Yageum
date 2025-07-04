@@ -11,12 +11,12 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		member_email,
 		member_gender, member_phone, member_address, create_date,
 		member_consent, email_consent, member_state, member_isFirst,
-		member_birth)
+		member_birth, member_reward, member_straight, member_expense)
 		values(#{memberRole},
 		#{memberId},#{memberPasswd},#{memberName},#{memberEmail},
 		#{memberGender},#{memberPhone},#{memberAddress},#{createDate},
 		#{memberConsent},#{emailConsent},#{memberState},#{memberIsFirst},
-		#{memberBirth}
+		#{memberBirth}, #{memberReward}, #{memberStraight}, #{memberExpense}
 		)
 	</insert>
 
