@@ -42,7 +42,7 @@
 					<div class="chart-title">월별 차트</div>
 					<div class="date-navigator">
 						<button class="nav-arrow" onclick="previousMonth()">◀</button>
-						<div class="current-date" onclick="openDateModal()">2025년 06월</div>
+						<div class="current-date" onclick="openDateModal()" th:text="${year}+'년 '+${month}+'월'"></div>
 						<button class="nav-arrow" onclick="nextMonth()">▶</button>
 					</div>
 				</div>
