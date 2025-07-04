@@ -1,6 +1,5 @@
 package com.yageum.entity;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 import com.yageum.domain.MemberDTO;

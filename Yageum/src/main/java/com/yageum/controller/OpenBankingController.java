@@ -1,32 +1,20 @@
 package com.yageum.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yageum.service.OpenBankingService;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Member;
-import com.yageum.mapper.MypageMapper;
 import com.yageum.repository.MemberRepository;
 import com.yageum.service.ExpenseService;
-import com.yageum.service.MemberService;
-import com.yageum.service.MypageService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

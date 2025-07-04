@@ -1,7 +1,6 @@
 package com.yageum.controller;
 
 import java.beans.PropertyEditorSupport;
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +32,8 @@ import com.yageum.entity.Expense;
 import com.yageum.entity.Member;
 import com.yageum.repository.MemberRepository;
 import com.yageum.service.ExpenseService;
-import com.yageum.service.MemberService;
 import com.yageum.service.QuestService;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

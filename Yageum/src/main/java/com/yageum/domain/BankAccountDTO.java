@@ -4,9 +4,7 @@ package com.yageum.domain;
 import java.time.LocalDate;
 
 import com.yageum.entity.BankAccount;
-import com.yageum.entity.Card;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
