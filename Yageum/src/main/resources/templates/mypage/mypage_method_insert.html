@@ -68,14 +68,14 @@
 				    <!-- 카드회사 선택 -->
 				    <div class="form-group">
 				        <label class="form-label required">카드회사</label>
-				        <select id="cardCompany" name="cardCompany" class="form-input">
+				        <select id="cardCorporation" name="cardCorporation" class="form-input">
 				            <option value="">카드사를 선택하세요</option>
 				            <option th:each="company : ${companyList}"
 				                    th:value="${company.ccIn}"
 				                    th:text="${company.ccName}">
 				            </option>
 				        </select>
-				        <div class="error-message" id="cardCompanyError"></div>
+				        <div class="error-message" id="cardCorporationError"></div>
 				    </div>
 
 				    <!-- 카드 유형 선택 -->
@@ -235,7 +235,7 @@
 	      "K Bank": "41"
 	    };
 
-	    const cardCompanySelect = document.getElementById('cardCompany');
+	    const cardCorporationSelect = document.getElementById('cardCorporation');
 
 	    cardInputs.forEach(input => {
 	      input.addEventListener('input', async () => {
@@ -252,7 +252,7 @@
 
 	            const matchedValue = bankNameMap[bankName];
 	            if (matchedValue) {
-	              cardCompanySelect.value = matchedValue;
+	              cardCorporationSelect.value = matchedValue;
 	              console.log("자동 선택된 cc_in 값:", matchedValue);
 	            } else {
 	              console.warn("매칭 실패:", bankName);
@@ -266,7 +266,7 @@
 	    
 
 	    // DOM 로드 후 실행
-	    //document.addEventListener('DOMContentLoaded', autoDetectCardCompany);
+	    //document.addEventListener('DOMContentLoaded', autoDetectcardCorporation);
 	</script>
 	</script>
 </body>

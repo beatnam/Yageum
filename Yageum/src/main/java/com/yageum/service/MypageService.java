@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.yageum.entity.Card;
-import com.yageum.entity.CardCompany;
+import com.yageum.entity.CardCorporation;
 import com.yageum.mapper.MypageMapper;
 import com.yageum.repository.CardCorporationRepository;
 
@@ -37,7 +37,7 @@ public class MypageService {
 	
 	}
 
-	public List<CardCompany> getCardCorporationList() {
+	public List<CardCorporation> getCardCorporationList() {
 		log.info("ExpenseService getCardCorporationList()");
 		
 		return cardCorporationRepository.findAll();

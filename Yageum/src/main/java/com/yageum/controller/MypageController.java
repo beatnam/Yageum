@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import com.yageum.domain.MemberDTO;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Card;
-import com.yageum.entity.CardCompany;
+import com.yageum.entity.CardCorporation;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.Member;
 import com.yageum.repository.MemberRepository;
@@ -238,7 +238,7 @@ public class MypageController {
 		log.info("MypageController methodinsert()");
 		
 		// 카드회사 목록 조회
-		List<CardCompany> companyList = mypageService.getCardCorporationList();
+		List<CardCorporation> companyList = mypageService.getCardCorporationList();
 		model.addAttribute("companyList", companyList);
 		
 		return "/mypage/mypage_method_insert";
@@ -255,7 +255,7 @@ public class MypageController {
 	        @RequestParam("cardHolder") String cardHolder,
 	        @RequestParam("cvc") String cvc,
 	        @RequestParam("cardType") int cardType,
-	        @RequestParam("cardCompany") int cardCompany,
+	        @RequestParam("cardCorporation") int cardCorporation,
 	        @RequestParam("cardName") String cardName) {
 		log.info("MypageController minsertPro()");
 
@@ -272,7 +272,7 @@ public class MypageController {
 	    card.setCardCvc(cvc);
 	    card.setCardUsername(cardHolder);
 	    card.setMethodIn(cardType);
-	    card.setCcIn(cardCompany);
+	    card.setCcIn(cardCorporation);
 	    card.setCardName(cardName);
 	    card.setMemberIn(memberIn);
 

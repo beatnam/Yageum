@@ -53,7 +53,7 @@ public class Card {
     
     @ManyToOne
     @JoinColumn(name = "cc_in", insertable = false, updatable = false)
-    private CardCompany cardCompany;
+    private CardCorporation cardCorporation;
     
     public String getCardNumMasked() {
         if (cardNum != null && cardNum.length() >= 4) {

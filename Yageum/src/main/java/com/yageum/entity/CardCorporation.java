@@ -15,7 +15,7 @@ import lombok.ToString;
 @Getter 
 @Setter
 @ToString
-public class CardCompany {
+public class CardCorporation {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
