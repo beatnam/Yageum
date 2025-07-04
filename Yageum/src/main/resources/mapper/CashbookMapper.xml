@@ -122,4 +122,8 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	  order by e.expense_date DESC
 	</select>
 	
+	<delete id="deleteExpense" parameterType="int">
+    	delete from expense where expense_in = #{id}
+	</delete>
+	
 </mapper>

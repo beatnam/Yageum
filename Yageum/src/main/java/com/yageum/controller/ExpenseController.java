@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.yageum.domain.ExpenseDTO;
 import com.yageum.domain.QuestSuccessDTO;
@@ -188,6 +189,7 @@ public class ExpenseController {
 
 		return "/cashbook/cashbook_update";
 	}
+	
 
 	// 수정 로직
 	@PostMapping("/updatePro")
@@ -197,6 +199,18 @@ public class ExpenseController {
 		expenseService.update(expenseDTO);
 
 		return "redirect:/cashbook/detail?id=" + expenseDTO.getExpenseIn() + "&date=" + expenseDTO.getExpenseDate();
+	}
+	
+	@PostMapping("/cashbook/delete")
+	public String delete(@RequestParam("id") int id,  @RequestParam("date") String date, RedirectAttributes redirectAttributes) {
+		log.info("ExpenseController delete()");
+	    try {
+	        expenseService.deleteExpenseById(id); // 삭제 처리
+	        redirectAttributes.addFlashAttribute("msg", "삭제가 완료되었습니다.");
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("msg", "삭제 중 오류가 발생했습니다.");
+	    }
+	    return "redirect:/cashbook/list?date=" + date;
 	}
 
 	// 가계부 수기 입력 로직 시작 하는 부분=================================

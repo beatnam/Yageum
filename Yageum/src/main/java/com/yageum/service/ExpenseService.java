@@ -137,8 +137,16 @@ public class ExpenseService {
 		}
 
 		public List<Card> cardByMemberIn(int memberIn) {
+			log.info("ExpenseService cardByMemberIn()");
 			
 			return cardRepository.findByMemberIn(memberIn);
+		}
+
+		public void deleteExpenseById(int id) {
+			log.info("ExpenseService deleteExpenseById()");
+			
+			cashbookMapper.deleteExpense(id);
+			
 		}
 
 

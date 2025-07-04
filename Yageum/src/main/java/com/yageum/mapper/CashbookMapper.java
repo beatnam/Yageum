@@ -28,7 +28,9 @@ public interface CashbookMapper {
 
    List<ExpenseDTO> searchExpense(Map<String, Object> paramMap);
 
-List<BankAccountDTO> accountAll();
+   List<BankAccountDTO> accountAll();
+
+   void deleteExpense(@Param("id") int id);
 
 
     
