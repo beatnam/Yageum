@@ -44,12 +44,13 @@ function fetchCards() {
     fetch(`/cashbook/cards/byMethod/${methodId}`)
       .then(res => res.json())
       .then(data => {
-        data.forEach(card => {
-          const option = document.createElement('option');
-          option.value = `card-${card.cardIn}`;
-          option.textContent = card.cardName;
-          document.getElementById("paymentFilter").appendChild(option);
-        });
+		data.forEach(card => {
+		  const option = document.createElement('option');
+		  option.value = `card-${card.cardIn}`;
+		  option.textContent = card.cardName;
+		  option.dataset.method = methodId; // 여기 중요! 1 또는 2
+		  document.getElementById("paymentFilter").appendChild(option);
+		});
       });
   });
 }
@@ -79,14 +80,20 @@ function applyFilters() {
   const { startDate, endDate } = getDateRange();
   
   // 결제수단 파싱
-    let method = "";
-    if (rawMethod.startsWith("card-")) {
-      method = 1; // 카드 methodIn
-    } else if (rawMethod.startsWith("account-")) {
-      method = 4; // 계좌 methodIn
-    } else if (rawMethod === "cash") {
-      method = 3; // 현금 methodIn
-    }
+  const selectedOption = document.getElementById("paymentFilter").selectedOptions[0];
+  let method = "";
+  let cardIn = "";
+  let accountIn = "";
+
+  if (rawMethod.startsWith("card-")) {
+    method = selectedOption.dataset.method;
+    cardIn = rawMethod.split("-")[1];
+  } else if (rawMethod.startsWith("account-")) {
+    method = 4;
+    accountIn = rawMethod.split("-")[1];
+  } else if (rawMethod === "cash") {
+    method = 3;
+  }
 
   // 타이틀 날짜 출력
   const formattedTitle = startDate.replaceAll("-", ".") + " ~ " + endDate.replaceAll("-", ".");
@@ -98,6 +105,8 @@ function applyFilters() {
   if (category) params.append("category", category);
   if (type) params.append("type", type);
   if (method) params.append("method", method);
+  if (cardIn) params.append("cardIn", cardIn);
+  if (accountIn) params.append("accountIn", accountIn);
   if (keyword) params.append("keyword", keyword);
   params.append("startDate", startDate);
   params.append("endDate", endDate);

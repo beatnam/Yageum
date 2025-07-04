@@ -314,25 +314,30 @@ public class ExpenseController {
 
 	@GetMapping("/filterSearch")
 	@ResponseBody
-	public List<ExpenseDTO> filterSearch(@RequestParam(name = "category", required = false) String category,
-			@RequestParam(name = "type", required = false) String type,
-			@RequestParam(name = "method", required = false) String method,
-			@RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-			@RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-			@RequestParam(name = "keyword", required = false) String keyword) {
+	public List<ExpenseDTO> filterSearch(
+	    @RequestParam(name = "category", required = false) String category,
+	    @RequestParam(name = "type", required = false) String type,
+	    @RequestParam(name = "method", required = false) String method,
+	    @RequestParam(name = "cardIn", required = false) String cardIn,
+	    @RequestParam(name = "accountIn", required = false) String accountIn,
+	    @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+	    @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+	    @RequestParam(name = "keyword", required = false) String keyword) {
 		log.info("filterSearch() 요청: category={}, type={}, method={}, 기간={}~{}, keyword={}", category, type, method,
 				startDate, endDate, keyword);
 
 		int memberIn = getLoginMemberIn();
 
 		Map<String, Object> paramMap = new HashMap<>();
-		paramMap.put("memberIn", memberIn);
-		paramMap.put("category", category);
-		paramMap.put("type", type);
-		paramMap.put("method", method);
-		paramMap.put("startDate", startDate);
-		paramMap.put("endDate", endDate);
-		paramMap.put("keyword", keyword);
+	    paramMap.put("memberIn", memberIn);
+	    paramMap.put("category", category);
+	    paramMap.put("type", type);
+	    paramMap.put("method", method);
+	    paramMap.put("cardIn", cardIn);
+	    paramMap.put("accountIn", accountIn);
+	    paramMap.put("startDate", startDate);
+	    paramMap.put("endDate", endDate);
+	    paramMap.put("keyword", keyword);
 
 		return expenseService.searchExpense(paramMap);
 	}

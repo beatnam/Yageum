@@ -124,24 +124,28 @@ public class ExpenseService {
 			return cashbookMapper.searchExpense(paramMap);
 		}
 
+		// 계좌 전체 목록
 		public List<BankAccount> accountAll() {
 			log.info("ExpenseService accountAll()");
 
 			return bankAccountRepository.findAll();
 		}
 
+		// 카드 전체 가져오기 (체크, 신용)
 		public List<Card> cardAll() {
 			log.info("ExpenseService cardAll()");
 
 			return cardRepository.findAll();
 		}
 
+		// 카드 
 		public List<Card> cardByMemberIn(int memberIn) {
 			log.info("ExpenseService cardByMemberIn()");
 			
 			return cardRepository.findByMemberIn(memberIn);
 		}
 
+		// 가계부 삭제
 		public void deleteExpenseById(int id) {
 			log.info("ExpenseService deleteExpenseById()");
 			

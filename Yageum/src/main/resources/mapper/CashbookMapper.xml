@@ -104,6 +104,14 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	  <if test="method != null and method != ''">
 	    and e.method_in = #{method}
 	  </if>
+	  
+	  <if test="cardIn != null and cardIn != ''">
+	    and e.card_in = #{cardIn}
+	  </if>
+	
+	  <if test="accountIn != null and accountIn != ''">
+	    and e.account_in = #{accountIn}
+	  </if>
 	
 	  <if test="startDate != null">
 	    and e.expense_date &gt;= #{startDate}
