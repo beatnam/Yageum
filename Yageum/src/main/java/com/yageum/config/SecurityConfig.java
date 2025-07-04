@@ -46,6 +46,19 @@ public class SecurityConfig {
             .securityContext(security -> security
                 .securityContextRepository(new HttpSessionSecurityContextRepository())
             )
+                    .sessionManagement(session -> session
+                        .invalidSessionUrl("/member/login?expired") // 세션 만료 시 이동할 URL
+                        .maximumSessions(1)                         // 동시에 로그인 가능한 세션 수 제한
+                        .maxSessionsPreventsLogin(false)            // 기존 세션 만료 후 새 세션 허용
+                        .expiredUrl("/member/login?duplicate")      // 다른 곳에서 로그인 시 처리 URL
+                    )
+                    .logout(logout -> logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutSuccessUrl("/")
+                    )
+                    .userDetailsService(myUserDetailsService)
+                    .build();
+            }
 //            .formLogin(form -> form
 //                .loginPage("/member/login")
 //                .loginProcessingUrl("/member/loginPro")
@@ -55,11 +68,7 @@ public class SecurityConfig {
 //                .failureUrl("/member/login")
 //                .permitAll()
 //            )
-            .logout(logout -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/")
-            )
-            .userDetailsService(myUserDetailsService)
-            .build();
+   
     }
-}
+    
+    

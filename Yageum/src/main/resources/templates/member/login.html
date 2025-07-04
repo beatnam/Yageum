@@ -18,7 +18,16 @@
 
 
 <body>
+
+
 	<div class="login-container">
+		<div class="error" th:if="${param.expired}">
+			<p style="color:red;">로그아웃되었습니다. 다시 로그인 해주세요.</p>
+		</div>
+
+		<div class="error" th:if="${param.duplicate}">
+			<p style="color:red;">다른 위치에서 로그인되어 로그아웃되었습니다.</p>
+		</div>
 		<div class="title"><img style="width:210px; height:210px;" src="../img/a.png"></div>
 
 		<form th:action="@{/member/loginPro}" method="post">
