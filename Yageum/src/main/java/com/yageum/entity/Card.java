@@ -36,8 +36,6 @@ public class Card {
     @Column(name = "card_year", length = 2)
     private String cardYear;
 
-    @Column(name = "card_cvc", length = 4)
-    private String cardCvc;
 
     @Column(name = "card_name", nullable = false, length = 50)
     private String cardName;

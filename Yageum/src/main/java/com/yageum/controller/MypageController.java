@@ -253,7 +253,6 @@ public class MypageController {
 	        @RequestParam("expiryMM") String expiryMM,
 	        @RequestParam("expiryYY") String expiryYY,
 	        @RequestParam("cardHolder") String cardHolder,
-	        @RequestParam("cvc") String cvc,
 	        @RequestParam("cardType") int cardType,
 	        @RequestParam("cardCorporation") int cardCorporation,
 	        @RequestParam("cardName") String cardName) {
@@ -264,12 +263,12 @@ public class MypageController {
 		int memberIn = member.getMemberIn();
 
 		String cardNumber = card1 + card2 + card3 + card4;
+		String maskedNumber = cardNumber.substring(0, 4) + "********" + cardNumber.substring(12);
 
 	    Card card = new Card();
-	    card.setCardNum(cardNumber);
+	    card.setCardNum(maskedNumber);
 	    card.setCardMonth(expiryMM);
 	    card.setCardYear(expiryYY);
-	    card.setCardCvc(cvc);
 	    card.setCardUsername(cardHolder);
 	    card.setMethodIn(cardType);
 	    card.setCcIn(cardCorporation);
@@ -282,28 +281,29 @@ public class MypageController {
 		return "redirect:/mypage/mlist";
 	}
 	
-	//카드사 자동 매칭 api
-	@GetMapping("/binlookup/{bin}")
-	@ResponseBody
-	public ResponseEntity<?> lookupBin(@PathVariable("bin") String bin) {
-	    String url = "https://lookup.binlist.net/" + bin;
-	    RestTemplate restTemplate = new RestTemplate();
-
-	    try {
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.set("Accept-Version", "3"); // binlist.net 권장 헤더
-	        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-	        ResponseEntity<String> response = restTemplate.exchange(
-	            url, HttpMethod.GET, entity, String.class
-	        );
-
-	        return ResponseEntity.ok().body(response.getBody());
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("BIN 조회 실패: " + e.getMessage());
-	    }
-	}
+	
+	//카드사 자동 매칭 api  : 외부 API의 불안정성과 호출 제한 문제로 인해 프론트엔드 자체 BIN 매핑 방식으로 전환
+//	@GetMapping("/binlookup/{bin}")
+//	@ResponseBody
+//	public ResponseEntity<?> lookupBin(@PathVariable("bin") String bin) {
+//	    String url = "https://lookup.binlist.net/" + bin;
+//	    RestTemplate restTemplate = new RestTemplate();
+//
+//	    try {
+//	        HttpHeaders headers = new HttpHeaders();
+//	        headers.set("Accept-Version", "3"); // binlist.net 권장 헤더
+//	        HttpEntity<String> entity = new HttpEntity<>(headers);
+//
+//	        ResponseEntity<String> response = restTemplate.exchange(
+//	            url, HttpMethod.GET, entity, String.class
+//	        );
+//
+//	        return ResponseEntity.ok().body(response.getBody());
+//	    } catch (Exception e) {
+//	    	e.printStackTrace();
+//	        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("BIN 조회 실패: " + e.getMessage());
+//	    }
+//	}
 
 
 }

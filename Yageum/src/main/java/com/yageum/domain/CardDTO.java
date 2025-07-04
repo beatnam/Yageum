@@ -16,7 +16,6 @@ public class CardDTO {
     private String cardNum;
     private String cardMonth;
     private String cardYear;
-    private String cardCvc;
     private String cardName;
     private String cardUsername;
     private int cc_in;
