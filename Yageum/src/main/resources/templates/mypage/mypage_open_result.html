@@ -39,23 +39,47 @@
 				<h2>👤사용자 정보 조회</h2>
 <!--					<h2>user_seq_no : <span th:text="${map2.user_seq_no}"></span></h2>-->
 <!--					<h2>user_ci : <span th:text="${map2.user_ci}"></span></h2>-->
-					<h4>user_name: <span th:text="${map2.user_name}"></span></h4>
+					<h4>user_name: <span th:text="${map2['user_name']}"></span></h4>
 				</div>
-				<div class="account-box">
+				<form method="post" action="/openbanking/saveAccounts">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				  <div class="account-box">
 				    <h2>💸등록 계좌 조회</h2>
-				    <p>이름: <strong th:text="${map2.user_name}"></strong></p>
+				    <p>이름: <strong th:text="${map2['user_name']}"></strong></p>
 				    <p>총 계좌 수: <strong th:text="${#lists.size(accountList)}"></strong></p>
+
 					<ul class="account-list">
-					    <li th:each="acc : ${accountList}" class="account-card">
-					        <div class="bank-name" th:text="${acc.bankName}"></div>
-					        <div class="account-num" th:text="${'🪙 계좌번호: ' + acc.accountNum}"></div>
-					    </li>
+					  <li th:each="acc, iterStat : ${accountList}" class="account-card" th:attr="data-index=${iterStat.index}">
+					    <label>
+					      <input type="checkbox" name="selectedAccounts"
+					             th:value="${acc['account_num_masked'] + ',' + acc['bank_name']}">
+					      <span th:text="${acc['bank_name'] + ' - ' + acc['account_num_masked']}"></span>
+					    </label>
+					    <input type="text" class="account-name-input"
+					           th:placeholder="'통장 이름 (예: 생활비통장 ' + ${iterStat.index + 1} + ')'">
+					  </li>
 					</ul>
-            	</div>
+
+				    <div class="btn-wrapper">
+				      <button type="submit" class="submit-btn">선택한 계좌 저장</button>
+				    </div>
+				  </div>
+				</form>
         </main>
     </div>
 	<script>
-		
+		document.querySelector('form').addEventListener('submit', function(e) {
+		  // 기존에 name 붙은 거 제거
+		  document.querySelectorAll('.account-name-input').forEach(input => input.removeAttribute('name'));
+
+		  // 체크된 항목만 찾아서 이름 붙여줌
+		  const checked = document.querySelectorAll('input[name="selectedAccounts"]:checked');
+		  checked.forEach((checkbox, i) => {
+		    const li = checkbox.closest('.account-card');
+		    const input = li.querySelector('.account-name-input');
+		    input.setAttribute('name', 'accountNames'); // name을 동적으로 붙여야 서버로 전송됨
+		  });
+		});
 		
 	</script>
 	
