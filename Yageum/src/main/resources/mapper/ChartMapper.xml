@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://mybatis.org/mybatis-3/getting-started.html
+src/main/resources/mapper폴더/MemberMapper.xml파일 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yageum.mapper.ChartMapper">
+
+	<select id="sumExpenseByMember" resultType="map">
+		select m.cm_name, sum(expense_sum) as 'expenseSum',
+		month(e.expense_date) as 'month', year(e.expense_date) as 'year'
+		from expense e join category_sub s
+		on e.cs_in = s.cs_in
+		join category_main m
+		on m.cm_in = s.cm_in
+		where member_in = #{memberIn} and month(expense_date) = #{month} and
+		year(expense_date) = #{year} and expense_type = 1
+		group by 1, 3, 4
+	</select>
+
+	<select id="plusMember" resultType="Map">
+		select sum(expense_sum) as 'plus'
+		from expense
+		where member_in = #{memberIn} and
+		month(expense_date) = #{month} and year(expense_date) = #{year} and
+		expense_type = 0
+
+	</select>
+
+	<select id="minusMember" resultType="Map">
+		select sum(expense_sum) as 'minus'
+		from expense
+		where member_in = #{memberIn} and
+		month(expense_date) = #{month} and year(expense_date) = #{year} and
+		expense_type = 1
+
+	</select>
+
+</mapper>
