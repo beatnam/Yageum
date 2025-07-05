@@ -23,6 +23,7 @@ public class MypageService {
 	private final MypageMapper mypageMapper;
 	private final CardCorporationRepository cardCorporationRepository;
 	
+	// 계좌 삭제
 	public void deleteAccountById(int id) {
 		log.info("ExpenseService deleteAccountById()");
 		
@@ -30,6 +31,7 @@ public class MypageService {
 		
 	}
 
+	// 카드 삭제
 	public void deleteCardById(int id) {
 		log.info("ExpenseService deleteCardById()");
 		
@@ -37,12 +39,14 @@ public class MypageService {
 	
 	}
 
+	// 카드 회사 리스트 출력
 	public List<CardCorporation> getCardCorporationList() {
 		log.info("ExpenseService getCardCorporationList()");
 		
 		return cardCorporationRepository.findAll();
 	}
 
+	// 수단 추가 로직
 	public void minsertPro(Card card) {
 		log.info("MypageService minsertPro() - {}", card);
 		
