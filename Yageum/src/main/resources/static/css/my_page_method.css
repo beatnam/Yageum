@@ -275,3 +275,22 @@
   background-color: #FFC107;
   border: none
   }
+  
+  .save-name-btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 5px 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-left: 10px;
+  }
+
+  .save-name-btn:hover {
+      background-color: #45a049;
+  }
+
+  
