@@ -17,5 +17,7 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Intege
 	
 	@Query("SELECT c FROM BankAccount c WHERE c.memberIn = :memberIn")
 	List<BankAccount> findByMemberIn(@Param("memberIn") int memberIn);
+
+	boolean existsByAccountNum(String accountNum);
 	
 }

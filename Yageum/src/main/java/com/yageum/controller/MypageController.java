@@ -48,6 +48,9 @@ public class MypageController {
 	private final ExpenseService expenseService;
 	private final MypageService mypageService;
 	
+	// 주현
+	
+	
 	@Value("${openbanking.id}")
 	   private String client_id;
 	
@@ -280,6 +283,8 @@ public class MypageController {
 	@PostMapping("/updateMethodName")
 	@ResponseBody
 	public ResponseEntity<String> updateMethodName(@RequestBody Map<String, String> data) {
+		log.info("MypageController updateMethodName()");
+		
 	    String type = data.get("type");
 	    String newName = data.get("newName");
 	    int id = Integer.parseInt(data.get("id"));

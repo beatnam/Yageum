@@ -1,5 +1,6 @@
 package com.yageum.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yageum.service.OpenBankingService;
 import com.yageum.entity.BankAccount;
@@ -36,12 +38,13 @@ public class OpenBankingController {
 //    private final String AUTH_URL = "https://testapi.openbanking.or.kr/oauth/2.0/authorize";
 //    private final String SCOPE = "login inquiry transfer";
 //    private final String STATE = "20132676"; 
-//    
+//    주현
     
 	// 오픈뱅킹 콜백 (토큰 발급, 세션 저장)
 	@GetMapping("/callback")
 	public String callback(@RequestParam Map<String, String> map, HttpSession session) {
 		log.info("OpenBankingController callback()");
+		
 		// 인증 후 응답 메시지
 		System.out.println(map);
 		
@@ -61,6 +64,7 @@ public class OpenBankingController {
 	@GetMapping("/userInfo")
 	public String getUserInfo(HttpSession session, Model model) {
 		log.info("OpenBankingController getUserInfo()");
+		
 	    String accessToken = (String) session.getAttribute("access_token");
 	    String userSeqNo = (String) session.getAttribute("user_seq_no");
 
@@ -88,6 +92,7 @@ public class OpenBankingController {
 	public String saveSelectedAccounts(@RequestParam("selectedAccounts") List<String> selectedAccounts,
 	                                   @RequestParam("accountNames") List<String> accountNames) {
 		log.info("OpenBankingController saveSelectedAccounts()");
+		
 		log.info("accountNames: " + accountNames);
 		log.info("selectedAccounts: " + selectedAccounts);
 	    String loginId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -96,6 +101,18 @@ public class OpenBankingController {
 
 	    openBankingService.saveAccounts(selectedAccounts, accountNames, memberIn);
 	    return "redirect:/mypage/mlist";
+	}
+	
+	//계좌 중복 확인
+	@GetMapping("/checkAccount")
+	@ResponseBody
+	public Map<String, Boolean> checkAccount(@RequestParam("accountNum") String accountNum) {
+	    log.info("OpenBankingController checkAccount(), accountNum={}", accountNum);
+
+	    boolean exists = openBankingService.isAccountExists(accountNum);
+	    Map<String, Boolean> result = new HashMap<>();
+	    result.put("duplicate", exists);
+	    return result;
 	}
 	
 	//db계좌 출력 로직

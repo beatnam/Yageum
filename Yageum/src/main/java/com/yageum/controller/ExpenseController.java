@@ -46,6 +46,8 @@ public class ExpenseController {
 	private final ExpenseService expenseService;
 	private final MemberRepository memberRepository;
 	private final QuestService questService;
+	
+	// 주현
 
 	// id 가져오기 공통메서드
 	private int getLoginMemberIn() {
@@ -58,6 +60,7 @@ public class ExpenseController {
 	@GetMapping("/main")
 	public String main(@AuthenticationPrincipal UserDetails userDetails) {
 		log.info("ExpenseController main()");
+		
 		String memberId = userDetails.getUsername();
 		int memberIn = questService.searchMemberIn(memberId);
 
@@ -164,6 +167,7 @@ public class ExpenseController {
 	@GetMapping("/detail")
 	public String detail(@RequestParam("id") int id, @RequestParam("date") String date, Model model) {
 		log.info("ExpenseController detail()");
+		
 		ExpenseDTO expense = expenseService.getExpenseDetailById(id);
 		log.info("조회된 expense: {}", expense);
 
@@ -176,6 +180,7 @@ public class ExpenseController {
 	@GetMapping("/update")
 	public String update(@RequestParam("id") int id, @RequestParam("date") String date, Model model) {
 		log.info("ExpenseController update()");
+		
 		ExpenseDTO expense = expenseService.getExpenseDetailById(id);
 
 		List<CategoryMain> mainList = expenseService.getMainCategoryList();
@@ -198,9 +203,11 @@ public class ExpenseController {
 		return "redirect:/cashbook/detail?id=" + expenseDTO.getExpenseIn() + "&date=" + expenseDTO.getExpenseDate();
 	}
 	
+	// 가계부 삭제
 	@PostMapping("/cashbook/delete")
 	public String delete(@RequestParam("id") int id,  @RequestParam("date") String date, RedirectAttributes redirectAttributes) {
 		log.info("ExpenseController delete()");
+		
 	    try {
 	        expenseService.deleteExpenseById(id); // 삭제 처리
 	        redirectAttributes.addFlashAttribute("msg", "삭제가 완료되었습니다.");
@@ -309,6 +316,7 @@ public class ExpenseController {
 		return "/cashbook/cashbook_search";
 	}
 
+	// 검색 / 필터링 로직
 	@GetMapping("/filterSearch")
 	@ResponseBody
 	public List<ExpenseDTO> filterSearch(
