@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,7 @@ import com.yageum.domain.CategorySubDTO;
 import com.yageum.domain.ItemDTO;
 import com.yageum.domain.NoticeDTO;
 import com.yageum.domain.QuestDTO;
+import com.yageum.domain.QuestStateDTO;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Card;
 import com.yageum.entity.CategoryMain;
@@ -43,9 +46,6 @@ import com.yageum.service.QuestService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 @Controller
@@ -101,6 +101,30 @@ public class AdminController {
 			List<Card> memberCard = expenseService.cardByMemberIn(memberIn);
 			List<Map<Object, Object>> memberQuest = questService.listQuest(memberIn);
 			
+			//memberQuest로 가지고 온 데이터 중에 성공한 것들만 다시 담아서 넣어 줌
+			List<Map<Object, Object>> filteredQuests = memberQuest.stream()
+		            .filter(map -> {
+		                // 1. Map에 "qpIn" 키가 존재하는지 확인
+		                if (map.containsKey("qpIn")) {
+		                    Object qpInValue = map.get("qpIn"); // Object 타입으로 값을 가져옴
+
+		                    // 2. 가져온 값이 Integer 또는 Long 타입인지 확인 (DB의 INT는 보통 Integer 또는 Long으로 매핑됨)
+		                    if (qpInValue instanceof Integer) {
+		                        Integer qpInInt = (Integer) qpInValue;
+		                        // 3. 캐스팅된 정수 값이 1인지 확인
+		                        return qpInInt == 1; 
+		                    } else if (qpInValue instanceof Long) { // 만약을 위해 Long 타입도 고려 (DB의 BIGINT 등)
+		                        Long qpInLong = (Long) qpInValue;
+		                        return qpInLong == 1L; // Long 타입 비교는 L 접미사 사용
+		                    }
+		                }
+		                // 4. "qpIn" 키가 없거나, 숫자 타입이 아니거나, 1이 아니면 필터링 대상에서 제외
+		                return false;
+		            })
+		            .collect(Collectors.toList());
+				
+			
+			model.addAttribute("questSuccess", filteredQuests);
 			model.addAttribute("quest", memberQuest);
 			model.addAttribute("bank", memberBank);
 			model.addAttribute("card" ,memberCard);
