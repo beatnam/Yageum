@@ -5,3 +5,10 @@ document.querySelector(".btn-edit").addEventListener("click", function () {
     const date = params.get("date");
     window.location.href = `/cashbook/update?id=${id}&date=${date}`;
 });
+
+// 로그아웃 함수
+function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+       window.location.href = '/logout';
+    }
+}

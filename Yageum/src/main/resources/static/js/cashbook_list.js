@@ -58,4 +58,10 @@
 		    return `${year}-${month}-${day}`;
 		}
 
+		// 로그아웃 함수
+		function logout() {
+		    if (confirm('로그아웃 하시겠습니까?')) {
+		       window.location.href = '/logout';
+		    }
+		}
 		

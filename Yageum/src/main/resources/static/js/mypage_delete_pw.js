@@ -33,3 +33,9 @@ function handlePasswordConfirm(event) {
 			alert('비밀번호 확인 중 오류가 발생했습니다.');
 		});
 	}
+	// 로그아웃 함수
+	function logout() {
+	    if (confirm('로그아웃 하시겠습니까?')) {
+	       window.location.href = '/logout';
+	    }
+	}

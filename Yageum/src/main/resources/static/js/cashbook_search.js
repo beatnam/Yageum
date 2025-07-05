@@ -220,3 +220,10 @@ function renderTransactions(data) {
   if (incomeEl) incomeEl.textContent = "+" + totalIncome.toLocaleString() + "원";
   if (expenseEl) expenseEl.textContent = "-" + totalExpense.toLocaleString() + "원";
 }
+
+// 로그아웃 함수
+function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+       window.location.href = '/logout';
+    }
+}

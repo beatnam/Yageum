@@ -216,3 +216,10 @@
 
     // DOM 로드 후 실행
     //document.addEventListener('DOMContentLoaded', autoDetectcardCorporation);
+	
+	// 로그아웃 함수
+	function logout() {
+	    if (confirm('로그아웃 하시겠습니까?')) {
+	       window.location.href = '/logout';
+	    }
+	}
