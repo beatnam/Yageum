@@ -9,6 +9,8 @@
 		    } else if (expenseType === "1") {
 		        expenseBtn.classList.add("active");
 		    }
+			
+			
 		});
 		
 		// 유형 수정
@@ -28,52 +30,9 @@
 		    }
 		}
 		
-		//수단 관련
+//		//수단 관련
 		document.addEventListener("DOMContentLoaded", function () {
-		    const method1 = document.getElementById("method1").value;
-			console.log("method1 값:", method1);
-		    const method2 = document.getElementById("method2");
-		    const selectedCardIn = document.getElementById("cardIn").value;
-		    const selectedAccountIn = document.getElementById("accountIn").value;
-
-		    if (method1 === "1" || method1 === "2") {
-		        fetch(`/cashbook/cards/byMethod/${method1}`)
-		            .then(res => res.json())
-		            .then(data => {
-						console.log("카드 데이터:", data);
-						console.log("선택된 카드 ID:", selectedCardIn);
-						
-		                data.forEach(card => {
-		                    const option = document.createElement("option");
-		                    option.value = card.cardIn;
-		                    option.textContent = card.cardName;
-		                    if (String(card.cardIn) === selectedCardIn) {
-		                        option.selected = true;
-		                    }
-		                    method2.appendChild(option);
-		                });
-		                method2.disabled = false;
-		            });
-		    } else if (method1 === "4") {
-		        fetch(`/cashbook/accounts`)
-		            .then(res => res.json())
-		            .then(data => {
-						console.log("계좌 데이터:", data);
-						console.log("선택된 계좌 ID:", selectedAccountIn);
-						
-		                data.forEach(account => {
-		                    const option = document.createElement("option");
-		                    option.value = account.accountIn;
-		                    option.textContent = account.bankName + " " + account.accountNum;
-							console.log("계좌 option ID 비교: ", account.accountIn, selectedAccountIn);
-		                    if (String(account.accountIn) === selectedAccountIn) {
-		                        option.selected = true;
-		                    }
-		                    method2.appendChild(option);
-		                });
-		                method2.disabled = false;
-		            });
-		    }
+		   updateMethod2();
 		});
 		
 		
@@ -81,8 +40,9 @@
 		function updateMethod2() {
 		    const method1 = document.getElementById('method1').value;
 		    const method2 = document.getElementById('method2');
-		    const selectedCard = /*[[${expense.cardIn}]]*/ 0;
-		    const selectedAccount = /*[[${expense.accountIn}]]*/ 0;
+			const selectedCard = document.getElementById("cardIn").value;
+			const selectedAccount = document.getElementById("accountIn").value;
+			console.log("selectedCard 값:", selectedCard);
 
 		    method2.innerHTML = '<option value="">상세 선택</option>';
 		    method2.disabled = true;
@@ -92,11 +52,12 @@
 		        fetch(`/cashbook/cards/byMethod/${method1}`)
 		            .then(res => res.json())
 		            .then(data => {
+						console.log("카드 API 응답:", data);
 		                data.forEach(card => {
 		                    const option = document.createElement("option");
 		                    option.value = card.cardIn;
-		                    option.textContent = card.cardName;
-		                    if (card.cardIn === selectedCard) {
+		                    option.textContent = card.ccName + "   " + card.cardName;
+		                    if (String(card.cardIn) === selectedCard) {
 		                        option.selected = true;
 		                    }
 		                    method2.appendChild(option);
@@ -110,8 +71,8 @@
 		                data.forEach(account => {
 		                    const option = document.createElement("option");
 		                    option.value = account.accountIn;
-		                    option.textContent = account.bankName + " " + account.accountNum;
-		                    if (account.accountIn === selectedAccount) {
+		                    option.textContent = account.bankName + " " + account.accountName;
+		                   if (String(account.accountIn) === selectedAccount) {
 		                        option.selected = true;
 		                    }
 		                    method2.appendChild(option);

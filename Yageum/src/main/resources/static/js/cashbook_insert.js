@@ -29,7 +29,7 @@ let selectedType = '';
 	                data.forEach(card => {
 	                    const option = document.createElement("option");
 	                    option.value = card.cardIn;
-	                    option.textContent = card.cardName;
+	                    option.textContent = card.ccName + " " +card.cardName;
 	                    method2.appendChild(option);
 	                });
 	                method2.disabled = false;
@@ -43,7 +43,7 @@ let selectedType = '';
 			                data.forEach(account => {
 			                    const option = document.createElement("option");
 			                    option.value = account.accountIn;  
-			                    option.textContent = account.bankName + " " + account.accountNum;
+			                    option.textContent = account.bankName + "   " + account.accountName;
 			                    method2.appendChild(option);
 			                });
 			                method2.disabled = false;

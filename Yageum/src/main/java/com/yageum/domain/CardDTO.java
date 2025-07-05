@@ -19,6 +19,7 @@ public class CardDTO {
     private String cardName;
     private String cardUsername;
     private int cc_in;
+    private String ccName;
     private int methodIn;
     
 //    public CardDTO(Card card) {

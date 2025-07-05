@@ -62,7 +62,7 @@ public class ExpenseService {
 	    public List<Card> getCardList(int memberIn, int methodIn) {
 	    	log.info("ExpenseService getCardList()");
 	    	
-	        return cardRepository.findCardsByMemberInAndMethodIn(memberIn, methodIn);
+	        return cashbookMapper.getCardList(memberIn, methodIn);
 	    }
 
 	    // 계좌 리스트 (회원번호 기준)

@@ -4,6 +4,8 @@
 
 <head>
 	<meta charset="UTF-8">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>계좌 및 결제 수단 관리</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +26,10 @@
 		<div th:replace="fragments/m_sidebar :: m_sidebar"></div>
 
 		<main class="accountbook-main-content">
+			<div class="edit-header">
 			<h1>결제 수단 관리</h1>
+			<p>가계부에서 사용할 수단을 관리하세요!</p>
+			</div>
 			
 			<!-- 버튼 영역 -->
 			<div class="global-controls">
@@ -48,6 +53,7 @@
 								<div class="payment-details"
 									th:text="${account.bankName + ' • ' + account.accountNum}">은행 • 계좌번호</div>
 							</div>
+							<button type="button" class="edit-name-btn">수정</button>
 						</div>
 <!--						<span class="payment-status status-active">사용중</span>-->
 					</li>
@@ -66,8 +72,9 @@
 							<div class="payment-info">
 								<div class="payment-name" th:text="${card.cardName}">카드이름</div>
 								<div class="payment-details"
-								     th:text="${card.cardCorporation.ccName + ' • ' + card.cardNum}">회사 • 카드번호</div>
+								     th:text="${card.ccName + ' • ' + card.cardNum}">회사 • 카드번호</div>
 							</div>
+							<button type="button" class="edit-name-btn">수정</button>
 						</div>
 <!--						<span class="payment-status status-active">사용중</span>-->
 					</li>
@@ -86,8 +93,9 @@
 							<div class="payment-info">
 								<div class="payment-name" th:text="${card.cardName}">카드이름</div>
 								<div class="payment-details"
-								     th:text="${card.cardCorporation.ccName + ' • ' + card.cardNum}">회사 • 카드번호</div>
+								     th:text="${card.ccName + ' • ' + card.cardNum}">회사 • 카드번호</div>
 							</div>
+							<button type="button" class="edit-name-btn">수정</button>
 						</div>
 <!--						<span class="payment-status status-active">사용중</span>-->
 					</li>

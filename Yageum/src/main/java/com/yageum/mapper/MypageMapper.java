@@ -2,6 +2,7 @@ package com.yageum.mapper;
 
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.yageum.entity.BankAccount;
@@ -20,6 +21,9 @@ public interface MypageMapper {
 
 	void insertBankAccount(BankAccount account);
 
+	void updateAccountName(@Param("id") int id, @Param("newName") String newName);
+	
+	void updateCardName(@Param("id") int id, @Param("newName") String newName);
 
     
     

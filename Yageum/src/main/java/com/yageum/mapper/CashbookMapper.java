@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.ExpenseDTO;
 import com.yageum.entity.BankAccount;
+import com.yageum.entity.Card;
 
 @Mapper
 @Repository
@@ -31,6 +32,10 @@ public interface CashbookMapper {
    List<BankAccountDTO> accountAll();
 
    void deleteExpense(@Param("id") int id);
+
+   List<Card> getCardList(@Param("memberIn") int memberIn, @Param("methodIn") int methodIn);
+   
+   //List<Card> getCardListAll(int memberIn);
 
 
     

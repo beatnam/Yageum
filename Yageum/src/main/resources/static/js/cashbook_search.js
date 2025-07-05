@@ -132,6 +132,16 @@ document.addEventListener("DOMContentLoaded", function () {
     customDateRange.style.display = (this.value === "custom") ? "block" : "none";
   });
 
+  // 내역 클릭 시 상세 페이지로 이동
+  document.querySelector(".transaction-list").addEventListener("click", function (e) {
+    const target = e.target.closest(".transaction-item");
+    if (target && target.dataset.id && target.dataset.date) {
+      const expenseId = target.dataset.id;
+      const expenseDate = target.dataset.date;
+      window.location.href = `/cashbook/detail?id=${expenseId}&date=${expenseDate}`;
+    }
+  });
+  
   fetchCards();    // 카드 불러오기
   fetchAccounts(); // 계좌 불러오기
   applyFilters(); // 초기 실행
@@ -197,7 +207,7 @@ function renderTransactions(data) {
     else totalExpense += amount;
 
     const itemHTML = `
-      <div class="transaction-item">
+      <div class="transaction-item" data-id="${item.expenseIn}" data-date="${item.expenseDate}">
         <div class="transaction-icon">${emoji}</div>
         <div class="transaction-details">
           <div class="transaction-desc">${content}</div>

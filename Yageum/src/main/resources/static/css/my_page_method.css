@@ -1,3 +1,34 @@
+.edit-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.edit-header h1 {
+    color: #4E342E;
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.edit-header p {
+    color: #666;
+    font-size: 1.1em;
+}
+
+.edit-name-btn {
+  display: none;
+  margin-left: 10px;
+  padding: 2px 6px;
+  font-size: 13px;
+}
+
+.edit-mode .edit-name-btn {
+  display: inline-block;
+}
+
 	/* Main container styles */
 		.accountbook-container {
 			display: flex;
@@ -229,3 +260,18 @@
 .btn-cancel:hover {
     background-color: #757575;
 }
+
+.payment-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.edit-name-btn {
+  display: none;
+  padding: 5px 10px;
+  font-size: 13px;
+  background-color: #FFC107;
+  border: none
+  }

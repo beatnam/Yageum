@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -274,6 +276,26 @@ public class MypageController {
 		return "redirect:/mypage/mlist";
 	}
 	
+	// 수단 이름 수정
+	@PostMapping("/updateMethodName")
+	@ResponseBody
+	public ResponseEntity<String> updateMethodName(@RequestBody Map<String, String> data) {
+	    String type = data.get("type");
+	    String newName = data.get("newName");
+	    int id = Integer.parseInt(data.get("id"));
+
+	    try {
+	        if (type.equals("account")) {
+	            mypageService.updateAccountName(id, newName);
+	        } else {
+	        	mypageService.updateCardName(id, newName);
+	        }
+	        return ResponseEntity.ok("성공");
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("실패");
+	    }
+	}
 	
 	//카드사 자동 매칭 api  : 외부 API의 불안정성과 호출 제한 문제로 인해 프론트엔드 자체 BIN 매핑 방식으로 전환
 //	@GetMapping("/binlookup/{bin}")
