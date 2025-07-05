@@ -52,23 +52,20 @@
             <div class="stats-container">
                 <!-- 5월의 가입자 수 -->
                 <div class="stats-box pink">
-                    <div class="stats-title"><h3>5월의 가입자 수</h3></div>
+                    <div class="stats-title"><h3>지금까지 가입자 수</h3></div>
                     <div class="date-selector">
 					
-					<input type="date">
+<!--					<input type="date">-->
                     </div>
-						<!--						<canvas></canvas>-->
-						
-						
+						<canvas id="chart" ></canvas>
 	                </div>
 
-                <!-- 월별 가입자 수 -->
-                <div class="stats-box pink">
-                    <div class="stats-title"><h3>현재까지 가입자 수</h3></div>
-<!--						<canvas></canvas>-->
-
+<!--                 월별 가입자 수 -->
+<!--                <div class="stats-box pink">-->
+<!--                    <div class="stats-title"><h3>현재까지 가입자 수</h3></div>-->
+<!--					<canvas id="chart2"></canvas>-->
 						
-	                </div>
+<!--                </div>-->
             </div>
 
             <!-- 중간 통계 자료 -->
@@ -80,7 +77,7 @@
                 
                 <div class="stat-card">
                     <div class="stat-title">지출 비율이 높은 카테고리</div>
-                    <div class="stat-value">교통비</div>
+                    <div class="stat-value" id="highestCategoryDisplay"></div>
                 </div>
                 
                 <div class="stat-card beige">
@@ -96,28 +93,19 @@
 
             <!-- 하단 통계 박스들 -->
             <div class="bottom-stats">
-                <!-- 이달의 질의응답 통계 -->
-                <div class="stats-box beige">
-                    <div class="stats-title">카테고리 별 지출 비율</div>
-					<!--						<canvas></canvas>-->
-                </div>
-
-                <!-- 이달의 질의응답 -->
+                <!-- 이달의 절약 왕 -->
                 <div class="large-stat-card">
                     <div class="large-stat-title">이달의 절약 왕</div>
                     <div class="center-text">홍길동 님</div>
                 </div>
-            </div>
-
-            <!-- 최하단 통계 박스들 -->
-            <div class="bottom-stats" style="margin-top: 20px;">
+                
+                <!-- 사용자 별 평균 연결 수 -->
                 <div class="large-stat-card">
                     <div class="large-stat-title">사용자 별 평균 연결 수</div>
                     <div class="large-stat-content">
                         <div class="large-stat-item">
                             <div class="large-stat-label">평균 계좌 연결 수</div>
                             <div class="large-stat-number" th:text="${#numbers.formatInteger((bank.size() / member.size()), 0)}"></div>
-							
                         </div>
                         <div class="large-stat-item">
                             <div class="large-stat-label">평균 카드 연결 수</div>
@@ -125,12 +113,12 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="large-stat-card">
-                    <div class="large-stat-title">추가 통계 정보</div>
-                    <div class="center-text">데이터</div>
-                </div>
-				
+            </div>
+
+            <!-- 맨 밑 중앙 배치 박스 -->
+            <div class="bottom-single-box">
+                <div class="stats-title">카테고리 별 지출 비율</div>
+                <canvas id="cateChart"></canvas>
             </div>
         </div>
     </div>
@@ -145,31 +133,7 @@
             submenu.classList.toggle('show');
         }
 
-        // 가입자 수 통계 데이터 (예시)
-        const memberStatsData = {
-            2024: {
-                1: 85, 2: 92, 3: 78, 4: 96, 5: 103, 6: 89,
-                7: 94, 8: 87, 9: 99, 10: 105, 11: 91, 12: 88
-            },
-            2025: {
-                1: 112, 2: 98, 3: 106, 4: 89, 5: 125, 6: 94,
-                7: 87, 8: 102, 9: 95, 10: 108, 11: 93, 12: 97
-            }
-        };
-
-        // 월별 가입자 수 업데이트 함수
-        function updateMemberStats() {
-            const year = document.getElementById('yearSelect').value;
-            const month = document.getElementById('monthSelect').value;
-            
-            // 실제로는 여기서 서버에서 데이터를 가져오거나
-            // 차트 라이브러리를 사용하여 그래프를 업데이트할 것입니다.
-            console.log(`${year}년 ${month}월 데이터 로드`);
-            console.log(`가입자 수: ${memberStatsData[year][month]}명`);
-            
-            // 예시: 선택된 월의 데이터를 표시
-            // 실제 구현에서는 그래프를 다시 그리거나 데이터를 업데이트합니다.
-        }
+    
 
         // 페이지 로드 시 초기 데이터 설정
         document.addEventListener('DOMContentLoaded', function() {
@@ -183,7 +147,174 @@
 				}
     </script>
 	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 	
+	<script th:inline="javascript">
+		
+		// 가입3
+		let myCt = document.getElementById('chart');
+		const monthlyLabels = /*[[${yearlyLabelsJson}]]*/ '[]';
+		const monthlyData = /*[[${yearlyDataJson}]]*/ '[]';
+		const monthlyLabelsJ = JSON.parse(monthlyLabels);
+		const monthlyDataJ = JSON.parse(monthlyData);
+		const backgroundColors = [];
+		    const colorPalette = [
+		        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+		        '#FF9F40', '#E7E9ED', '#C9CBCE', '#A7AEB8', '#868B94',
+		        '#6B6B6B', '#FFD700'
+		    ];
+		for(let a = 1; a < monthlyLabels.length; a++){
+			backgroundColors.push(colorPalette[a % colorPalette.length]);
+		}
+		
+		
+		 var chart = new Chart(myCt, {
+			type: 'bar',
+			data:{
+				labels: monthlyLabelsJ,
+				datasets: [
+					{	
+						label: '총 가입자 수',
+						data: monthlyDataJ,
+						backgroundColor:backgroundColors,
+						barPercentage: 0.5,     // 막대 자체의 너비를 50%로 줄입니다. (기본값: 0.9)
+                   		categoryPercentage: 0.7 
+					},
+				]
+			},
+		 	options: { 
+			   responsive: true, // 컨테이너 크기에 반응하도록 설정 (필수)
+               maintainAspectRatio: true, // 차트의 가로세로 비율을 유지할지 여부
+               aspectRatio: 16 / 9, // **여기에 원하는 비율을 설정합니다. (가로 / 세로)**
+			   plugins: {
+	              legend: {
+	                  display: false // 범례 자체를 숨깁니다.
+	              }
+	           }, 
+			   scales:{
+				y:{
+					beginAtZero: true,
+				}
+			   }
+			},
+			font: {
+                   family: 'Arial, "Malgun Gothic", "Apple SD Gothic Neo", "Nanum Gothic", sans-serif',
+                   size: 15 // 기본 폰트 크기
+           },
+		 });
+		 //--------------------------------------------------------------------------------
+		 
+	
+	
+		
+		
+	</script>	
+	<script src="../js/jquery-3.7.1.js"></script>
+	<script th:inline="javascript">
+		
 
+		let cateChart = document.getElementById('cateChart').getContext('2d');
+				const cateLabel = /*[[${chartLabels}]]*/[];
+				const cateDate = /*[[${chartData}]]*/[];
+				const totalExpense = /*[[${totalExpense}]]*/ 0;
+				console.log( cateLabel);
+				console.log(cateDate);
+				console.log(totalExpense);
+				const backgroundColor = [
+				           'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
+				           'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
+				           'rgba(199, 199, 199, 0.7)', 'rgba(83, 102, 255, 0.7)', 'rgba(201, 153, 207, 0.7)',
+				           'rgba(100, 200, 100, 0.7)', 'rgba(255, 100, 255, 0.7)', 'rgba(100, 255, 255, 0.7)',
+				           'rgba(255, 128, 0, 0.7)', 'rgba(0, 128, 255, 0.7)', 'rgba(128, 0, 255, 0.7)',
+				           'rgba(0, 255, 128, 0.7)', 'rgba(255, 0, 128, 0.7)', 'rgba(128, 255, 0, 0.7)',
+				           'rgba(0, 128, 128, 0.7)', 'rgba(128, 0, 0, 0.7)', 'rgba(0, 0, 128, 0.7)',
+				           'rgba(128, 128, 0, 0.7)'
+				       ];
+				       const borderColor = [
+				           'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)',
+				           'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)',
+				           'rgba(199, 199, 199, 1)', 'rgba(83, 102, 255, 1)', 'rgba(201, 153, 207, 1)',
+				           'rgba(100, 200, 100, 1)', 'rgba(255, 100, 255, 1)', 'rgba(100, 255, 255, 1)',
+				           'rgba(255, 128, 0, 1)', 'rgba(0, 128, 255, 1)', 'rgba(128, 0, 255, 1)',
+				           'rgba(0, 255, 128, 1)', 'rgba(255, 0, 128, 1)', 'rgba(128, 255, 0, 1)',
+				           'rgba(0, 128, 128, 1)', 'rgba(128, 0, 0, 1)', 'rgba(0, 0, 128, 1)',
+				           'rgba(128, 128, 0, 1)'
+				       ];
+				
+				
+				
+				let myChart3 = new Chart(cateChart, {
+					type: 'bar', // 원형 차트 타입
+		            data: {
+		            labels: cateLabel, // 카테고리 이름 배열
+		            datasets: [
+		                   {
+		                       label: '카테고리 지출 비율', // 데이터셋 라벨
+		                       data: cateDate,    // 각 카테고리의 실제 지출 금액 배열
+							   backgroundColor: backgroundColor.slice(0, cateLabel.length), // 데이터 수만큼만 사용
+	                           borderColor: borderColor.slice(0, cateLabel.length),       // 데이터 수만큼만 사용
+	                           borderWidth: 1
+		                   }
+		               ]
+		           },
+				   options: {
+				                   responsive: true, // 반응형 차트
+				                   maintainAspectRatio: false, // 컨테이너 크기에 맞춰 비율 조정
+				                   plugins: {
+				                       legend: {
+										   display: false 
+				                       },
+				                       tooltip: {
+				                           callbacks: {
+				                               label: function(tooltipItem) {
+				                                   let label = tooltipItem.label || ''; // 카테고리 이름
+
+				                                   if (label) {
+				                                       label += ': ';
+				                                   }
+
+				                                   const value = tooltipItem.raw; // 해당 카테고리의 실제 지출 금액
+				                                   // 금액을 원화 단위로 포맷팅 (예: 50,000원)
+				                                   label += value.toLocaleString() + '원';
+
+				                                   // 전체 지출 금액이 0보다 큰 경우에만 퍼센티지 계산 및 추가
+				                                   if (totalExpense > 0) {
+				                                       const percentage = (value / totalExpense * 100).toFixed(0); // 소수점 두 자리까지
+				                                       label += ' (' + percentage + '%)';
+				                                   }
+
+				                                   return label;
+				                               }
+				                           }
+				                       }
+				                   }
+				               }
+				           });
+	
+						  //------------------------------------------------------------------
+						  
+						  function displayHighestCategory() {
+						      const highestCategoryDisplay = document.getElementById('highestCategoryDisplay'); 
+							  var highCategory = 0;
+							  var highCateName = '';
+							   
+							  for(let i = 0; i < cateLabel.length; i++ ){
+								
+								if(cateDate[i] < cateDate[i+1]){
+									highCategory = cateDate[i+1];
+									highCateName = cateLabel[i+1];
+								}
+								
+								
+							  }
+							  highestCategoryDisplay.innerText = highCateName;
+							  
+							  
+						  }
+						  myChart3.options.animation.onComplete = () => {
+						  		    displayHighestCategory(); // 차트 애니메이션이 완료될 때 함수 실행
+						  		};
+						
+	</script>
 </body>
 </html>

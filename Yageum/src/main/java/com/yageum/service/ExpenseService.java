@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
-
+import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.ExpenseDTO;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Card;
@@ -143,7 +143,10 @@ public class ExpenseService {
 			
 			return cardRepository.findByMemberIn(memberIn);
 		}
-
+		public List<Expense> expenseAll() {
+			
+			return expenseRepository.findAll() ;
+		}
 		// 가계부 삭제
 		public void deleteExpenseById(int id) {
 			log.info("ExpenseService deleteExpenseById()");
