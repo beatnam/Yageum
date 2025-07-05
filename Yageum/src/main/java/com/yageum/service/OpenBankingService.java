@@ -34,24 +34,43 @@ public class OpenBankingService {
 		return openBankingApiClient.getUserInfo(map);
 	}
 
+	// 오픈뱅킹 계좌 목록 불러오기
 	public Map<String, Object> accountList(Map<String, String> map) {
 
 		return openBankingApiClient.accountList(map);	
 	}
 
+	// 오픈뱅킹 계좌 db에 저장
 	public void saveAccounts(List<String> selectedAccounts, List<String> accountNames, int memberIn) {
+		log.info("OpenBankingService saveAccounts()");
 	    for (int i = 0; i < selectedAccounts.size(); i++) {
-	        String[] parts = selectedAccounts.get(i).split(",");
-	        String accountNum = parts[0];
-	        String bankName = parts[1];
-	        String accountName = accountNames.get(i);  // 사용자 입력값
+	        System.out.println("입력값: " + selectedAccounts.get(i));
 
-	        // 1. 은행명으로 bank_in 조회 or insert
+	        String[] parts = selectedAccounts.get(i).split("\\|");
+	        if (parts.length < 2) {
+	            System.out.println("🔴split 실패 (parts.length < 2)");
+	            continue;
+	        }
+
+	        String accountNum = parts[0].trim();
+	        String bankName = parts[1].trim();
+	        String accountName = (i < accountNames.size()) ? accountNames.get(i) : "";
+
+	        System.out.println("🟢추출: " + accountNum + " / " + bankName + " / " + accountName);
+
+	        // 1. 은행 처리
 	        Bank bank = openbankingMapper.findByName(bankName);
 	        if (bank == null) {
+	            System.out.println("🔵은행 없음 → insert 시도");
 	            bank = new Bank();
 	            bank.setBankName(bankName);
 	            openbankingMapper.insertBank(bank);
+	            bank = openbankingMapper.findByName(bankName);
+	        }
+
+	        if (bank == null || bank.getBankIn() == 0) {
+	            System.out.println("🔴은행 조회 실패 → 저장 중단");
+	            continue;
 	        }
 
 	        // 2. 계좌 저장
@@ -60,13 +79,13 @@ public class OpenBankingService {
 	        account.setBankIn(bank.getBankIn());
 	        account.setAccountNum(accountNum);
 	        account.setAccountName(accountName);
-	        account.setAccountAlias(null); // 별칭은 없음
+	        account.setAccountAlias(null);
 	        account.setCreateDate(LocalDate.now());
 
 	        openbankingMapper.insertBankAccount(account);
+	        System.out.println("✅저장 완료: " + accountNum + " / " + bankName + " / " + accountName);
 	    }
 	}
-	
 ////	등록계좌 조회
 //	public Map<String, String> accountList(Map<String, String> map) {
 //		

@@ -51,8 +51,8 @@
 					<ul class="account-list">
 					  <li th:each="acc, iterStat : ${accountList}" class="account-card" th:attr="data-index=${iterStat.index}">
 					    <label>
-					      <input type="checkbox" name="selectedAccounts"
-					             th:value="${acc['account_num_masked'] + ',' + acc['bank_name']}">
+							<input type="checkbox" name="selectedAccounts"
+							       th:value="${acc['account_num_masked']} + '|' + ${acc['bank_name']}">
 					      <span th:text="${acc['bank_name'] + ' - ' + acc['account_num_masked']}"></span>
 					    </label>
 					    <input type="text" class="account-name-input"
@@ -67,19 +67,7 @@
 				</form>
         </main>
     </div>
-	<script>
-		document.querySelector('form').addEventListener('submit', function(e) {
-		  // 기존에 name 붙은 거 제거
-		  document.querySelectorAll('.account-name-input').forEach(input => input.removeAttribute('name'));
-
-		  // 체크된 항목만 찾아서 이름 붙여줌
-		  const checked = document.querySelectorAll('input[name="selectedAccounts"]:checked');
-		  checked.forEach((checkbox, i) => {
-		    const li = checkbox.closest('.account-card');
-		    const input = li.querySelector('.account-name-input');
-		    input.setAttribute('name', 'accountNames'); // name을 동적으로 붙여야 서버로 전송됨
-		  });
-		});
+	<script src="../js/mypage_open_result.js">
 		
 	</script>
 	

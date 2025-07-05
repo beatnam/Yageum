@@ -38,8 +38,10 @@ public class OpenBankingController {
 //    private final String STATE = "20132676"; 
 //    
     
+	// 오픈뱅킹 콜백 (토큰 발급, 세션 저장)
 	@GetMapping("/callback")
 	public String callback(@RequestParam Map<String, String> map, HttpSession session) {
+		log.info("OpenBankingController callback()");
 		// 인증 후 응답 메시지
 		System.out.println(map);
 		
@@ -55,8 +57,10 @@ public class OpenBankingController {
 	}
 	
 	
+	// 가져온 정보로 사용자 이름
 	@GetMapping("/userInfo")
 	public String getUserInfo(HttpSession session, Model model) {
+		log.info("OpenBankingController getUserInfo()");
 	    String accessToken = (String) session.getAttribute("access_token");
 	    String userSeqNo = (String) session.getAttribute("user_seq_no");
 
@@ -79,11 +83,13 @@ public class OpenBankingController {
 	    return "mypage/mypage_open_result";
 	}
 	
+	// 오픈뱅킹으로 가져온 계좌 db에 저장
 	@PostMapping("/saveAccounts")
 	public String saveSelectedAccounts(@RequestParam("selectedAccounts") List<String> selectedAccounts,
 	                                   @RequestParam("accountNames") List<String> accountNames) {
-		System.out.println("accountNames: " + accountNames);
-		System.out.println("selectedAccounts: " + selectedAccounts);
+		log.info("OpenBankingController saveSelectedAccounts()");
+		log.info("accountNames: " + accountNames);
+		log.info("selectedAccounts: " + selectedAccounts);
 	    String loginId = SecurityContextHolder.getContext().getAuthentication().getName();
 	    Member member = memberRepository.findByMemberId(loginId);
 	    int memberIn = member.getMemberIn();
