@@ -103,7 +103,7 @@ public class OpenBankingApiClient {
    }
    
 //	등록계좌 조회
-	public Map<String, String> accountList(Map<String, String> map) {
+	public Map<String, Object> accountList(Map<String, String> map) {
 		log.info("access_token : " + map.get("access_token"));
 		log.info("user_seq_no : " + map.get("user_seq_no"));
 		httpHeaders = new HttpHeaders();
@@ -127,11 +127,11 @@ public class OpenBankingApiClient {
 		
 		restTemplate = new RestTemplate();
 		
-		Map<String, String> map2 = restTemplate
-				.exchange(uriComponents.toString(), HttpMethod.GET,accountList,Map.class)
-				.getBody();
-		log.info("//등록계좌 조회 map2 : " + map2.toString());
-		return map2;
+		Map<String, Object> result = restTemplate
+		        .exchange(uriComponents.toString(), HttpMethod.GET, accountList, Map.class)
+		        .getBody();
+		log.info("//등록계좌 조회 result : " + result.toString());
+		return result;
 	}
 
 

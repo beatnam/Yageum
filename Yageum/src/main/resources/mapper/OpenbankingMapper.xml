@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://mybatis.org/mybatis-3/getting-started.html
+src/main/resources/mapper폴더/MemberMapper.xml파일 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yageum.mapper.OpenbankingMapper">
+	<insert id="insertBankAccount" parameterType="com.yageum.entity.BankAccount">
+	  insert into bank_account
+	    (member_in, bank_in, account_num, account_name, account_alias, create_date)
+	  values
+	    (#{memberIn}, #{bankIn}, #{accountNum}, #{accountName}, #{accountAlias}, #{createDate});
+	</insert>
+	
+	<select id="findByName" resultType="com.yageum.entity.Bank">
+	  select * from bank where bank_name = #{bankName}
+	</select>
+	
+	<insert id="insertBank" parameterType="com.yageum.entity.Bank">
+	  insert into bank (bank_name) values (#{bankName});
+	</insert>
+	
+
+</mapper>
