@@ -66,6 +66,22 @@ public class ChatGPTService {
 		
 		return content;
 	}
+
+	public String askGold(String prompt) {
+		System.out.println("ChatGPTService askChatGPT");
+
+		String result = chatGPTClient.askGold(prompt);
+
+		// 배열의 내용만 뽑아오기
+		JSONObject jsonObject = new JSONObject(result);
+		JSONArray jsonArray = jsonObject.getJSONArray("choices");
+		JSONObject firstChoice = jsonArray.getJSONObject(0);
+		JSONObject message = firstChoice.getJSONObject("message");
+
+		String cont = message.getString("content");
+
+		return cont;
+	}
 	
 
 }

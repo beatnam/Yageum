@@ -6,8 +6,19 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 
 <mapper namespace="com.yageum.mapper.ChartMapper">
 
+	<select id="sumExpenseByMemberLogo" resultType="java.lang.Integer">
+		select ifnull(sum(expense_sum),0) as 'expenseSum'
+		from expense e join category_sub s
+		on e.cs_in = s.cs_in
+		join category_main m
+		on m.cm_in = s.cm_in
+		where member_in = #{memberIn} and month(expense_date) = #{month} and
+		year(expense_date) = #{year} and expense_type = 1
+	</select>
+
+
 	<select id="sumExpenseByMember" resultType="map">
-		select m.cm_name, sum(expense_sum) as 'expenseSum',
+		select m.cm_name, ifnull(sum(expense_sum),0) as 'expenseSum',
 		month(e.expense_date) as 'month', year(e.expense_date) as 'year'
 		from expense e join category_sub s
 		on e.cs_in = s.cs_in

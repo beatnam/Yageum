@@ -43,5 +43,11 @@ public class ChartService {
 	}
 
 
+	public int sumExpenseByMemberLogo(ChartDTO chartDTO) {
+		// TODO Auto-generated method stub
+		return chartMapper.sumExpenseByMemberLogo(chartDTO);
+	}
+
+
 
 }

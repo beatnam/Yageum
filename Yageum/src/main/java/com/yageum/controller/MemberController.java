@@ -3,7 +3,6 @@ package com.yageum.controller;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -13,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,8 +29,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import com.yageum.config.MyUserDetailsService;
+import com.yageum.domain.ChartDTO;
 import com.yageum.domain.MemberDTO;
+import com.yageum.service.ChartService;
+import com.yageum.service.ChatGPTService;
 import com.yageum.service.MemberService;
+import com.yageum.service.QuestService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,6 +51,12 @@ public class MemberController {
 
 	private final MemberService memberService;
 
+	private final QuestService questService;
+
+	private final ChartService chartService;
+
+	private final ChatGPTService chatGPTService;
+
 	private final MyUserDetailsService myUserDetailsService;
 
 	private final PasswordEncoder passwordEncoder;
@@ -59,12 +69,37 @@ public class MemberController {
 	@Value("${naver.client-secret}")
 	private String nClientSecret;
 
+	// 로고 클릭시 금값 안내
+	@ResponseBody
+	@GetMapping("/logoClick")
+	public String logoClick(@AuthenticationPrincipal UserDetails userDetails) {
+		log.info("logoClick");
+		String memberId = userDetails.getUsername();
+		System.out.println(userDetails.getUsername());
+
+		int memberIn = questService.searchMemberIn(memberId);
+		ChartDTO chartDTO = new ChartDTO();
+		chartDTO.setMemberIn(memberIn);
+
+		LocalDate today = LocalDate.now();
+		chartDTO.setMonth(today.getMonthValue());
+		chartDTO.setYear(today.getYear());
+		int sumExpense = chartService.sumExpenseByMemberLogo(chartDTO);
+		System.out.println(sumExpense);
+
+
+		String result = "이번달 현재까지 사용한 금액은" + String.valueOf(sumExpense) + "원 입니다. \n차트를 보러 가시겠습니까?";
+
+		return result;
+
+	}
+
 	// 아이디 중복 검사
 	@ResponseBody
 	@GetMapping("/idCheck")
 	public String idCheck(@RequestParam("id") String id) {
 		log.info("MemberController idCheck()");
-		
+
 		MemberDTO memberDTO = memberService.infoMember(id);
 		String result = "";
 		if (memberDTO != null) {
@@ -78,14 +113,14 @@ public class MemberController {
 			result = "idok";
 		}
 		// 결과값 리턴
-		return result;	
+		return result;
 	}
-	
+
 	@ResponseBody
 	@GetMapping("/emailCheck")
 	public String emailCheck(@RequestParam("email") String email) {
 		log.info("MemberController idCheck()");
-		
+
 		MemberDTO memberDTO = memberService.infoMember2(email);
 		String result = "";
 		if (memberDTO != null) {
@@ -99,14 +134,14 @@ public class MemberController {
 			result = "emailok";
 		}
 		// 결과값 리턴
-		return result;	
+		return result;
 	}
-	
+
 	@ResponseBody
 	@GetMapping("/phoneCheck")
 	public String phoneCheck(@RequestParam("phone") String phone) {
 		log.info("MemberController idCheck()");
-		
+
 		MemberDTO memberDTO = memberService.infoMember3(phone);
 		String result = "";
 		if (memberDTO != null) {
@@ -120,11 +155,9 @@ public class MemberController {
 			result = "phoneok";
 		}
 		// 결과값 리턴
-		return result;	
+		return result;
 	}
-	
-	
-	
+
 	// 네이버 로그인 URL을 만들면서
 	@GetMapping("/login")
 	public String login(Model model, HttpSession session,
@@ -194,7 +227,7 @@ public class MemberController {
 			memberDTO.setLastLoginDate(LocalDate.now());
 			memberService.updateDate(memberDTO);
 			session.setAttribute("memberName", memberDTO.getMemberName());
-			
+
 			return "redirect:/cashbook/main";
 		}
 	}

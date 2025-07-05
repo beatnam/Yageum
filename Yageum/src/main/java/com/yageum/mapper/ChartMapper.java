@@ -21,6 +21,8 @@ public interface ChartMapper {
 
 	Map<String, Object> minusMember(ChartDTO chartDTO);
 
+	int sumExpenseByMemberLogo(ChartDTO chartDTO);
+
 	
 	
 
