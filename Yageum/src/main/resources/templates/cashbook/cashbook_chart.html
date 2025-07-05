@@ -8,31 +8,25 @@
 
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
-		rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap" rel="stylesheet">
 
 	<link rel="stylesheet" href="../css/common.css">
 	<link rel="stylesheet" href="../css/cashbook_chart.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-
 	<style>
-
+		
 	</style>
 </head>
 
 <body>
 	<div th:replace="fragments/header :: header"></div>
-
 	<div class="app-container">
 		<div th:replace="fragments/sidebar :: sidebar"></div>
-
 		<main class="content">
 			<div class="content-header">
 				<h2>나의 차트</h2>
 				<p>가계부 내역을 시각적으로 확인해보세요</p>
 			</div>
-
 			<div class="content-body">
 				<div class="chart-header">
 					<div class="chart-title">월별 차트</div>
@@ -42,19 +36,14 @@
 						<button class="nav-arrow" onclick="nextMonth()">▶</button>
 					</div>
 				</div>
-
 				<div class="total-summary">
 					<div class="summary-item">
 						<div class="summary-label">총 수입</div>
-						<div class="summary-amount income">+ <span
-								th:text="${plus != null and plus['plus'] != null ? #numbers.formatDecimal(plus['plus'], 0, 'COMMA', 0, 'POINT') : '0'}"
-								class="income-value"></span>원</div>
+						<div class="summary-amount income">+ <span th:text="${plus != null and plus['plus'] != null ? #numbers.formatDecimal(plus['plus'], 0, 'COMMA', 0, 'POINT') : '0'}" class="income-value"></span>원</div>
 					</div>
 					<div class="summary-item">
 						<div class="summary-label">총 지출</div>
-						<div class="summary-amount expense">-<span
-								th:text="${minus != null and minus['minus'] != null ? #numbers.formatDecimal(minus['minus'], 0, 'COMMA', 0, 'POINT') : '0'}"
-								class="expense-value"></span>원</div>
+						<div class="summary-amount expense">-<span th:text="${minus != null and minus['minus'] != null ? #numbers.formatDecimal(minus['minus'], 0, 'COMMA', 0, 'POINT') : '0'}" class="expense-value"></span>원</div>
 					</div>
 					<div class="summary-item">
 						<div class="summary-label">잔액</div>
@@ -63,46 +52,32 @@
 						</div>
 					</div>
 				</div>
-
-				<div class="charts-container">
+				<div class="charts-container horizontal-layout">
 					<div class="chart-box">
 						<h3>카테고리별 지출 (원형 차트)</h3>
 						<div class="chart-canvas">
 							<canvas id="pieChart"></canvas>
 						</div>
 					</div>
-					<div class="chart-box">
-						<h3>일별 수입/지출 현황 (막대 차트)</h3>
-						<div class="chart-canvas">
-							<canvas id="barChart"></canvas>
-						</div>
-					</div>
-				</div>
-
-				<div class="expense-table">
-					<div class="table-header">
-						카테고리별 지출 내역
-					</div>
-					<div class="expense-list">
+					<div class="expense-table">
+						<div class="table-header">카테고리별 지출 내역</div>
+						<div class="expense-list"></div>
 					</div>
 				</div>
 			</div>
 		</main>
 	</div>
-
 	<div id="dateModal" class="date-modal">
 		<div class="date-modal-content">
 			<div class="modal-header">날짜 선택</div>
 			<div class="date-selectors">
 				<div class="date-selector">
 					<label>년도</label>
-					<select id="yearSelect">
-					</select>
+					<select id="yearSelect"></select>
 				</div>
 				<div class="date-selector">
 					<label>월</label>
-					<select id="monthSelect">
-					</select>
+					<select id="monthSelect"></select>
 				</div>
 			</div>
 			<div class="modal-buttons">
@@ -111,27 +86,18 @@
 			</div>
 		</div>
 	</div>
-
 	<div th:replace="fragments/footer :: footer"></div>
-
 	<script th:inline="javascript">
 		let currentYear = /*[[${year}]]*/ 2025;
 		let currentMonth = /*[[${month}]]*/ 6;
-
-		let pieChartData = /*[[${sumExpense}]]*/[];
+		let pieChartData = /*[[${sumExpense}]]*/ [];
 		let totalIncome = /*[[${plus != null and plus['plus'] != null ? plus['plus'] : 0}]]*/ 0;
 		let totalExpense = /*[[${minus != null and minus['minus'] != null ? minus['minus'] : 0}]]*/ 0;
 		let balance = /*[[${sum}]]*/ 0;
-
-		const chartColors = [
-			'#FF6B6B', '#4ECDC4', '#45B7D1', '#F9CA24', '#6C5CE7',
-			'#A29BFE', '#FD79A8', '#00B894', '#E17055'
-		];
+		const chartColors = ['#FF6B6B','#4ECDC4','#45B7D1','#F9CA24','#6C5CE7','#A29BFE','#FD79A8','#00B894','#E17055'];
 	</script>
-
 	<script>
-		let pieChart, barChart;
-
+		let pieChart;
 		document.addEventListener('DOMContentLoaded', function () {
 			populateDateSelectors();
 			updateDateDisplay();
@@ -139,21 +105,13 @@
 			initializeCharts();
 			updateExpenseDetails(pieChartData);
 		});
-
 		function initializeCharts() {
 			initPieChart();
-			initBarChart();
 		}
-
 		function initPieChart() {
 			const ctx = document.getElementById('pieChart').getContext('2d');
-
-			if (pieChart) {
-				pieChart.destroy();
-			}
-
-			let labels = [];
-			let data = [];
+			if (pieChart) pieChart.destroy();
+			let labels = [], data = [];
 			if (Array.isArray(pieChartData) && pieChartData.length > 0) {
 				labels = pieChartData.map(item => item.cm_name);
 				data = pieChartData.map(item => item.expenseSum);
@@ -161,17 +119,11 @@
 				labels = ['데이터 없음'];
 				data = [1];
 			}
-
 			pieChart = new Chart(ctx, {
 				type: 'pie',
 				data: {
 					labels: labels,
-					datasets: [{
-						data: data,
-						backgroundColor: chartColors.slice(0, labels.length),
-						borderWidth: 2,
-						borderColor: '#fff'
-					}]
+					datasets: [{ data: data, backgroundColor: chartColors.slice(0, labels.length), borderWidth: 2, borderColor: '#fff' }]
 				},
 				options: {
 					responsive: true,
@@ -179,18 +131,12 @@
 					plugins: {
 						legend: {
 							position: 'bottom',
-							labels: {
-								padding: 20,
-								usePointStyle: true,
-								font: { family: 'Gowun Dodum' }
-							}
+							labels: { padding: 20, usePointStyle: true, font: { family: 'Gowun Dodum' } }
 						},
 						tooltip: {
 							callbacks: {
 								label: function (context) {
-									if (context.label === '데이터 없음') {
-										return '해당 월의 지출 내역이 없습니다.';
-									}
+									if (context.label === '데이터 없음') return '해당 월의 지출 내역이 없습니다.';
 									return context.label + ': ' + context.parsed.toLocaleString() + '원';
 								}
 							}
@@ -199,245 +145,89 @@
 				}
 			});
 		}
-
-		function initBarChart() {
-			const barCtx = document.getElementById('barChart').getContext('2d');
-			if (barChart) {
-				barChart.destroy();
-			}
-
-			const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-			const labels = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}일`);
-			const incomeData = Array.from({ length: daysInMonth }, () => Math.floor(Math.random() * 100000));
-			const expenseData = Array.from({ length: daysInMonth }, () => Math.floor(Math.random() * 70000));
-
-			barChart = new Chart(barCtx, {
-				type: 'bar',
-				data: {
-					labels: labels,
-					datasets: [
-						{
-							label: '수입',
-							data: incomeData,
-							backgroundColor: '#4ECDC4',
-							borderColor: '#4ECDC4',
-							borderWidth: 1
-						},
-						{
-							label: '지출',
-							data: expenseData,
-							backgroundColor: '#FF6B6B',
-							borderColor: '#FF6B6B',
-							borderWidth: 1
-						}
-					]
-				},
-				options: {
-					responsive: true,
-					maintainAspectRatio: false,
-					plugins: {
-						legend: {
-							position: 'top',
-							labels: {
-								font: { family: 'Gowun Dodum' }
-							}
-						},
-						tooltip: {
-							callbacks: {
-								label: function (context) {
-									return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + '원';
-								}
-							}
-						}
-					},
-					scales: {
-						x: {
-							grid: {
-								display: false
-							},
-							ticks: {
-								font: { family: 'Gowun Dodum' }
-							}
-						},
-						y: {
-							beginAtZero: true,
-							ticks: {
-								callback: function (value, index, values) {
-									return value.toLocaleString() + '원';
-								},
-								font: { family: 'Gowun Dodum' }
-							}
-						}
-					}
-				}
-			});
-		}
-
-		function previousMonth() {
-			if (currentMonth === 1) {
-				currentMonth = 12;
-				currentYear--;
+		function updateExpenseDetails(data) {
+			const expenseList = document.querySelector('.expense-list');
+			expenseList.innerHTML = '';
+			if (Array.isArray(data) && data.length > 0) {
+				data.forEach((item, index) => {
+					const div = document.createElement('div');
+					div.classList.add('expense-item');
+					div.innerHTML = `<div class="expense-category"><div class="category-dot" style="background-color:${chartColors[index % chartColors.length]}"></div><span>${item.cm_name}</span></div><div class="expense-amount">${item.expenseSum.toLocaleString()}원</div>`;
+					expenseList.appendChild(div);
+				});
 			} else {
-				currentMonth--;
+				const div = document.createElement('div');
+				div.classList.add('expense-item');
+				div.innerHTML = '<div class="expense-category"><span>해당 월의 지출 내역이 없습니다.</span></div>';
+				expenseList.appendChild(div);
 			}
-			updateDateDisplay();
-			loadMonthData();
 		}
-
-		function nextMonth() {
-			if (currentMonth === 12) {
-				currentMonth = 1;
-				currentYear++;
-			} else {
-				currentMonth++;
-			}
-			updateDateDisplay();
-			loadMonthData();
-		}
-
 		function updateDateDisplay() {
-			const dateElement = document.querySelector('.current-date');
-			dateElement.textContent = `${currentYear}년 ${currentMonth}월`;
+			document.querySelector('.current-date').textContent = `${currentYear}년 ${currentMonth}월`;
 		}
-
+		function previousMonth() {
+			if (currentMonth === 1) { currentMonth = 12; currentYear--; } else currentMonth--;
+			updateDateDisplay(); loadMonthData();
+		}
+		function nextMonth() {
+			if (currentMonth === 12) { currentMonth = 1; currentYear++; } else currentMonth++;
+			updateDateDisplay(); loadMonthData();
+		}
+		async function loadMonthData() {
+			try {
+				const res = await fetch(`/cashbook/api/chartMonth?year=${currentYear}&month=${currentMonth}`);
+				const result = await res.json();
+				if (result.success) {
+					pieChartData = result.data.sumExpense;
+					totalIncome = result.data.plus?.plus ?? 0;
+					totalExpense = result.data.minus?.minus ?? 0;
+					balance = result.data.sum;
+					updateSummaryDisplay(); initializeCharts(); updateExpenseDetails(pieChartData);
+				} else throw new Error(result.message);
+			} catch (e) {
+				alert('차트 데이터를 가져올 수 없습니다.');
+				pieChartData = []; totalIncome = 0; totalExpense = 0; balance = 0;
+				updateSummaryDisplay(); initializeCharts(); updateExpenseDetails([]);
+			}
+		}
 		function updateSummaryDisplay() {
 			document.querySelector('.income-value').textContent = totalIncome.toLocaleString();
 			document.querySelector('.expense-value').textContent = totalExpense.toLocaleString();
 			document.querySelector('.balance-value').textContent = balance.toLocaleString();
 		}
-
-		async function loadMonthData() {
-			console.log(`Loading data for ${currentYear}년 ${currentMonth}월`);
-
-			try {
-				const response = await fetch(`/cashbook/api/chartMonth?year=${currentYear}&month=${currentMonth}`);
-				const result = await response.json();
-
-				if (result.success) {
-					pieChartData = result.data.sumExpense;
-					totalIncome = result.data.plus && result.data.plus.plus !== null ? result.data.plus.plus : 0;
-					totalExpense = result.data.minus && result.data.minus.minus !== null ? result.data.minus.minus : 0;
-					balance = result.data.sum;
-
-					updateSummaryDisplay();
-					initializeCharts();
-					updateExpenseDetails(pieChartData);
-
-				} else {
-					console.error("데이터 로드 실패:", result.message);
-					alert("차트 데이터를 가져오는 데 실패했습니다: " + result.message);
-					pieChartData = [];
-					totalIncome = 0;
-					totalExpense = 0;
-					balance = 0;
-					updateSummaryDisplay();
-					initializeCharts();
-					updateExpenseDetails([]);
-				}
-			} catch (error) {
-				console.error("데이터 로드 중 네트워크 오류 발생:", error);
-				alert("네트워크 오류로 차트 데이터를 가져올 수 없습니다.");
-				pieChartData = [];
-				totalIncome = 0;
-				totalExpense = 0;
-				balance = 0;
-				updateSummaryDisplay();
-				initializeCharts();
-				updateExpenseDetails([]);
-			}
-		}
-
-		function updateExpenseDetails(data) {
-			const expenseList = document.querySelector('.expense-list');
-			expenseList.innerHTML = '';
-
-			if (Array.isArray(data) && data.length > 0) {
-				data.forEach((item, index) => {
-					const expenseItem = document.createElement('div');
-					expenseItem.classList.add('expense-item');
-
-					const categoryDotColor = chartColors[index % chartColors.length];
-
-					expenseItem.innerHTML = `
-						<div class="expense-category">
-							<div class="category-dot" style="background-color:${categoryDotColor}"></div>
-							<span>${item.cm_name}</span>
-						</div>
-						<div class="expense-amount">${item.expenseSum.toLocaleString()}원</div>
-					`;
-					expenseList.appendChild(expenseItem);
-				});
-			} else {
-				const noDataItem = document.createElement('div');
-				noDataItem.classList.add('expense-item');
-				noDataItem.innerHTML = `<div class="expense-category"><span>해당 월의 지출 내역이 없습니다.</span></div>`;
-				expenseList.appendChild(noDataItem);
-			}
-		}
-
 		function populateDateSelectors() {
 			const yearSelect = document.getElementById('yearSelect');
 			const monthSelect = document.getElementById('monthSelect');
-			const currentYearForModal = new Date().getFullYear();
-
-			for (let i = currentYearForModal - 5; i <= currentYearForModal + 5; i++) {
-				const option = document.createElement('option');
-				option.value = i;
-				option.textContent = `${i}년`;
-				yearSelect.appendChild(option);
+			const nowYear = new Date().getFullYear();
+			for (let y = nowYear - 5; y <= nowYear + 5; y++) {
+				const opt = document.createElement('option');
+				opt.value = y; opt.textContent = `${y}년`; yearSelect.appendChild(opt);
 			}
-
-			for (let i = 1; i <= 12; i++) {
-				const option = document.createElement('option');
-				option.value = i;
-				option.textContent = `${i}월`;
-				monthSelect.appendChild(option);
+			for (let m = 1; m <= 12; m++) {
+				const opt = document.createElement('option');
+				opt.value = m; opt.textContent = `${m}월`; monthSelect.appendChild(opt);
 			}
-			
 			yearSelect.value = currentYear;
 			monthSelect.value = currentMonth;
 		}
-
 		document.getElementById('dateModal').addEventListener('click', function (e) {
-			if (e.target === this) {
-				closeDateModal();
-			}
+			if (e.target === this) closeDateModal();
 		});
-
 		function openDateModal() {
 			document.getElementById('yearSelect').value = currentYear;
 			document.getElementById('monthSelect').value = currentMonth;
 			document.getElementById('dateModal').style.display = 'block';
 		}
-
 		function closeDateModal() {
 			document.getElementById('dateModal').style.display = 'none';
 		}
-
 		function confirmDateChange() {
 			const newYear = parseInt(document.getElementById('yearSelect').value);
 			const newMonth = parseInt(document.getElementById('monthSelect').value);
-
-			if (newYear === currentYear && newMonth === currentMonth) {
-				closeDateModal();
-				return;
-			}
-
-			currentYear = newYear;
-			currentMonth = newMonth;
-
-			updateDateDisplay();
-			loadMonthData();
-			closeDateModal();
-		}
-
-		function logout() {
-			if (confirm('로그아웃 하시겠습니까?')) {
-				window.location.href = '/logout';
-			}
+			if (newYear === currentYear && newMonth === currentMonth) return closeDateModal();
+			currentYear = newYear; currentMonth = newMonth;
+			updateDateDisplay(); loadMonthData(); closeDateModal();
 		}
 	</script>
-
 </body>
-
 </html>

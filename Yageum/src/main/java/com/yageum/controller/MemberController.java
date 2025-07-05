@@ -55,8 +55,6 @@ public class MemberController {
 
 	private final ChartService chartService;
 
-	private final ChatGPTService chatGPTService;
-
 	private final MyUserDetailsService myUserDetailsService;
 
 	private final PasswordEncoder passwordEncoder;
@@ -88,7 +86,7 @@ public class MemberController {
 		System.out.println(sumExpense);
 
 
-		String result = "이번달 현재까지 사용한 금액은" + String.valueOf(sumExpense) + "원 입니다. \n차트를 보러 가시겠습니까?";
+		String result = "이번달 현재까지 사용한 금액은 " + String.valueOf(sumExpense) + "원입니다. \n차트를 보러 가시겠습니까?";
 
 		return result;
 
