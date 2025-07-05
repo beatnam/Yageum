@@ -28,10 +28,18 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 	    insert into bank_account (
 	        member_in, bank_in, account_num, finnum, account_name, create_date, account_alias
 	    )
-	    VALUES (
+	    values (
 	        #{memberIn}, #{bankIn}, #{accountNum}, #{finnum}, #{accountName}, NOW(), #{accountAlias}
 	    )
 	</insert>
+	
+	<update id="updateAccountName">
+	  update bank_account set account_name = #{newName} where account_in = #{id}
+	</update>
+	
+	<update id="updateCardName">
+	  update card set card_name = #{newName} where card_in = #{id}
+	</update>
 
 	
 

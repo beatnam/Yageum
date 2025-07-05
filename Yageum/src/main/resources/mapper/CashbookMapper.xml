@@ -46,6 +46,15 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		where ba.member_in = #{memberIn}
 	</select>
 	
+	<select id="getCardList" resultType="com.yageum.domain.CardDTO">
+		select c.card_in, c.card_name, c.card_num, c.cc_in, cc.cc_name, c.method_in, c.member_in
+		from card c
+		left join card_corporation cc
+		on c.cc_in = cc.cc_in
+		where c.member_in = #{memberIn}
+		and c.method_in = #{methodIn}
+	</select>
+	
 	<select id="getDailyIncomeExpense" resultType="map">
 		select 
 			expense_date, 

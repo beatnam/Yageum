@@ -31,7 +31,57 @@ document.addEventListener('DOMContentLoaded', function() {
 	    addBtn.addEventListener('click', function () {
 	        window.location.href = '/mypage/minsert';
 	    });
-	});
+		
+
+		    // 수정 버튼 동작 정의
+		    document.querySelectorAll('.edit-name-btn').forEach(editBtn => {
+		        editBtn.addEventListener('click', function () {
+		            const item = editBtn.closest('.payment-item');
+		            const nameDiv = item.querySelector('.payment-name');
+		            const originalText = nameDiv.textContent;
+
+		            const input = document.createElement('input');
+		            input.type = 'text';
+		            input.value = originalText;
+		            input.className = 'edit-name-input';
+
+		            const saveBtn = document.createElement('button');
+		            saveBtn.textContent = '저장';
+		            saveBtn.className = 'save-name-btn';
+
+		            nameDiv.replaceWith(input);
+		            editBtn.replaceWith(saveBtn);
+
+		            saveBtn.addEventListener('click', function () {
+		                const newName = input.value;
+		                const id = item.getAttribute('data-id');
+		                const type = item.getAttribute('data-type');
+
+						const token = document.querySelector('meta[name="_csrf"]')?.content;
+						const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+		                fetch('/mypage/updateMethodName', {
+		                    method: 'POST',
+		                    headers: {
+		                        'Content-Type': 'application/json',
+		                        [header]: token
+		                    },
+		                    body: JSON.stringify({ id, type, newName })
+		                }).then(res => {
+		                    if (res.ok) {
+		                        const newNameDiv = document.createElement('div');
+		                        newNameDiv.className = 'payment-name';
+		                        newNameDiv.textContent = newName;
+
+		                        input.replaceWith(newNameDiv);
+		                        saveBtn.replaceWith(editBtn);
+		                    } else {
+		                        alert("수정 실패!");
+		                    }
+		                });
+		            });
+		        });
+		    });
+		});
 	
 	document.getElementById('globalDeleteBtn').addEventListener('click', function () {
 	    const checked = document.querySelectorAll('.select-checkbox:checked');

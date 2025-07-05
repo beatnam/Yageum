@@ -38,6 +38,12 @@ public class MypageService {
 		mypageMapper.deleteCardById(id);
 	
 	}
+	
+//	//카드 리스트 출력
+//	public List<Card> getAllCardList(int memberIn) {
+//	    log.info("ExpenseService getAllCardList()");
+//	    return cashbookMapper.getCardListByMember(memberIn);
+//	}
 
 	// 카드 회사 리스트 출력
 	public List<CardCorporation> getCardCorporationList() {
@@ -53,7 +59,15 @@ public class MypageService {
 		mypageMapper.minsertPro(card);
 	}
 
+	// 수단 이름 수정 (계좌)
+	public void updateAccountName(int id, String newName) {
+	    mypageMapper.updateAccountName(id, newName);
+	}
 	
+	// 수단 이름 수정 (카드)
+	public void updateCardName(int id, String newName) {
+	    mypageMapper.updateCardName(id, newName);
+	}
 
 	  
 
