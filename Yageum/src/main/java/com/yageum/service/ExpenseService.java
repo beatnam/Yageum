@@ -141,6 +141,11 @@ public class ExpenseService {
 			return cardRepository.findByMemberIn(memberIn);
 		}
 
+		public List<Expense> expenseAll() {
+			
+			return expenseRepository.findAll() ;
+		}
+
 
 	  
 
