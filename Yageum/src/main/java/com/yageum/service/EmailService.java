@@ -35,7 +35,6 @@ public class EmailService {
 		 
 	 }
 	 
-	 /*
 	 public void sendSimpleEmails(String[] toEmails, String subject, String content) {
 		 SimpleMailMessage message = new SimpleMailMessage();
 		 message.setTo(toEmails); // 여러 수신자 설정 (String 배열)
@@ -60,7 +59,7 @@ public class EmailService {
 	 
 	 
 	 
-	  첨부파일 보내는 메서드 
+	  /*첨부파일 보내는 메서드 
 	 public void sendEmail(String toEmail, String subject, String text) {
 		 MimeMessage message = mailSender.createMimeMessage();
 		 try {
