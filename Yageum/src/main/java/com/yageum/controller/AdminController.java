@@ -38,6 +38,7 @@ import com.yageum.repository.CategoryMainRepository;
 import com.yageum.service.AdminService;
 import com.yageum.service.CategoryService;
 import com.yageum.service.ConsumptionService;
+import com.yageum.service.EmailService;
 import com.yageum.service.ExpenseService;
 import com.yageum.service.ItemService;
 import com.yageum.service.MemberService;
@@ -71,6 +72,10 @@ public class AdminController {
 	//Repository			
 	private final CategoryMainRepository categoryMainRepository;
 
+	
+
+	
+	
 	// 회원 관리 페이지
 	@GetMapping("/user")
 	public String user(Model model) {
@@ -166,6 +171,7 @@ public class AdminController {
 	public String state(Model model) {
 		log.info("AdminController state()");
 	//
+		int qpIn = 3;
 		List<CategorySub> categorySub = categoryService.cateSFindAll();
 		List<Member> memberList = memberService.adminInfo();
 		List<BankAccount> bankAccount = expenseService.accountAll();
@@ -174,6 +180,8 @@ public class AdminController {
 		log.info(categorySub.toString());
 		List<Expense> cateExpense = expenseService.expenseAll();
 		log.info(cateExpense.toString());
+		List<QuestStateDTO> questSuccess = expenseService.successQuest(qpIn);
+		log.info(questSuccess.toString());
 		
 		//차트 데이터 가공
 		
@@ -568,6 +576,7 @@ public class AdminController {
 		return "/admin/admin_notification";
 	}
 
+	//공지사항 저장 로직
 	@GetMapping("/notice_gener")
 	public String noticeGener(Model model) {
 		log.info("AdminController noticeGener()");
@@ -585,6 +594,13 @@ public class AdminController {
 		
 		noticeService.insert(noticeDTO);
 	}
+	
+
+	
+	
+	
+	
+	
 	
 	@GetMapping("/notice_update")
 	public String noticeUpdate(@RequestParam("noticeIn")int noticeIn ,Model model) {
@@ -605,16 +621,13 @@ public class AdminController {
 		log.info("AdminController noticeUpdatePro()");
 		log.info(noitceDTO.toString());
 
-//		NoticeDTO noticeDTO2 = noticeService.findByIn(noticeIn).orElseThrow(()
-//				-> new UsernameNotFoundException("없는 카테고리")
-//				);
-//		noticeDTO2.setNoticeContent(map.get("noticeContent"));
-//		noticeDTO2.setNoticeDate(map.get("noticeDate"));
-//		noticeDTO2.setNoticeSubject(map.get("noticeSubject"));
-
 		
 		noticeService.update(noitceDTO);
 	}
+	//공지사항 저장 로직
+	
+	//이메일 전송 로직
+	
 	
 	
 	

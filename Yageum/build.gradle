@@ -60,6 +60,20 @@ implementation 'nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.2.0'
 // https://mvnrepository.com/artifact/org.json/json
 implementation 'org.json:json:20250107'
 
+//보내는 SMTP 메시지 보내기 
+
+// Spring Boot Web Starter (컨트롤러를 위해 필요합니다)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Boot Mail Starter (이메일 전송에 필수)
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Spring Boot Test Starter (테스트에 필요, 선택 사항)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+		
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	
 }
 
 tasks.named('test') {

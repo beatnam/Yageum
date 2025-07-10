@@ -50,6 +50,9 @@ public interface QuestMapper {
 
 	int sumFromExpense(SumSearchDTO sumSearchDTO);
 
+	List<QuestStateDTO> successQuest(int qpIn);
+
 	
+
 
 }

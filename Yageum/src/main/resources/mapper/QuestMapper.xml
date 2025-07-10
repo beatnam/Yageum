@@ -19,6 +19,7 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 		#{rewardDate})
 
 	</insert>
+	
 
 	<select id="listQuest" resultType="map">
 		select quest_in, quest_name, quest_type_name,
@@ -54,6 +55,11 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 
 	</select>
 
+	<select id="successQuest" resultType="com.yageum.domain.QuestStateDTO">
+		select *
+		from quest_state
+		where qp_in = #{qpIn}
+	</select>
 	<select id="myReward" resultType="java.lang.Integer">
 		select member_reward
 		from member
