@@ -52,7 +52,7 @@
 		<div class="main-content">
 			<div class="main_header">
 				<h1>공지사항 목록</h1>
-				<button class="add-btn" onclick="addNotice()">추가하기</button>
+				<button class="add-btn" onclick="addNotice()">공지전송</button>
 			</div>
 
 			<div class="table-container">
@@ -84,7 +84,6 @@
 					</tbody>
 				</table>
 			</div>
-
 			<div class="pagination">
 				<span>이전</span>
 				<a href="#">1</a>
@@ -143,7 +142,7 @@
 
 		// 공지사항 추가 기능
 		function addNotice() {
-			const uri = "/admin/notice_gener";
+			const uri = "/email/send";
 			window.open(uri, "popup", "height=590, width=470");
 		}
 

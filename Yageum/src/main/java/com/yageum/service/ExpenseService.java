@@ -7,12 +7,14 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import com.yageum.domain.BankAccountDTO;
 import com.yageum.domain.ExpenseDTO;
+import com.yageum.domain.QuestStateDTO;
 import com.yageum.entity.BankAccount;
 import com.yageum.entity.Card;
 import com.yageum.entity.CategoryMain;
 import com.yageum.entity.CategorySub;
 import com.yageum.entity.Expense;
 import com.yageum.mapper.CashbookMapper;
+import com.yageum.mapper.QuestMapper;
 import com.yageum.repository.BankAccountRepository;
 import com.yageum.repository.CardRepository;
 import com.yageum.repository.CategoryMainRepository;
@@ -35,6 +37,7 @@ public class ExpenseService {
 	 private final CardRepository cardRepository;
 	 private final CashbookMapper cashbookMapper;
 	 private final BankAccountRepository bankAccountRepository;
+	 private final QuestMapper questMapper;
 
 	    
 	    // 내역 저장
@@ -153,6 +156,12 @@ public class ExpenseService {
 			
 			cashbookMapper.deleteExpense(id);
 			
+		}
+
+		public List<QuestStateDTO> successQuest(int qpIn) {
+			log.info("ExpenseService deleteExpenseById()");
+
+			return questMapper.successQuest(qpIn);
 		}
 
 
