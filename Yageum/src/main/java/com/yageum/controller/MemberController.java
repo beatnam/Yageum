@@ -163,7 +163,7 @@ public class MemberController {
 		log.info("MemberController login()");
 		String clientId = nClientId;
 
-		String redirectUri = URLEncoder.encode("http://localhost:8080/member/login/callback", StandardCharsets.UTF_8);
+		String redirectUri = URLEncoder.encode("http://c3d2501t1p2.itwillbs.com/member/login/callback", StandardCharsets.UTF_8);
 		String state = UUID.randomUUID().toString();
 
 		session.setAttribute("state", state);

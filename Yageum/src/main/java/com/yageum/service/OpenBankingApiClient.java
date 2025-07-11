@@ -28,7 +28,7 @@ public class OpenBankingApiClient {
    @Value("${openbanking.secret}")
    private String client_secret;
 
-   private String redirect_uri = "http://localhost:8080/openbanking/callback";
+   private String redirect_uri = "http://c3d2501t1p2.itwillbs.com/openbanking/callback";
    private String grant_type = "authorization_code";
    
 //   헤더 정보 관리 클래스
