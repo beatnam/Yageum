@@ -69,4 +69,9 @@ public class AdminService {
 		
 	}
 
+	public List<Map<Object, String>> transaction() {
+		// TODO Auto-generated method stub
+		return adminMapper.transaction();
+	}
+
 }

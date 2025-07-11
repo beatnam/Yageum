@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/admin_user.css">
+	<link rel="stylesheet" href="../css/admin_header.css">
+	<script src="../js/jquery-3.7.1.js"></script>
+	<title>사용자 관리</title>
+</head>
+
+<body>
+	<div th:replace="fragments/admin_header :: header"></div>
+	<div class="container">
+		<!-- 사이드바 -->
+		<div class="sidebar">
+			<h2>관리자 페이지</h2>
+
+			<div class="menu-item">
+				<a href="/admin/user" class="menu-link active">사용자 관리</a>
+			</div>
+
+			<div class="menu-item">
+				<a href="/admin/state" class="menu-link">통계 / 리포트</a>
+			</div>
+
+			<div class="menu-item">
+				<a href="#" class="menu-link" onclick="toggleSubmenu(event)">사이트 설정</a>
+				<div class="submenu" id="siteSettingsSubmenu">
+					<div class="submenu-item">
+						<a href="/admin/quest" class="submenu-link">퀘스트 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/item" class="submenu-link">구매항목 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/category" class="submenu-link">카테고리 관리</a>
+					</div>
+					<div class="submenu-item">
+						<a href="/admin/notification" class="submenu-link">공지사항 관리</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 메인 콘텐츠 -->
+		<div class="main-content">
+			<div class="main_header">
+				<h1>아이템 구매 내역</h1>
+				<!--                <div class="search-container">-->
+				<!--                    <input type="text" class="search-input" id="searchInput" placeholder="이름 또는 회원 ID 검색">-->
+				<!--                    <button class="search-btn" onclick="searchUsers()">검색</button>-->
+				<!--                </div>-->
+			</div>
+
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>구매 번호</th>
+							<th>회원 아이디</th>
+							<th>아이템 이름</th>
+							<th>구매 일시</th>
+							<th>회원 주소</th>
+							<th>회원 전화번호</th>
+							<th>발송 여부</th>
+							<th>발송 하기</th>
+						</tr>
+					</thead>
+					<tbody id="userTableBody">
+						<!-- Thymeleaf로 회원 정보 반복 출력 -->
+
+						<tr th:each="transaction : ${transactionList}">
+							<td th:text="${transaction.transaction_in}"></td>
+							<td th:text="${#strings.length(transaction.member_id) >= 43 ? 'Naver User' : transaction.member_id}">
+							</td>
+							<td th:text="${transaction.item_name}"></td>
+							<td th:text="${transaction.transaction_date}"></td>
+							<td th:text="${transaction.member_address}"></td>
+							<td th:text="${transaction.member_phone}"></td>
+							<td th:if="${transaction.is_send == false}">발송 전</td>
+							<td th:if="${transaction.is_send == true}">발송 후</td>
+							<!--							<td><button href=# class="detail-btn" th:value="${member.memberId}">발송하기</button></td>-->
+						</tr>
+					</tbody>
+				</table>
+				<div id="noResults" class="no-results" style="display: none;">
+					검색 결과가 없습니다.
+				</div>
+			</div>
+
+			<div class="pagination">
+				<span>이전</span>
+				<a href="#">1</a>
+				<a href="#">2</a>
+				<a href="#">3</a>
+				<a href="#">4</a>
+				<a href="#">5</a>
+				<span>다음</span>
+			</div>
+		</div>
+	</div>
+	<script src="../js/jquery-3.6.0.js"></script>
+	<script>
+
+
+		function logout() {
+			if (confirm('로그아웃 하시겠습니까?')) {
+				window.location.href = '/logout';
+			}
+		}
+	</script>
+</body>
+
+</html>
