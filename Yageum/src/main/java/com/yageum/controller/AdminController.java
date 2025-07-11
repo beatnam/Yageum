@@ -532,6 +532,7 @@ public class AdminController {
 		Optional<NoticeDTO> noticeDTO = noticeService.findByIn(noticeIn);
 
 		model.addAttribute("notice", noticeDTO.get());
+		
 		return "/admin/notice_update";
 
 	}
