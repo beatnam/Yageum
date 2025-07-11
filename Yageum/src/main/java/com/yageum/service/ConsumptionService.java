@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Log
 @RequiredArgsConstructor
-@Slf4j
 public class ConsumptionService {
     
     private final ExpenseMapper expenseMapper;
