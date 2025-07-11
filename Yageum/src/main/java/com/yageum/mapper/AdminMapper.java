@@ -32,4 +32,6 @@ public interface AdminMapper {
 
 	void changeQuestStateVaild();
 
+	List<Map<Object, String>> transaction();
+
 }

@@ -64,10 +64,20 @@ src/main/resources/mapper폴더/MemberMapper.xml파일 -->
 
 	</update>
 
-	<update id="changeQuestStateVaild"> 
-		UPDATE quest_state 
-		SET qp_in = 5 
-		WHERE quest_in IN 
-				(SELECT quest_in FROM quest WHERE end_date $lt; CURDATE())
+	<update id="changeQuestStateVaild">
+		UPDATE quest_state
+		SET qp_in = 5
+		WHERE quest_in IN
+		(SELECT quest_in FROM quest WHERE end_date $lt; CURDATE())
 	</update>
+
+	<select id="transaction" resultType="map">
+		select transaction_in, m.member_id, item_name, transaction_date,
+		member_address, member_phone, is_send
+		from transaction t join member m
+		on t.member_in = m.member_in
+		join item i
+		on i.item_in = t.item_in
+		order by is_send;
+	</select>
 </mapper>
