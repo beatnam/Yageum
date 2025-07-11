@@ -6,6 +6,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.yageum.domain.EmailDTO;
+
 import lombok.extern.java.Log;
 
 @Service
@@ -35,28 +37,32 @@ public class EmailService {
 		 
 	 }
 	 
-	 public void sendSimpleEmails(String[] toEmails, String subject, String content) {
+	 public void sendSimpleEmails(String[] emails, String subject, String content) {
 		 SimpleMailMessage message = new SimpleMailMessage();
-		 message.setTo(toEmails); // 여러 수신자 설정 (String 배열)
+		 message.setTo(emails); // 여러 수신자 설정 (String 배열)
 	     message.setSubject(subject);
 	     message.setText(content);
 	     
 	     try {
 	            mailSender.send(message);
 	            // 배열을 문자열로 변환하여 로깅 (예: [email1@a.com, email2@b.com])
-	            log.info("이메일 전송 성공 (여러 수신자): To=" + String.join(", ", toEmails) + ", Subject=" + subject);
+	            log.info("이메일 전송 성공 (여러 수신자): To=" + String.join(", ", emails) + ", Subject=" + subject);
 	        } catch (Exception e) {
-	            log.severe("이메일 전송 실패 (여러 수신자): To=" + String.join(", ", toEmails) + ", Subject=" + subject + ", Error=" + e.getMessage());
+	            log.severe("이메일 전송 실패 (여러 수신자): To=" + String.join(", ", emails) + ", Subject=" + subject + ", Error=" + e.getMessage());
 	            throw new RuntimeException("이메일 전송 중 오류가 발생했습니다.", e);
 	     }
 	     
 	 }
 	 
-	 public void sendSimpleEmails(List<String> toEmails, String subject, String content) {
-	        // List<String>을 String[]으로 변환하여 기존 메서드 호출
-		 sendSimpleEmails(toEmails.toArray(new String[0]), subject, content);
-	    }
 	 
+	 //List<String>으로 받은 이메일 정보 Stringp[] 타입으로 변환후 sendSimpleEmails()으로 전송
+	 public void changeType(List<String> emails, String subject, String content) {
+	        // List<String>을 String[]으로 변환
+	        String[] emailArray = emails.toArray(new String[0]);
+
+	        // 변환된 배열을 핵심 메서드로 전달하여 호출
+	        sendSimpleEmails(emailArray, subject, content);
+	    }
 	 
 	 
 	  /*첨부파일 보내는 메서드 

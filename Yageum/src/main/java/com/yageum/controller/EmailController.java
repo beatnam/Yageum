@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yageum.domain.EmailDTO;
 import com.yageum.entity.Member;
 import com.yageum.service.EmailService;
@@ -51,23 +52,26 @@ public class EmailController {
 		log.info("받은내용" + emailDTO.toString());
 		List<Member> member = memberService.adminInfo();
 		
-		List<Map<String, String>> emails = member.stream()
+		List<String> emails = member.stream()
 				.filter(m -> m.getEmailConsent() == true)
-				.map(m -> Map.of("to", m.getMemberEmail()))
+				.map(m -> m.getMemberEmail())
 				.collect(Collectors.toList());
-						
-						
 		
-						
+//		ObjectMapper objectMapper = new ObjectMapper();
 				
+//		String emailJson = objectMapper.writeValueAsString(emails);
+		
 
 				
-				
+		if(emails.isEmpty()) {
+			return "이메일 수신 동의를 한 대상자가 없습니다.";
+		}
+		
+		
 		try {
-			emailService.sendSimpleEmail(
+			emailService.changeType(
 					
-//					emails.get(),
-					emailDTO.getTo(),
+					emails,
 					emailDTO.getSubject(),
 					emailDTO.getContent()
 					);
