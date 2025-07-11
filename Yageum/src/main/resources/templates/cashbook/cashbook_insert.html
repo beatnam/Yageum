@@ -1,135 +1,147 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <meta charset="UTF-8">
-    <title>가계부 입력</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<title>가계부 입력</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap" rel="stylesheet">
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
+		rel="stylesheet">
 
- <link rel="stylesheet" href="../css/common.css">
- <link rel="stylesheet" href="../css/cashbook_insert.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/cashbook_insert.css">
 
 </head>
+
 <body>
 	<!-- 헤더 -->
 	<div th:replace="fragments/header :: header"></div>
 
 
-    <!-- 사이드바 + 본문 -->
-    <div class="app-container">
-       		<div th:replace="fragments/sidebar :: sidebar"></div>
+	<!-- 사이드바 + 본문 -->
+	<div class="app-container">
+		<div th:replace="fragments/sidebar :: sidebar"></div>
 
-            <main class="content">
-            <div class="content-header">
-                <h2>내역 수기 입력</h2>
-                <p>오늘의 수입 / 지출 내역을 입력하세요!</p>
-            </div>
-            <div class="content-body">
-              <div class="form-container">
-        <form id="transactionForm" action="/cashbook/insertPro" method="post" onsubmit="return handleSubmit(event)">
-			<!-- 날짜 입력 -->
-			<div class="form-group">
-			    <label class="form-label">날짜 <span class="required">*</span></label>
-			    <input type="date" class="form-input" id="expenseDate" name="expenseDate"
-			           th:value="${selectedDate}" required>
+		<main class="content">
+			<div class="content-header">
+				<h2>내역 수기 입력</h2>
+				<p>오늘의 수입 / 지출 내역을 입력하세요!</p>
 			</div>
-			
-            <!-- 금액 입력 -->
-            <div class="form-group">
-                <label class="form-label">금액 <span class="required">*</span></label>
-                <input type="text" class="amount-input" id="expenseSum" name="expenseSum" placeholder="금액을 입력하세요" required>
-                <div class="error-message">금액을 입력해주세요.</div>
-            </div>
+			<div class="content-body">
+				<div class="form-container">
+					<form id="transactionForm" action="/cashbook/insertPro" method="post"
+						onsubmit="return handleSubmit(event)">
+						<!-- 날짜 입력 -->
+						<div class="form-group">
+							<label class="form-label">날짜 <span class="required">*</span></label>
+							<input type="date" class="form-input" id="expenseDate" name="expenseDate"
+								th:value="${selectedDate}" required>
+						</div>
 
-            <!-- 유형 선택 -->
-            <div class="form-group">
-                <label class="form-label">유형 <span class="required">*</span></label>
-                <div class="type-buttons">
-                    <button type="button" class="type-btn income" onclick="selectType('income')">수입</button>
-                    <button type="button" class="type-btn expense" onclick="selectType('expense')">지출</button>
-                </div>
-                <input type="hidden" id="expenseType" name="expenseType" required>
-                <div class="error-message">유형을 선택해주세요.</div>
-            </div>
+						<!-- 금액 입력 -->
+						<div class="form-group">
+							<label class="form-label">금액 <span class="required">*</span></label>
+							<input type="text" class="amount-input" id="expenseSum" name="expenseSum"
+								placeholder="금액을 입력하세요" required>
+							<div class="error-message">금액을 입력해주세요.</div>
+						</div>
 
-            <!-- 내용 입력 -->
-            <div class="form-group">
-                <label class="form-label">내용 <span class="required">*</span></label>
-                <input type="text" class="form-input" id="expenseContent" name="expenseContent" placeholder="내용을 입력하세요" required>
-                <div class="error-message">내용을 입력해주세요.</div>
-            </div>
+						<!-- 유형 선택 -->
+						<div class="form-group">
+							<label class="form-label">유형 <span class="required">*</span></label>
+							<div class="type-buttons">
+								<button type="button" class="type-btn income" onclick="selectType('income')">수입</button>
+								<button type="button" class="type-btn expense"
+									onclick="selectType('expense')">지출</button>
+							</div>
+							<input type="hidden" id="expenseType" name="expenseType" required>
+							<div class="error-message">유형을 선택해주세요.</div>
+						</div>
 
-            <!-- 수단 선택 -->
-            <div class="form-group">
-                <label class="form-label">수단 <span class="required">*</span></label>
-                <div class="select-group">
-					<select class="form-select" id="method1" name="method_in" onchange="updateMethod2()" required>
-					    <option value="">선택</option>
-					    <option value="1">신용카드</option>
-					    <option value="2">체크카드</option>
-					    <option value="3">현금</option>
-					    <option value="4">계좌</option>
-					</select>
-                    <select class="form-select" id="method2" name="method2" disabled required>
-                        <option value="">상세 선택</option>
-                    </select>
-                </div>
-                <div class="error-message">수단을 선택해주세요.</div>
-            </div>
+						<!-- 내용 입력 -->
+						<div class="form-group">
+							<label class="form-label">내용 <span class="required">*</span></label>
+							<input type="text" class="form-input" id="expenseContent" name="expenseContent"
+								placeholder="내용을 입력하세요" required>
+							<div class="error-message">내용을 입력해주세요.</div>
+						</div>
 
-			<!-- 카테고리 선택 -->
-			<div class="form-group">
-			  <label class="form-label">카테고리 <span class="required">*</span></label>
-			  <div class="category-selector">
-			    <div class="category-display" id="categoryDisplay">카테고리를 선택하세요</div>
-			    <button type="button" class="category-btn" onclick="openCategoryModal()">선택</button>
-			    <input type="hidden" id="cs_in" name="cs_in" required>
-			  </div>
+						<!-- 수단 선택 -->
+						<div class="form-group">
+							<label class="form-label">수단 <span class="required">*</span></label>
+							<div class="select-group">
+								<select class="form-select" id="method1" name="method_in" onchange="updateMethod2()"
+									required>
+									<option value="">선택</option>
+									<option value="1">신용카드</option>
+									<option value="2">체크카드</option>
+									<option value="3">현금</option>
+									<option value="4">계좌</option>
+								</select>
+								<select class="form-select" id="method2" name="method2" disabled required>
+									<option value="">상세 선택</option>
+								</select>
+							</div>
+							<div class="error-message">수단을 선택해주세요.</div>
+						</div>
+
+						<!-- 카테고리 선택 -->
+						<div class="form-group">
+							<label class="form-label">카테고리 <span class="required">*</span></label>
+							<div class="category-selector">
+								<div class="category-display" id="categoryDisplay">카테고리를 선택하세요</div>
+								<button type="button" class="category-btn" onclick="openCategoryModal()">선택</button>
+								<input type="hidden" id="cs_in" name="cs_in" required>
+							</div>
+						</div>
+
+						<!-- 카테고리 모달 -->
+						<div id="categoryModal" class="modal-overlay" style="display: none;">
+							<div class="modal-content">
+								<h3 class="modal-title">카테고리 선택</h3>
+								<div class="category-modal-body">
+									<ul class="category-list" id="mainCategoryList">
+										<!-- 대분류 리스트 동적 생성 -->
+										<li th:each="main : ${mainList}" th:text="${main.cmName}"
+											th:attr="data-cmin=${main.cmIn}" onclick="loadSubCategories(this)">
+											[[${main.cmName}]]
+										</li>
+									</ul>
+									<ul class="subcategory-list" id="subCategoryList">
+										<!-- 여기에 소분류가 동적으로 뜸 -->
+									</ul>
+								</div>
+								<button onclick="closeCategoryModal()">닫기</button>
+							</div>
+						</div>
+
+						<!-- 메모 입력 -->
+						<div class="form-group">
+							<label class="form-label">메모</label>
+							<textarea class="form-textarea" id="expenseMemo" name="expenseMemo"
+								placeholder="메모를 입력하세요 (선택사항)"></textarea>
+						</div>
+
+						<!-- 제출 버튼 -->
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+						<button type="submit" class="submit-btn">저장하기</button>
+					</form>
+				</div>
 			</div>
-
-			<!-- 카테고리 모달 -->
-			<div id="categoryModal" class="modal-overlay" style="display: none;">
-			  <div class="modal-content">
-			    <h3 class="modal-title">카테고리 선택</h3>
-			    <div class="category-modal-body">
-			      <ul class="category-list" id="mainCategoryList">
-			        <!-- 대분류 리스트 동적 생성 -->
-					<li th:each="main : ${mainList}" th:text="${main.cmName}" th:attr="data-cmin=${main.cmIn}" onclick="loadSubCategories(this)">
-						[[${main.cmName}]]
-					</li>
-			      </ul>
-			      <ul class="subcategory-list" id="subCategoryList">
-			        <!-- 여기에 소분류가 동적으로 뜸 -->
-			      </ul>
-			    </div>
-			    <button onclick="closeCategoryModal()">닫기</button>
-			  </div>
-			</div>
-
-            <!-- 메모 입력 -->
-            <div class="form-group">
-                <label class="form-label">메모</label>
-                <textarea class="form-textarea" id="expenseMemo" name="expenseMemo" placeholder="메모를 입력하세요 (선택사항)"></textarea>
-            </div>
-
-            <!-- 제출 버튼 -->
-			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <button type="submit" class="submit-btn">저장하기</button>
-        </form>
-    </div>
-            </div>
-        </main>
-    </div>
+		</main>
+	</div>
 
 	<!-- 푸터 -->
-		<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="fragments/footer :: footer"></div>
 
-    <script src="../js/cashbook_insert.js"></script>
-	
+	<script src="../js/cashbook_insert.js"></script>
+
 
 </body>
+
 </html>

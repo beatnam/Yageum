@@ -1,129 +1,134 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <meta charset="UTF-8">
-    <title>야금야금 - 오픈뱅킹 가계부</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<title>야금야금 - 오픈뱅킹 가계부</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap" rel="stylesheet">
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Brush+Script&family=Black+Han+Sans&display=swap"
+		rel="stylesheet">
 
- <link rel="stylesheet" href="../css/common.css">
- <link rel="stylesheet" href="../css/cashbook_search.css">
-
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/cashbook_search.css">
 </head>
+
 <body>
 	<!-- 헤더 -->
-		<div th:replace="fragments/header :: header"></div>
+	<div th:replace="fragments/header :: header"></div>
 
-    <!-- 사이드바 + 본문 -->
-    <div class="app-container">
+	<!-- 사이드바 + 본문 -->
+	<div class="app-container">
 		<div th:replace="fragments/sidebar :: sidebar"></div>
 
-            <main class="content">
-            <div class="content-header">
-                <h2>월별 내역</h2>
-                <p>자신이 원하는 내역을 찾아보세요!</p>
-            </div>
-			
-            <div class="content-body">
-				
-			  <!-- 필터 영역 -->
+		<main class="content">
+			<div class="content-header">
+				<h2>월별 내역</h2>
+				<p>자신이 원하는 내역을 찾아보세요!</p>
+			</div>
+
+			<div class="content-body">
+
+				<!-- 필터 영역 -->
 				<div class="filter-section">
-				  <div class="filter-row">
-					
-				    <!-- 카테고리 -->
-				    <div class="filter-group">
-				      <label class="filter-label">카테고리</label>
-					  <select class="filter-select" id="categoryFilter">
-					    <option value="">전체</option>
-					    <option th:each="category : ${mainList}" th:value="${category.cmIn}" th:text="${category.cmName}"></option>
-					  </select>
-				    </div>
+					<div class="filter-row">
 
-				    <!-- 기간 -->
-				    <div class="filter-group">
-				      <label class="filter-label">기간</label>
-				      <select class="filter-select" id="periodFilter">
-				        <option value="thisMonth">이번 달</option>
-				        <option value="lastMonth">지난 달</option>
-				        <option value="custom">직접 입력</option>
-				      </select>
-					  
-				      <div id="customDateRange" style="display: none; margin-top: 5px;">
-				        <input type="date" id="startDateInput" class="filter-input" />
-				        <span style="margin: 0 5px;">~</span>
-				        <input type="date" id="endDateInput" class="filter-input" />
-				      </div>
-				    </div>
+						<!-- 카테고리 -->
+						<div class="filter-group">
+							<label class="filter-label">카테고리</label>
+							<select class="filter-select" id="categoryFilter">
+								<option value="">전체</option>
+								<option th:each="category : ${mainList}" th:value="${category.cmIn}"
+									th:text="${category.cmName}"></option>
+							</select>
+						</div>
 
-				    <!-- 유형 -->
-				    <div class="filter-group">
-				      <label class="filter-label">유형</label>
-				      <select class="filter-select" id="typeFilter">
-				        <option value="">전체</option>
-				        <option value="income">수입</option>
-				        <option value="expense">지출</option>
-				      </select>
-				    </div>
+						<!-- 기간 -->
+						<div class="filter-group">
+							<label class="filter-label">기간</label>
+							<select class="filter-select" id="periodFilter">
+								<option value="thisMonth">이번 달</option>
+								<option value="lastMonth">지난 달</option>
+								<option value="custom">직접 입력</option>
+							</select>
 
-				    <!-- 결제수단 -->
-				    <div class="filter-group">
-				      <label class="filter-label">결제수단</label>
-				      <select class="filter-select" id="paymentFilter">
-				        <option value="">전체</option>
-				        <!-- 카드/계좌는 JS로 동적 삽입 -->
-				        <option value="cash">현금</option>
-				      </select>
-				    </div>
-				  </div>
+							<div id="customDateRange" style="display: none; margin-top: 5px;">
+								<input type="date" id="startDateInput" class="filter-input" />
+								<span style="margin: 0 5px;">~</span>
+								<input type="date" id="endDateInput" class="filter-input" />
+							</div>
+						</div>
 
-				  <!-- 검색 -->
-				  <div class="filter-row">
-				    <div class="filter-group">
-				      <label class="filter-label">검색</label>
-				      <input type="text" class="filter-input" id="searchInput" placeholder="검색어를 입력하세요">
-				    </div>
+						<!-- 유형 -->
+						<div class="filter-group">
+							<label class="filter-label">유형</label>
+							<select class="filter-select" id="typeFilter">
+								<option value="">전체</option>
+								<option value="income">수입</option>
+								<option value="expense">지출</option>
+							</select>
+						</div>
 
-				    <button class="btn-search" onclick="applyFilters()">조회</button>
-					<button class="btn-reset" onclick="resetFilters()">초기화</button>
-				  </div>
+						<!-- 결제수단 -->
+						<div class="filter-group">
+							<label class="filter-label">결제수단</label>
+							<select class="filter-select" id="paymentFilter">
+								<option value="">전체</option>
+								<!-- 카드/계좌는 JS로 동적 삽입 -->
+								<option value="cash">현금</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- 검색 -->
+					<div class="filter-row">
+						<div class="filter-group">
+							<label class="filter-label">검색</label>
+							<input type="text" class="filter-input" id="searchInput" placeholder="검색어를 입력하세요">
+						</div>
+
+						<button class="btn-search" onclick="applyFilters()">조회</button>
+						<button class="btn-reset" onclick="resetFilters()">초기화</button>
+					</div>
 				</div>
 
-				
-             <!-- 내역 영역 -->
-               <div class="transaction-list">
-				
+
+				<!-- 내역 영역 -->
+				<div class="transaction-list">
+
 					<!-- 내역 헤더-->
-                   <div class="transaction-header">
-                       <h3 class="transaction-title" th:text="${startDate} + ' ~ ' + ${endDate}"></h3>
-                       <div class="transaction-summary">
-                           <div class="summary-item">
-                               <span>수입:</span>
-                               <span class="income"></span>
-                           </div>
-                           <div class="summary-item">
-                               <span>지출:</span>
-                               <span class="expense"></span>
-                           </div>
-                       </div>
-                   </div>
+					<div class="transaction-header">
+						<h3 class="transaction-title" th:text="${startDate} + ' ~ ' + ${endDate}"></h3>
+						<div class="transaction-summary">
+							<div class="summary-item">
+								<span>수입:</span>
+								<span class="income"></span>
+							</div>
+							<div class="summary-item">
+								<span>지출:</span>
+								<span class="expense"></span>
+							</div>
+						</div>
+					</div>
 
-                   <!-- 내역 리스트 -->
-                   <div class="transaction-item">
+					<!-- 내역 리스트 -->
+					<div class="transaction-item">
 
-                   </div>
+					</div>
 
-               </div>
-            </div>
-        </main>
-    </div>
+				</div>
+			</div>
+		</main>
+	</div>
 
 	<!--푸터-->
 	<div th:replace="fragments/footer :: footer"></div>
 
-    <script src="../js/cashbook_search.js"></script>
+	<script src="../js/cashbook_search.js"></script>
 </body>
+
 </html>
