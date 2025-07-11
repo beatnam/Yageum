@@ -1,61 +1,60 @@
 plugins {
-	id 'java'
-	id 'war'
-	id 'org.springframework.boot' version '3.4.5'
-	id 'io.spring.dependency-management' version '1.1.7'
+   id 'java'
+   id 'war'
+   id 'org.springframework.boot' version '3.4.5'
+   id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.yageum'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+   toolchain {
+      languageVersion = JavaLanguageVersion.of(21)
+   }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+   compileOnly {
+      extendsFrom annotationProcessor
+   }
 }
 
 repositories {
-	mavenCentral()
+   mavenCentral()
 }
 
 bootJar {
-	enabled = false
-
+    enabled = false
 }
 
 bootWar {
-	enabled = true 
-	archiveBaseName = 'SpringBoot'
-	archiveVersion = '0.0.1-SNAPSHOT'
-	mainClass = 'com.yageum.Application'
+    enabled = true
+    archiveBaseName = 'SpringBoot'
+    archiveVersion = '0.0.1-SNAPSHOT'
+   mainClass = 'com.yageum.Application'
 }
 
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	
-	implementation 'jakarta.activation:jakarta.actication-api:2.0.1'
-	
-	// 내장 Tomcat 제거 (외부 Tomcat 사용 시)
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-	
-	
-	
+   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+   implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+   implementation 'org.springframework.boot:spring-boot-starter-web'
+   compileOnly 'org.projectlombok:lombok'
+   developmentOnly 'org.springframework.boot:spring-boot-devtools'
+   runtimeOnly 'com.h2database:h2'
+   runtimeOnly 'com.mysql:mysql-connector-j'
+   annotationProcessor 'org.projectlombok:lombok'
+   testImplementation 'org.springframework.boot:spring-boot-starter-test'
+   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+   
+   implementation 'jakarta.activation:jakarta.activation-api:2.0.1'
+   
+   // 내장 Tomcat 제거 (외부 Tomcat 사용 시)
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+   
+   
+   
  //https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
 implementation 'org.springframework.boot:spring-boot-starter-security'
 
@@ -87,16 +86,16 @@ implementation 'org.json:json:20250107'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // Spring Boot Mail Starter (이메일 전송에 필수)
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
+   implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Spring Boot Test Starter (테스트에 필요, 선택 사항)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	
-		
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	
+   
+      
+   implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+   
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+   useJUnitPlatform()
 }
