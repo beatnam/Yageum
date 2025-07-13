@@ -302,6 +302,13 @@ public class MypageController {
 	    }
 	}
 	
+	@GetMapping("/chatbot")
+	public String chatbot() {
+		log.info("MypageController chatbot()");
+		
+		return "/mypage/mypage_chatbot";
+	}
+	
 	//카드사 자동 매칭 api  : 외부 API의 불안정성과 호출 제한 문제로 인해 프론트엔드 자체 BIN 매핑 방식으로 전환
 //	@GetMapping("/binlookup/{bin}")
 //	@ResponseBody

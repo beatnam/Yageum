@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>챗봇</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="icon" href="../img/gold.png" type="image/x-icon">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="../css/my_page.css">
+	<link rel="stylesheet" href="../css/my_page_chatbot.css">
+</head>
+
+<body>
+	<!-- 헤더 -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="accountbook-container">
+		<div th:replace="fragments/m_sidebar :: m_sidebar"></div>
+
+		<main class="accountbook-main-content">
+		  <div class="chatbot-container">
+		    <h2>💬 야금야금 챗봇</h2>
+		    <div id="chat-log" class="chat-log"></div>
+
+		    <div class="chat-input-box">
+		      <input type="text" id="user-input" placeholder="무엇을 도와드릴까요?" onkeydown="if(event.key==='Enter') sendMessage();">
+		      <button onclick="sendMessage()">전송</button>
+		    </div>
+		  </div>	
+		</main>
+	</div>
+
+	<!-- 푸터 -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+	<script src="../js/mypage_chatbot.js">
+
+		
+	</script>
+</body>
+
+</html>
