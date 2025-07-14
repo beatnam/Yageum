@@ -35,6 +35,13 @@ bootWar {
    mainClass = 'com.yageum.Application'
 }
 
+configurations.all {
+    resolutionStrategy {
+        // Groovy 버전을 'org.apache.groovy' 그룹 ID로 4.0.26으로 강제합니다.
+        // 'org.codehaus.groovy:groovy:4.0.26' 이 라인은 제거되었습니다.
+        force 'org.apache.groovy:groovy:4.0.26'
+    }
+}
 
 dependencies {
    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -53,47 +60,31 @@ dependencies {
    // 내장 Tomcat 제거 (외부 Tomcat 사용 시)
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
    
-   
-   
- //https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
-implementation 'org.springframework.boot:spring-boot-starter-security'
+   // Spring Security 6 사용
+   implementation 'org.springframework.boot:spring-boot-starter-security'
+   implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' // 올바른 버전 사용
 
- // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
-testImplementation 'org.springframework.boot:spring-boot-starter-test'
+   // MyBatis
+   implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+   testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
 
- // https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-springsecurity5
-implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+   implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
 
-// https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter
-implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+   // Thymeleaf 레이아웃 다이얼렉트
+   implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.1'
 
-// https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter-test
-testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+   // **문제의 원인으로 지목되었던 의존성: Spring Boot 3.x 및 Groovy 4.x와 호환성 문제가 있을 수 있어 주석 처리했습니다.**
+   // **빌드 후 이 기능을 사용해야 한다면, 이 의존성을 다시 활성화하고 호환되는 버전을 찾아보거나 대안을 모색해야 합니다.**
+   // implementation 'nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.2.0'
 
-implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
+   // JSON 파싱
+   implementation 'org.json:json:20250107'
 
-// https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-extras-jackson2dialect
-implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.1'
-
-implementation 'nz.net.ultraq.thymeleaf:thymeleaf-expression-processor:1.2.0'
-
-// https://mvnrepository.com/artifact/org.json/json
-implementation 'org.json:json:20250107'
-
-//보내는 SMTP 메시지 보내기 
-
-// Spring Boot Web Starter (컨트롤러를 위해 필요합니다)
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // Spring Boot Mail Starter (이메일 전송에 필수)
+   // 이메일 전송 (Spring Mail)
    implementation 'org.springframework.boot:spring-boot-starter-mail'
-
-    // Spring Boot Test Starter (테스트에 필요, 선택 사항)
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
    
-      
-   implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-   
+   // Thymeleaf는 이미 위에 선언되어 있으므로 중복 제거
+   // implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 tasks.named('test') {

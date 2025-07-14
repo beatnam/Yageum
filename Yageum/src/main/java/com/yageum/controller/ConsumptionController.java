@@ -38,7 +38,6 @@ import com.yageum.service.ChatGPTClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
-import lombok.extern.log4j.Log4j;
 
 @Controller
 @RequiredArgsConstructor
